@@ -22,14 +22,18 @@ E-Mail. Die technische Umsetzung hat noch nicht begonnen.
 6. [Technologie und Architektur](docs/06-technologie-architektur.md) – konkrete
    Zieltechnologie, Repository-Struktur, Formularlösung, CI/CD, Tests,
    Datenschutz, Sicherheit und bewusst verworfene Alternativen.
+7. [GitHub-Pages-Deployment](docs/07-github-pages-deployment.md) – öffentlicher
+   Betrieb, GitHub Actions, Projekt-URL, Custom Domain, DNS-Reihenfolge und
+   Rollback.
 
 ## Leitentscheidung
 
 Website, DNS, Domain-Registrar und E-Mail werden als vier getrennte Systeme
 behandelt. Sie werden nicht gleichzeitig migriert. Die neue Website wird zuerst
-auf einer Vorschau-URL fertiggestellt und vollständig abgenommen. Danach wird
-nur der Web-Traffic umgestellt. E-Mail und Registrar folgen – sofern weiterhin
-gewünscht – in eigenen Wartungsfenstern.
+über GitHub Pages unter der GitHub-Projekt-URL fertiggestellt und vollständig
+abgenommen. Danach wird nur der Web-Traffic der Domain auf GitHub Pages
+umgestellt. E-Mail und Registrar folgen – sofern weiterhin gewünscht – in
+eigenen Wartungsfenstern.
 
 ## Noch nicht durchführen
 

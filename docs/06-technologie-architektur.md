@@ -29,14 +29,14 @@ Abhängigkeit von einem einzelnen Hostinganbieter.
 | Datenvalidierung | Zod-Schemas bzw. Astro-Schemafunktion | Build bricht bei fehlenden Pflichtfeldern oder ungültigen Slugs ab |
 | Bilder | Astro Image Pipeline | responsive Größen, AVIF/WebP, Fallback, feste Abmessungen gegen Layoutsprünge |
 | Schrift | selbst gehostete WOFF2-Dateien | keine Verbindung zu Google Fonts; nur benötigte Schnitte laden |
-| Formular | kleine Serverless-/Edge-Funktion in TypeScript | keine Datenbank; serverseitige Validierung, Honeypot und Rate Limit |
+| Formular | separater API-Dienst in TypeScript | GitHub Pages führt keinen Servercode aus; keine Datenbank, serverseitige Validierung, Honeypot und Rate Limit |
 | E-Mail-Versand des Formulars | authentifizierter Transaktions-/SMTP-Dienst | erst nach Provider-, AVV- und Datenschutzentscheidung festlegen |
 | Unit-/Logiktests | Vitest, nur für nichttriviale Logik | keine Tests um ihrer selbst willen |
 | Browser-/E2E-Tests | Playwright | Chromium, Firefox und WebKit; Mobil- und Desktoppfade |
 | Accessibility-Automation | `@axe-core/playwright` | automatisierte WCAG-A/AA-Risiken plus verpflichtende manuelle Prüfung |
 | Performanceprüfung | Lighthouse CI plus reale Messung nach Launch | Budgets im Pull Request und Core Web Vitals im Betrieb |
 | CI/CD | GitHub Actions | Format, Lint, Typprüfung, Build und Tests vor Merge/Deployment |
-| Hosting | managed Static Hosting/CDN mit Preview und atomarem Rollback | Anbieter erst nach separater Providerbewertung auswählen |
+| Hosting | GitHub Pages | öffentlicher statischer Betrieb aus `main`; Custom Domain und HTTPS nach Abnahme |
 | Monitoring | externer HTTPS-/Seitenmonitor plus Host-Logs | Alarm für Startseite, Kontakt und Zertifikat |
 
 Versionsnummern werden nicht dauerhaft in diesem Konzept festgeschrieben. Beim
@@ -208,7 +208,7 @@ dieser technischen Annahme.
 ├── .github/
 │   ├── workflows/
 │   │   ├── ci.yml
-│   │   └── deploy.yml
+│   │   └── deploy-pages.yml
 │   └── dependabot.yml
 ├── docs/
 ├── public/
@@ -238,9 +238,10 @@ dieser technischen Annahme.
 └── tsconfig.json
 ```
 
-Eine `functions/`- oder providerbezogene Adapterstruktur wird erst ergänzt,
-wenn der Hosting- und Formularanbieter feststeht. Fachliche Inhalte dürfen
-nicht in providergebundene Funktionen wandern.
+Eine Formularfunktion kann nicht in GitHub Pages laufen. Eine `functions/`- oder
+providerbezogene Adapterstruktur wird erst ergänzt, wenn ein getrenntes
+Formular-Backend freigegeben ist. Fachliche Inhalte dürfen nicht in
+providergebundene Funktionen wandern.
 
 ## 10. CI/CD und Branch-Regeln
 
@@ -264,12 +265,16 @@ reproduzierbare Build-/Testschritte in GitHub Actions:
 
 ### Deployment
 
-- Pull Requests erhalten isolierte Vorschau-Deployments;
+- Pull Requests werden vollständig gebaut und getestet. GitHub Pages stellt für
+  dieses Repository keine isolierte Vorschau-URL pro Pull Request bereit;
+- die öffentliche Vorabnahme erfolgt auf der Pages-Projekt-URL, bevor die
+  Custom Domain umgestellt wird;
 - `main` ist geschützt und erfordert erfolgreiche Checks;
 - Produktion wird aus einem eindeutig identifizierbaren Commit gebaut;
 - kein direktes Bearbeiten von Dateien auf dem Produktionsserver;
-- Deployment ist atomar und kann auf den vorigen erfolgreichen Build
-  zurückgestellt werden;
+- der Pages-Deploy-Job benötigt nur `pages: write` und `id-token: write` und
+  verwendet die geschützte Umgebung `github-pages`;
+- Rollback erfolgt durch erneutes Deployment eines bekannten guten Commits;
 - Secrets liegen ausschließlich im geschützten Secret Store des Hosters/GitHub,
   nie in `.env`-Dateien im Repository;
 - Produktionsdeployment erhält vor dem DNS-Launch eine manuelle Freigabe.
@@ -322,25 +327,34 @@ darauf hin, dass automatisierte Tests nur einen Teil der Barrieren erkennen:
 DNSSEC, CAA, DKIM und DMARC gehören zum Infrastruktur-/Mailplan und werden
 koordiniert aktiviert, nicht unkontrolliert durch den Website-Build.
 
-## 13. Hosting-Anforderungen
+## 13. GitHub Pages als Zielhosting
 
-Der konkrete Hoster bleibt eine getrennte Beschaffungsentscheidung. Er muss
-mindestens bieten:
+Die Website wird über GitHub Pages veröffentlicht. Das passt zum statischen
+Astro-Build, hält Hosting und E-Mail getrennt und ermöglicht reproduzierbare
+Deployments direkt aus dem Repository.
 
-- statische Deployments aus Git/GitHub Actions;
-- Vorschau pro Pull Request;
-- atomare Releases und One-Click-/API-Rollback;
-- eigene Domain und automatische TLS-Erneuerung;
-- konfigurierbare Security Header und Redirects;
-- EU-Datenregion bzw. nachvollziehbaren Datenschutz/AVV;
-- zugängliche Logs und Exportmöglichkeit;
-- Serverless-/Edge-Funktion nur falls Formular aktiv ist;
-- keine Bindung von Domainregistrierung oder E-Mail an das Hostingpaket.
+Verbindliche Grenzen:
 
-Die Wahl zwischen Cloudplattform und europäischem Managed Hoster erfolgt anhand
-der Kriterien in
-[Entscheidungen und offene Punkte](05-entscheidungen-und-offene-punkte.md), nicht
-nur anhand des Einstiegspreises.
+- GitHub Pages führt ausschließlich statische Dateien aus; Formularlogik läuft
+  bei einem separaten, noch auszuwählenden API-Dienst;
+- es gibt keine native, isolierte Pages-URL je Pull Request; PRs werden in CI
+  gebaut und getestet, die Abnahme erfolgt lokal bzw. auf der Projekt-URL;
+- Security Header sind auf Pages nur eingeschränkt steuerbar. Kritische
+  Anforderungen werden vor Launch gegen die ausgelieferten Header geprüft;
+- Hosting-Logs sind begrenzt; Verfügbarkeit und Kernseiten werden extern
+  überwacht;
+- da das Repository öffentlich ist, dürfen keine Secrets, Kundendaten,
+  unveröffentlichten personenbezogenen Inhalte oder internen Dokumente
+  eingecheckt werden;
+- CAA muss, falls später gesetzt, `letsencrypt.org` für das Pages-Zertifikat
+  zulassen.
+
+Bis zum Domain-Cutover gilt die Projekt-URL
+`https://leonhueber.github.io/elektro-hubmann/`. Dafür setzt Astro
+`site: "https://leonhueber.github.io"` und `base: "/elektro-hubmann"`. Beim
+Wechsel auf `https://elektro-hubmann.at` wird `site` auf die Custom Domain
+gesetzt und `base` entfernt. Die Details und Reihenfolge stehen im
+[GitHub-Pages-Deploymentplan](07-github-pages-deployment.md).
 
 ## 14. Wartung und Updates
 

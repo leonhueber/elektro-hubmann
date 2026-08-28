@@ -77,21 +77,34 @@ Wildcard-A-Record ist wahrscheinlich, aber noch zu bestätigen.
 
 ### Vorbereitung, mindestens 7 Tage vorher
 
-1. Neue Website unter einer Vorschau-URL vollständig testen.
-2. Produktionsdomain beim neuen Hoster hinzufügen und Zertifikat vorbereiten.
-3. Vollständigen DNS-Export und Screenshot/Export der aktuellen Zone sichern.
-4. Web-A/AAAA/CNAME-TTL von 86.400 auf 300 Sekunden senken. Die Änderung muss
+1. Neue Website unter `https://leonhueber.github.io/elektro-hubmann/`
+   vollständig testen.
+2. Repository unter **Settings → Pages** auf „GitHub Actions“ stellen.
+3. Domain per GitHub-TXT-Challenge verifizieren und den TXT-Record dauerhaft
+   belassen.
+4. `elektro-hubmann.at` zuerst in den GitHub-Pages-Einstellungen als Custom
+   Domain hinterlegen; DNS erst danach umstellen. Das reduziert das Risiko
+   einer Domainübernahme.
+5. Vollständigen DNS-Export und Screenshot/Export der aktuellen Zone sichern.
+6. Wahrscheinlichen Wildcard-A-Record eindeutig prüfen und entfernen. GitHub
+   warnt bei Pages ausdrücklich vor Wildcard-DNS-Records.
+7. Web-A/AAAA/CNAME-TTL von 86.400 auf 300 Sekunden senken. Die Änderung muss
    mindestens eine alte TTL-Periode vor dem Cutover aktiv sein.
-5. MX, SPF, Microsoft-TXT und Autodiscover als „nicht anfassen“ markieren.
-6. Rollback auf `152.53.64.181` testen und dokumentieren.
+8. MX, SPF, Microsoft-TXT und Autodiscover als „nicht anfassen“ markieren.
+9. Rollback auf `152.53.64.181` testen und dokumentieren.
 
 ### Cutover
 
-1. Nur Webrecords auf das neue Ziel ändern.
-2. DNS über mehrere Resolver prüfen.
-3. HTTPS-Zertifikat, Canonical-Domain und HTTP→HTTPS/www-Redirect testen.
-4. Startseite, Kernseiten, 404, Formulare und alte URL-Redirects testen.
-5. Eingehende und ausgehende E-Mail testen, obwohl Mailrecords unverändert sind.
+1. Nur Webrecords ändern. Für die Apex-Domain ausschließlich die zum
+   Cutover-Zeitpunkt in der offiziellen GitHub-Dokumentation bzw. Pages-Oberfläche
+   angegebenen A/AAAA- oder ALIAS/ANAME-Ziele verwenden.
+2. `www` als CNAME direkt auf `leonhueber.github.io` setzen. Weder
+   `https://` noch `/elektro-hubmann` gehören in den CNAME-Wert.
+3. DNS über mehrere Resolver prüfen.
+4. Nach ausgestelltem Zertifikat „Enforce HTTPS“ in GitHub Pages aktivieren.
+5. Canonical-Domain und HTTP→HTTPS/www-Redirect testen.
+6. Startseite, Kernseiten, 404, Formulare und alte URL-Redirects testen.
+7. Eingehende und ausgehende E-Mail testen, obwohl Mailrecords unverändert sind.
 
 ### Stabilisierung
 
@@ -256,6 +269,8 @@ Nicht gleichzeitig mit dem Registrartransfer durchführen.
 | Domain liegt nicht unter Unternehmenskontrolle | Verlust der Domain | Inhaber/Registrar vor Projektstart verifizieren |
 | gleichzeitiger Web-, Mail- und Registrarwechsel | schwer lokalisierbarer Totalausfall | getrennte Wartungsfenster und Gates |
 | DNS-Zone unvollständig kopiert | Website/Mail/Tools fallen aus | Export plus Record-für-Record-Diff |
+| GitHub-Custom-Domain erst nach DNS gesetzt | Domainübernahme oder fehlerhafte Zuordnung | Domain zuerst verifizieren und in Pages eintragen |
+| Wildcard-DNS bleibt aktiv | Übernahmerisiko für ungenutzte Subdomains | Wildcard vor Pages-Cutover entfernen |
 | MX versehentlich beim Weblaunch geändert | E-Mail-Ausfall | Mailrecords sperren und nach Launch testen |
 | hohe TTL 86.400 | langsamer Cutover/Rollback | mindestens eine TTL-Periode vorher auf 300 senken |
 | IMAP als Vollmigration missverstanden | Kalender/Kontakte/Rechte fehlen | workload-fähiges Tool und Pilot verwenden |
@@ -263,4 +278,3 @@ Nicht gleichzeitig mit dem Registrartransfer durchführen.
 | alter Provider zu früh gekündigt | kein Rollback/Datenverlust | 30 Tage Parallelbetrieb und verifiziertes Backup |
 | DNSSEC falsch migriert | gesamte Domain nicht auflösbar | DS koordiniert, nicht am selben Tag aktivieren |
 | Rechtstexte aus Altseite übernommen | Abmahn-/Compliance-Risiko | reale Datenflüsse und österreichische Pflichtangaben prüfen |
-

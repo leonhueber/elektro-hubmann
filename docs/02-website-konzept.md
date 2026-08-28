@@ -284,7 +284,7 @@ Die Architektur bleibt portabel:
 
 - Domain beim Registrar;
 - DNS separat und exportierbar;
-- Website auf managed Hosting/CDN;
+- statische Website über GitHub Pages;
 - E-Mail bei einem spezialisierten Mailanbieter;
 - Quellcode und Assets im eigenen Repository;
 - Zugang und Abrechnung im Namen des Unternehmens.

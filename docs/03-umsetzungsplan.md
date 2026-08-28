@@ -82,16 +82,21 @@ danach beginnt die Entwicklung.
 - responsive Navigation und erreichbare Telefon-/Mailaktionen bauen;
 - Bilder mit Astros Bildpipeline responsive als AVIF/WebP plus Fallback
   ausliefern und lokal benötigte Fonts selbst hosten;
-- Kontaktformular als getrennte kleine Serverless-/Edge-Funktion mit
-  serverseitiger Schema-Validierung, Honeypot und Rate Limit umsetzen;
+- Kontaktformular außerhalb von GitHub Pages als getrennten API-Dienst mit
+  serverseitiger Schema-Validierung, Honeypot und Rate Limit umsetzen; falls
+  Datenschutz, AVV und Zustellung noch nicht freigegeben sind, zunächst nur
+  Telefon und E-Mail veröffentlichen;
 - Sitemap, robots.txt, Canonicals, Open Graph und strukturierte Daten ergänzen;
 - Consent nur für tatsächlich eingesetzte einwilligungspflichtige Dienste;
 - sichere Header, HTTPS, Cache und Fehlerseiten konfigurieren;
 - GitHub Actions für Format, Lint, `astro check`, Build, Linkprüfung,
-  Playwright und Accessibility-Tests einrichten.
+  Playwright und Accessibility-Tests einrichten;
+- GitHub-Pages-Workflow erst nach vorhandenem Astro-Projekt aktivieren und den
+  gebauten Ordner `dist/` als Pages-Artefakt veröffentlichen.
 
-**Gate:** Alle Seiten funktionieren auf der Vorschau-URL, keine Produktion
-wurde verändert.
+**Gate:** Alle Seiten funktionieren lokal und nach dem ersten Pages-Deployment
+unter `https://leonhueber.github.io/elektro-hubmann/`; die Produktionsdomain
+wurde noch nicht verändert.
 
 ### Phase 5 – Inhaltliche und rechtliche Abnahme
 
@@ -149,7 +154,13 @@ Risikoentscheid.
 **Arbeiten**
 
 - finalen Produktionsbuild und unveränderliche Versionskennung erzeugen;
-- neue Website auf finalem Hosting testen, bevor DNS umgestellt wird;
+- Website über GitHub Pages unter der Projekt-URL testen, bevor DNS umgestellt
+  wird;
+- Repository unter **Settings → Pages** auf „GitHub Actions“ stellen;
+- `elektro-hubmann.at` in GitHub als Custom Domain eintragen und verifizieren,
+  bevor die öffentlichen DNS-Webrecords geändert werden;
+- wahrscheinlichen Wildcard-A-Record bestätigen und vor dem Pages-Cutover
+  entfernen; Wildcards erhöhen bei GitHub Pages das Übernahmerisiko;
 - Altwebsite und DNS erneut sichern;
 - TTL der Webrecords mehrere Tage vorher von 86.400 auf 300 Sekunden senken;
 - Monitoring für HTTPS, Erreichbarkeit und wichtige Seiten einrichten;
@@ -164,11 +175,14 @@ Web-IP.
 **Arbeiten**
 
 1. Wartungsfenster bestätigen; keine gleichzeitige E-Mail-/Registraränderung.
-2. Nur A/AAAA/CNAME für Website gemäß Zielhoster ändern.
+2. Nur die Webrecords auf die in GitHub Pages angezeigten Ziele ändern: Apex
+   mittels der zum Cutover gültigen A/AAAA- oder ALIAS/ANAME-Werte, `www` per
+   CNAME direkt auf `leonhueber.github.io` – ohne Repository-Pfad.
 3. MX, SPF, DKIM, DMARC und Autodiscover unverändert lassen.
 4. DNS-Auflösung, TLS, Startseite, Unterseiten, Redirects und Formular testen.
 5. Logs und Monitoring beobachten.
-6. Bei kritischem Fehler Webrecord auf die alte IP zurückstellen.
+6. Bei kritischem Fehler Webrecord auf die alte IP `152.53.64.181`
+   zurückstellen.
 
 **Gate:** 24 Stunden fehlerfrei, anschließend weitere 7–14 Tage engmaschig
 beobachten.

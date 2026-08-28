@@ -75,11 +75,15 @@ Ausgangspunkt verwenden und bei Unsicherheit juristisch prüfen.
 
 - [ ] Empfohlene statische Architektur akzeptiert oder CMS-Anforderung belegt.
 - [ ] Quellcode-Repository gehört dem Unternehmen.
-- [ ] Hostingkonto, Abrechnung und Domainkonto gehören dem Unternehmen.
+- [x] GitHub Pages als öffentliches Website-Hosting gewählt.
+- [x] Repository ist öffentlich; Quellcode und eingecheckte Inhalte sind damit
+  bewusst weltweit lesbar.
+- [ ] GitHub-Konto mit MFA, Recovery und mindestens einem dokumentierten
+  Notfallweg abgesichert.
 - [ ] Deployment, Backups, Monitoring und Patchverantwortung vereinbart.
 - [ ] Formularversand und Spam-Schutz entschieden.
 - [ ] Datenstandort und Auftragsverarbeitung der Dienstleister geprüft.
-- [ ] Exit/Export vom neuen Hoster und CMS getestet bzw. vertraglich geklärt.
+- [ ] Repository-Export und Wiederaufbau von `dist/` als Hosting-Exit getestet.
 
 ## 7. Domain- und DNS-Zugänge
 
@@ -91,6 +95,8 @@ Ausgangspunkt verwenden und bei Unsicherheit juristisch prüfen.
 - [ ] DNS-Adminzugang zu `ns1/ns2.antagus.de` bzw. zuständigem Portal vorhanden.
 - [ ] Vollständige DNS-Zone exportiert.
 - [ ] Wildcard-A-Record bestätigt oder widerlegt.
+- [ ] Wildcard-DNS vor GitHub-Pages-Cutover entfernt.
+- [ ] GitHub-Domainverifikation per TXT abgeschlossen und Record beibehalten.
 - [ ] DNSSEC-Status über Registrar/nic.at bestätigt.
 - [ ] Aktueller Webhosting-Vertrag und Eigentümer geklärt.
 - [ ] Widerspruch zwischen „IONOS“ im Datenschutztext und aktuellem Hosting geklärt.
@@ -109,9 +115,11 @@ Ausgangspunkt verwenden und bei Unsicherheit juristisch prüfen.
 - [ ] DKIM im Microsoft-365-Tenant geprüft.
 - [ ] DMARC-Einführung mit Reporting-Adresse geplant.
 
-## 9. Kriterien für einen neuen Provider
+## 9. Kriterien für verbleibende Provider
 
-Ein Provider wird erst nach dem Bedarf ausgewählt. Mindestkriterien:
+GitHub Pages ist für das statische Website-Hosting gewählt. Registrar, DNS,
+E-Mail, Formular-API und Monitoring bleiben getrennte Entscheidungen. Dafür
+gelten mindestens diese Kriterien:
 
 | Bereich | Prüffrage |
 |---|---|
@@ -122,7 +130,7 @@ Ein Provider wird erst nach dem Bedarf ausgewählt. Mindestkriterien:
 | Datenschutz | Datenstandort, AVV, Unterauftragsverarbeiter, Löschung? |
 | Portabilität | Vollständiger Export von DNS, Website und Mail möglich? |
 | E-Mail | DKIM, DMARC, Shared Mailboxes, Kalender, Mobilgeräte, Migration? |
-| Website | atomare Deployments, Preview, Rollback, TLS, Logs, CDN? |
+| Website | Pages-Status, Actions-Historie, HTTPS und externer Uptime-Monitor geprüft? |
 | Kosten | Gesamtpreis inklusive Mailboxen, Speicher, Backups und Support? |
 | Kündigung | Datenexport, Parallelbetrieb und sauberes Offboarding möglich? |
 
@@ -136,4 +144,3 @@ Ein Provider wird erst nach dem Bedarf ausgewählt. Mindestkriterien:
 - [ ] Verantwortliche und Rollback-Entscheider sind erreichbar.
 - [ ] Alte Werte und konkrete Rückkehrschritte sind dokumentiert.
 - [ ] Keine Kündigung oder irreversible Änderung im selben Fenster.
-
