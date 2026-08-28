@@ -73,13 +73,22 @@ danach beginnt die Entwicklung.
 
 **Arbeiten**
 
+- Astro-Projekt mit statischem Output und TypeScript Strict initialisieren;
+- Node.js LTS und pnpm über Versions-/Lockdateien reproduzierbar festlegen;
+- Design-Tokens in nativen CSS Custom Properties und komponentennahe Styles
+  umsetzen; kein globales UI-Framework ohne neuen Architekturentscheid;
+- Inhalte über typisierte Astro Content Collections und Markdown/MDX abbilden;
 - Komponenten, Seiten und Inhaltsmodell umsetzen;
 - responsive Navigation und erreichbare Telefon-/Mailaktionen bauen;
-- Bilder responsive ausliefern, lokal benötigte Fonts selbst hosten;
-- Formular serverseitig validieren, Spam-Schutz datensparsam gestalten;
+- Bilder mit Astros Bildpipeline responsive als AVIF/WebP plus Fallback
+  ausliefern und lokal benötigte Fonts selbst hosten;
+- Kontaktformular als getrennte kleine Serverless-/Edge-Funktion mit
+  serverseitiger Schema-Validierung, Honeypot und Rate Limit umsetzen;
 - Sitemap, robots.txt, Canonicals, Open Graph und strukturierte Daten ergänzen;
 - Consent nur für tatsächlich eingesetzte einwilligungspflichtige Dienste;
-- sichere Header, HTTPS, Cache und Fehlerseiten konfigurieren.
+- sichere Header, HTTPS, Cache und Fehlerseiten konfigurieren;
+- GitHub Actions für Format, Lint, `astro check`, Build, Linkprüfung,
+  Playwright und Accessibility-Tests einrichten.
 
 **Gate:** Alle Seiten funktionieren auf der Vorschau-URL, keine Produktion
 wurde verändert.
@@ -115,6 +124,7 @@ nicht bloß aus dem Altbestand kopiert.
 | Sicherheit | HTTPS, Mixed Content, Header, Abhängigkeiten, Secret-Scan |
 | Datenschutz | Ablehnen/Akzeptieren/Widerrufen; keine Vorabübertragung |
 | Performance | langsames Mobilnetz, Bildgrößen, Fonts, JS und Core Web Vitals |
+| CI | sauberer Install aus Lockfile, Typecheck, Build und Tests |
 
 **Performancebudgets**
 
@@ -209,4 +219,3 @@ Die Website ist erst fertig, wenn:
 - alle Alt-URLs entschieden und getestet sind;
 - Backup, Monitoring, Admin-Zugänge und Rollback dokumentiert sind;
 - Website-Launch ohne Veränderung der Mailzustellung erfolgt ist.
-

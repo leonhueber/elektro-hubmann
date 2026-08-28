@@ -19,6 +19,9 @@ E-Mail. Die technische Umsetzung hat noch nicht begonnen.
 5. [Entscheidungen und offene Punkte](docs/05-entscheidungen-und-offene-punkte.md)
    – Angaben und Zugänge, die vor Design, Entwicklung oder Migration geklärt
    werden müssen.
+6. [Technologie und Architektur](docs/06-technologie-architektur.md) – konkrete
+   Zieltechnologie, Repository-Struktur, Formularlösung, CI/CD, Tests,
+   Datenschutz, Sicherheit und bewusst verworfene Alternativen.
 
 ## Leitentscheidung
 
@@ -35,4 +38,3 @@ gewünscht – in eigenen Wartungsfenstern.
 - keine Nameserver, MX-, SPF- oder Autodiscover-Einträge verändern;
 - keine Zugangsdaten oder Wiederherstellungscodes in diesem Repository speichern;
 - keine Rechtstexte ungeprüft aus der alten Website übernehmen.
-

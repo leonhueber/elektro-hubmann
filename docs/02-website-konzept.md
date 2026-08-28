@@ -254,16 +254,23 @@ Vektor- oder hochauflösende Masterdatei beschafft werden.
 
 ## 9. Technische Empfehlung
 
-### Empfohlen: statisch generierte Website
+### Festgelegte Zielrichtung: Astro und TypeScript
 
-Für den aktuellen Umfang ist eine statisch generierte Website, z. B. mit Astro
-und TypeScript, die robusteste Basis:
+Für den aktuellen Umfang ist eine mit **Astro** statisch generierte Website und
+**TypeScript im Strict-Modus** die robusteste Basis:
 
 - sehr wenig Angriffs- und Wartungsfläche;
 - schnelle Ladezeiten und einfache Cache-Verteilung;
 - versionierte Änderungen und reproduzierbare Deployments;
 - Inhalte als Markdown/strukturierte Daten;
 - kein öffentliches WordPress-Backend.
+
+Die UI wird primär mit Astro-Komponenten und nativem CSS umgesetzt. React oder
+ein anderes Client-Framework wird nicht global eingebunden. Interaktive
+JavaScript-Inseln werden nur verwendet, wenn eine Funktion sie tatsächlich
+benötigt. Inhalte liegen typisiert in Astro Content Collections und
+Markdown/MDX. Der vollständige, verbindliche Technologieentscheid ist in
+[Technologie und Architektur](06-technologie-architektur.md) dokumentiert.
 
 Wenn der Betrieb Inhalte regelmäßig selbst ohne Git pflegen muss, wird vor
 Baubeginn entweder ein kleines Headless-CMS ergänzt oder WordPress bewusst als
@@ -284,4 +291,3 @@ Die Architektur bleibt portabel:
 
 Damit kann später ein Teil gewechselt werden, ohne alle anderen Dienste zu
 gefährden.
-
