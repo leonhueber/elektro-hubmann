@@ -70,6 +70,10 @@ Ausgangspunkt verwenden und bei Unsicherheit juristisch prüfen.
 - [ ] CMS-Selbstpflege wirklich erforderlich?
 - [ ] Wer ist nach Launch für Inhalte verantwortlich?
 - [ ] Analytics nötig; wenn ja, welche Entscheidungen werden damit getroffen?
+- [ ] Zwei oder drei initiale Designvarianten festgelegt und eindeutig benannt.
+- [ ] Hauptversion bestimmt oder Entscheidungstermin und Entscheider festgelegt.
+- [ ] Geklärt, ob Alternativversionen nach der finalen Auswahl öffentlich
+  bleiben oder entfernt werden.
 
 ## 6. Technische Architektur
 

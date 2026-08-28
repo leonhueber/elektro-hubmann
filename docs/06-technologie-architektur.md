@@ -26,6 +26,7 @@ Abhängigkeit von einem einzelnen Hostinganbieter.
 | UI | Astro-Komponenten | server-/buildseitige Komponenten; Browser-JavaScript nur als begründete Insel |
 | Styling | natives CSS, CSS Custom Properties, Astro-scoped Styles | Design-Tokens zentral, Komponenten lokal; kein Tailwind im Basissetup |
 | Inhalte | Astro Content Collections mit Markdown/MDX | Leistungen, Projekte und Unternehmensinhalte mit Schema validieren |
+| Designvarianten | typisierte Varianten-Registry und getrennte Astro-Layouts | gemeinsame Inhalte, feste URLs, maximal drei aktive Varianten |
 | Datenvalidierung | Zod-Schemas bzw. Astro-Schemafunktion | Build bricht bei fehlenden Pflichtfeldern oder ungültigen Slugs ab |
 | Bilder | Astro Image Pipeline | responsive Größen, AVIF/WebP, Fallback, feste Abmessungen gegen Layoutsprünge |
 | Schrift | selbst gehostete WOFF2-Dateien | keine Verbindung zu Google Fonts; nur benötigte Schnitte laden |
@@ -219,6 +220,7 @@ dieser technischen Annahme.
 │   ├── components/
 │   │   ├── layout/
 │   │   ├── navigation/
+│   │   ├── variants/
 │   │   ├── sections/
 │   │   └── ui/
 │   ├── content/
@@ -226,6 +228,9 @@ dieser technischen Annahme.
 │   │   └── projects/
 │   ├── layouts/
 │   ├── pages/
+│   │   └── varianten/
+│   ├── config/
+│   │   └── variants.ts
 │   ├── styles/
 │   └── utils/
 ├── tests/
@@ -258,6 +263,11 @@ Jeder Pull Request muss automatisch bestehen:
 7. Playwright-Smoke-Tests;
 8. automatisierter axe-Scan;
 9. Lighthouse-Budget für die Kernseiten.
+
+Zusätzlich prüft CI jede aktive Designvariante mindestens auf Startseite,
+Navigation, Kontakt und einer Leistungsseite. Ein Buildfehler in einer
+Alternative blockiert das gemeinsame Deployment, weil alle Varianten als ein
+Pages-Artefakt veröffentlicht werden.
 
 GitHub empfiehlt für Node-Projekte eine fest konfigurierte Node-Version und
 reproduzierbare Build-/Testschritte in GitHub Actions:

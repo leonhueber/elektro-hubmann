@@ -14,6 +14,11 @@ Die Veröffentlichung erfolgt in zwei bewusst getrennten Stufen:
    `https://leonhueber.github.io/elektro-hubmann/`;
 2. erst nach Freigabe Anbindung von `https://elektro-hubmann.at` und `www`.
 
+Innerhalb desselben Deployments werden mehrere Designvarianten unter festen
+Unterpfaden veröffentlicht. Es gibt dafür keine getrennten Pages-Sites und
+keine voneinander abweichenden Branch-Deployments; ein Commit beschreibt immer
+den gemeinsam abgenommenen Stand aller aktiven Varianten.
+
 Die bestehende Domain, DNS-Zone und E-Mail-Konfiguration bleiben während der
 Entwicklung unangetastet.
 
@@ -183,6 +188,8 @@ statischen Hoster ist möglich, ohne Domain, Mail oder Inhaltsmodell umzubauen.
 - [ ] Repository-Quelle in Settings auf GitHub Actions gestellt.
 - [ ] Projekt-URL ist öffentlich erreichbar und alle Assets laden.
 - [ ] Basispfad, Canonicals und Sitemap sind korrekt.
+- [ ] Alle aktiven Varianten und ihre Versionsleiste sind erreichbar.
+- [ ] Nur die Hauptversion ist in Sitemap und Suchindex vorgesehen.
 - [ ] 404 und Redirect-Matrix sind geprüft.
 - [ ] Externer Uptime-Monitor ist vorbereitet.
 - [ ] Custom Domain ist vor DNS-Änderung verifiziert und eingetragen.

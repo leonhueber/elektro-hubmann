@@ -25,6 +25,9 @@ E-Mail. Die technische Umsetzung hat noch nicht begonnen.
 7. [GitHub-Pages-Deployment](docs/07-github-pages-deployment.md) – öffentlicher
    Betrieb, GitHub Actions, Projekt-URL, Custom Domain, DNS-Reihenfolge und
    Rollback.
+8. [Live-Versionen](docs/08-live-versionen.md) – mehrere gleichzeitig
+   erreichbare Designvarianten, URL-Schema, Versionsleiste, SEO-Regeln und
+   Abnahme.
 
 ## Leitentscheidung
 

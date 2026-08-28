@@ -291,3 +291,21 @@ Die Architektur bleibt portabel:
 
 Damit kann später ein Teil gewechselt werden, ohne alle anderen Dienste zu
 gefährden.
+
+## 10. Mehrere öffentliche Designversionen
+
+Während der Entwurfs- und Entscheidungsphase werden bis zu drei vollständige
+Designvarianten gleichzeitig veröffentlicht. Jede Variante erhält eine feste,
+teilbare URL. Ganz oben über der eigentlichen Hauptnavigation erscheint eine
+schmale Versionsleiste mit den verfügbaren Varianten und einer eindeutigen
+Kennzeichnung der aktuell geöffneten Version.
+
+Die Varianten verwenden dieselben freigegebenen Unternehmensdaten und Inhalte.
+Sie unterscheiden sich primär in visueller Richtung, Seitenkomposition und
+Interaktionsgestaltung. Inhaltliche Abweichungen werden ausdrücklich
+dokumentiert; ansonsten würden Design- und Textentscheidung unnötig vermischt.
+
+Die Hauptversion liegt später auf den normalen URLs. Alternative Varianten
+bleiben öffentlich erreichbar, werden aber nicht in die XML-Sitemap aufgenommen
+und mit `noindex, follow` von Suchergebnissen ausgeschlossen. Details stehen im
+[Konzept für Live-Versionen](08-live-versionen.md).
