@@ -29,6 +29,15 @@ E-Mail. Die technische Umsetzung hat noch nicht begonnen.
    erreichbare Designvarianten, URL-Schema, Versionsleiste, SEO-Regeln und
    Abnahme.
 
+## Design-Mockups
+
+- [Version A – Architektur](docs/mockups/version-a-architektur.png)
+- [Version B – Technisch](docs/mockups/version-b-technisch.png)
+- [Version C – Regional](docs/mockups/version-c-regional.png)
+
+Die Bilder sind visuelle Konzepte. Texte, Bilder, Projekte, Personen und
+Kontaktdaten darin sind nicht als freigegebene Unternehmensangaben zu verwenden.
+
 ## Leitentscheidung
 
 Website, DNS, Domain-Registrar und E-Mail werden als vier getrennte Systeme
