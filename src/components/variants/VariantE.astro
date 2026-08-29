@@ -1,0 +1,108 @@
+---
+import '@fontsource/anton/400.css';
+import { IconArrowRight, IconSquareCheck, IconUser } from '@tabler/icons-react';
+import HomeSections from '../HomeSections.astro';
+import SiteFooter from '../SiteFooter.astro';
+import { company } from '../../config/site';
+import { withBase } from '../../lib/url';
+
+const pagePath = Astro.url.pathname;
+---
+
+<main id="hauptinhalt">
+  <section class="hero-e" aria-labelledby="hero-e-title">
+    <div class="hero-e__backdrop">
+      <img
+        src={withBase('/images/version-e/baustellen-hero.webp')}
+        alt="Elektrotechniker bei Arbeiten an einem Verteiler auf einer Baustelle"
+        width="1586"
+        height="992"
+        fetchpriority="high"
+      />
+    </div>
+
+    <div class="hero-e__topline">
+      <div>
+        <a href={company.emergencyHref}
+          >Störungsdienst: <strong>{company.emergency}</strong></a
+        >
+        <a href="#fachhandel">
+          Fachgeschäft & Öffnungszeiten
+          <IconArrowRight size={16} stroke={1.8} aria-hidden="true" />
+        </a>
+      </div>
+    </div>
+
+    <header class="hero-e__header">
+      <a class="hero-e__brand" href={pagePath} aria-label="Elektro Hubmann">
+        <img
+          src={withBase('/logo-elektrotechnik-hubmann-dark.png')}
+          width="287"
+          height="78"
+          alt="Elektrotechnik Hubmann"
+        />
+      </a>
+      <nav class="main-nav hero-e__nav" aria-label="Hauptnavigation">
+        <a href="#leistungen">Leistungen</a>
+        <a href="#projekte">Projekte</a>
+        <a href="#unternehmen">Unternehmen</a>
+        <a href="#kontakt">Kontakt</a>
+      </nav>
+      <a class="button hero-e__header-cta" href="#projektanfrage"
+        >Projekt anfragen</a
+      >
+    </header>
+
+    <div class="hero-e__content">
+      <span class="eyebrow">Seit 1972 auf der Baustelle</span>
+      <h1 id="hero-e-title">
+        Strom für<br />Projekte, die<br />Bestand haben.
+      </h1>
+      <p>
+        Elektroinstallationen für Neubau, Sanierung und Gewerbe in Gitschtal,
+        Hermagor und am Weißensee.
+      </p>
+      <div class="hero-e__actions">
+        <a class="button" href="#projektanfrage">
+          Projekt starten
+          <IconArrowRight size={24} stroke={1.8} aria-hidden="true" />
+        </a>
+        <a class="hero-e__text-link" href="#projekte">
+          Referenzen ansehen
+          <IconArrowRight size={22} stroke={1.8} aria-hidden="true" />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="hero-e__trust" aria-label="Erfahrung und Arbeitsweise">
+    <div class="hero-e__trust-inner">
+      <div>
+        <span class="hero-e__trust-icon hero-e__trust-icon--text">50+</span>
+        <strong>50+ Jahre Erfahrung</strong>
+      </div>
+      <div>
+        <span class="hero-e__trust-icon">
+          <IconUser size={28} stroke={1.7} aria-hidden="true" />
+        </span>
+        <strong>Persönlicher Ansprechpartner</strong>
+      </div>
+      <div>
+        <span class="hero-e__trust-icon">
+          <IconSquareCheck size={28} stroke={1.7} aria-hidden="true" />
+        </span>
+        <strong>Planung bis Übergabe</strong>
+      </div>
+    </div>
+  </section>
+
+  <HomeSections
+    showTrust={false}
+    servicesEyebrow="Schwerpunkte"
+    servicesTitle="Unsere Schwerpunkte"
+    servicesIntro="Wir bieten durchdachte Elektrotechnik für jedes Projekt – zuverlässig, termintreu und aus einer Hand."
+    serviceOrder={[0, 1, 2, 4, 3]}
+  />
+</main>
+
+<SiteFooter />

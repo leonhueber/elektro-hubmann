@@ -3,6 +3,7 @@ import VariantA from '../../components/variants/VariantA.astro';
 import VariantB from '../../components/variants/VariantB.astro';
 import VariantC from '../../components/variants/VariantC.astro';
 import VariantD from '../../components/variants/VariantD.astro';
+import VariantE from '../../components/variants/VariantE.astro';
 import { variants, type VariantId } from '../../config/site';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
@@ -19,7 +20,13 @@ interface Props {
 
 const { variantId } = Astro.props;
 const current = variants.find((variant) => variant.id === variantId)!;
-const components = { a: VariantA, b: VariantB, c: VariantC, d: VariantD };
+const components = {
+  a: VariantA,
+  b: VariantB,
+  c: VariantC,
+  d: VariantD,
+  e: VariantE,
+};
 const VariantComponent = components[variantId];
 ---
 

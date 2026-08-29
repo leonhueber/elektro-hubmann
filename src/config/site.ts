@@ -23,6 +23,12 @@ export const variants = [
     direction: 'Hybrid',
     summary: 'Klar, bildstark und regional verankert.',
   },
+  {
+    id: 'e',
+    name: 'Version E',
+    direction: 'Baustelle',
+    summary: 'Kontrastreich, direkt und kraftvoll.',
+  },
 ] as const;
 
 export type VariantId = (typeof variants)[number]['id'];

@@ -2,33 +2,54 @@
 import { processSteps, projects, services, trustItems } from '../config/site';
 import { withBase } from '../lib/url';
 import ServiceIcon from './ServiceIcon';
+
+interface Props {
+  showTrust?: boolean;
+  servicesEyebrow?: string;
+  servicesTitle?: string;
+  servicesIntro?: string;
+  serviceOrder?: readonly number[];
+}
+
+const {
+  showTrust = true,
+  servicesEyebrow = 'Leistungen',
+  servicesTitle = 'Alles, was ein Gebäude elektrisch stark macht.',
+  servicesIntro = 'Von der ersten Planung bis zur laufenden Betreuung – mit einem regionalen Ansprechpartner für das gesamte Projekt.',
+  serviceOrder = services.map((_, index) => index),
+} = Astro.props;
+
+const visibleServices = serviceOrder
+  .map((index) => services[index])
+  .filter(
+    (service): service is (typeof services)[number] => service !== undefined,
+  );
 ---
 
-<section class="trust-strip" aria-label="Erfahrung und Arbeitsweise">
-  {
-    trustItems.map(([value, label]) => (
-      <div>
-        <strong>{value}</strong>
-        <span>{label}</span>
-      </div>
-    ))
-  }
-</section>
+{
+  showTrust && (
+    <section class="trust-strip" aria-label="Erfahrung und Arbeitsweise">
+      {trustItems.map(([value, label]) => (
+        <div>
+          <strong>{value}</strong>
+          <span>{label}</span>
+        </div>
+      ))}
+    </section>
+  )
+}
 
 <section class="section services-section" id="leistungen">
   <div class="section-heading section-heading--row">
     <div>
-      <span class="eyebrow">Leistungen</span>
-      <h2>Alles, was ein Gebäude elektrisch stark macht.</h2>
+      <span class="eyebrow">{servicesEyebrow}</span>
+      <h2>{servicesTitle}</h2>
     </div>
-    <p>
-      Von der ersten Planung bis zur laufenden Betreuung – mit einem regionalen
-      Ansprechpartner für das gesamte Projekt.
-    </p>
+    <p>{servicesIntro}</p>
   </div>
   <div class="service-showcase">
     {
-      services.map((service) => (
+      visibleServices.map((service) => (
         <a
           class="service-showcase__item"
           href="#projektanfrage"
@@ -173,7 +194,8 @@ import ServiceIcon from './ServiceIcon';
         <input type="tel" name="phone" autocomplete="tel" required />
       </label>
       <label>
-        <span class="field-label">E-Mail <span aria-hidden="true">*</span></span>
+        <span class="field-label">E-Mail <span aria-hidden="true">*</span></span
+        >
         <input type="email" name="email" autocomplete="email" required />
       </label>
       <label>
