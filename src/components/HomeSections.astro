@@ -1,6 +1,7 @@
 ---
 import { processSteps, projects, services, trustItems } from '../config/site';
 import { withBase } from '../lib/url';
+import ServiceIcon from './ServiceIcon';
 ---
 
 <section class="trust-strip" aria-label="Erfahrung und Arbeitsweise">
@@ -25,18 +26,27 @@ import { withBase } from '../lib/url';
       Ansprechpartner für das gesamte Projekt.
     </p>
   </div>
-  <div class="service-grid">
+  <div class="service-showcase">
     {
       services.map((service) => (
-        <article class="service-card">
-          <span class="service-card__number">{service.marker}</span>
-          <h3>{service.title}</h3>
-          <p>{service.description}</p>
-          <small>{service.details}</small>
-          <a href="#projektanfrage" aria-label={`${service.title} anfragen`}>
-            Bereich ansehen <span aria-hidden="true">→</span>
-          </a>
-        </article>
+        <a
+          class="service-showcase__item"
+          href="#projektanfrage"
+          aria-label={`${service.title} anfragen`}
+        >
+          <ServiceIcon kind={service.marker} />
+          <h3>{service.shortTitle}</h3>
+          <span class="service-showcase__accent" aria-hidden="true" />
+          <div class="service-showcase__media">
+            <img
+              src={withBase(service.image)}
+              alt={service.imageAlt}
+              loading="lazy"
+              width={service.imageWidth}
+              height={service.imageHeight}
+            />
+          </div>
+        </a>
       ))
     }
   </div>

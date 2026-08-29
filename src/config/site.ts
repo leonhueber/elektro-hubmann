@@ -46,38 +46,63 @@ export const trustItems = [
 export const services = [
   {
     title: 'Elektroinstallation und Sanierung',
+    shortTitle: 'Neubau & Sanierung',
     description:
       'Elektroanlagen für Neubau, Umbau und die fachgerechte Modernisierung bestehender Gebäude.',
     details: 'Planung · Installation · Erweiterung · Sanierung',
     marker: '01',
+    image: '/images/legacy-placeholders/hubmann-slider-4.jpg',
+    imageAlt: 'Elektrotechniker bei Arbeiten an einem Verteiler',
+    imageWidth: 1920,
+    imageHeight: 1277,
   },
   {
     title: 'Photovoltaik und Energie',
+    shortTitle: 'Photovoltaik & Energie',
     description:
       'Energielösungen, die auf Gebäude, Verbrauch und zukünftige Anforderungen abgestimmt sind.',
     details: 'Photovoltaik · Elektroheizung · Energiemanagement',
     marker: '02',
+    image: '/images/legacy-placeholders/hubmann-slider-1.jpg',
+    imageAlt: 'Detailaufnahme einer Elektroinstallation',
+    imageWidth: 1920,
+    imageHeight: 1277,
   },
   {
     title: 'Gebäudetechnik und Sicherheit',
+    shortTitle: 'Gebäudetechnik & Sicherheit',
     description:
       'Technik für Komfort und Schutz – sorgfältig geplant und nachvollziehbar umgesetzt.',
     details: 'Blitzschutz · Alarmanlagen · Gebäudetechnik',
     marker: '03',
+    image: '/images/legacy-placeholders/wire.jpg',
+    imageAlt: 'Verdrahtung in einer technischen Anlage',
+    imageWidth: 1920,
+    imageHeight: 1080,
   },
   {
     title: 'KNX, Netzwerk und Medien',
+    shortTitle: 'KNX, Netzwerk & Medien',
     description:
       'Vernetzte Infrastruktur für moderne Wohngebäude, Betriebe und touristische Objekte.',
     details: 'KNX · PC-Netzwerke · SAT-Anlagen · Medien',
     marker: '04',
+    image: '/images/legacy-placeholders/elektriker.jpg',
+    imageAlt: 'Elektroinstallateur bei der Arbeit',
+    imageWidth: 446,
+    imageHeight: 618,
   },
   {
     title: 'Prüfung, Service und Störungsbehebung',
+    shortTitle: 'Service & Prüfung',
     description:
       'Persönlicher Service für bestehende Anlagen und rasche Hilfe, wenn Technik ausfällt.',
     details: 'Prüfung · Wartung · Service · Störungsdienst',
     marker: '05',
+    image: '/images/legacy-placeholders/hubmann-slider-1.jpg',
+    imageAlt: 'Arbeiten an einem elektrischen Verteiler',
+    imageWidth: 1920,
+    imageHeight: 1277,
   },
 ] as const;
 
