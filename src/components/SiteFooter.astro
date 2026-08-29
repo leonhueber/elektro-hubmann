@@ -1,9 +1,33 @@
-<footer class="site-footer">
-  <div>
-    <strong>Elektro Hubmann</strong>
-    <span>Weilbach · Oberösterreich</span>
+---
+import { company } from '../config/site';
+---
+
+<footer class="site-footer" id="kontakt">
+  <div class="site-footer__grid">
+    <div class="site-footer__brand">
+      <strong>{company.name}</strong>
+      <span>{company.proprietor}</span>
+      <span>{company.address}</span>
+    </div>
+    <div>
+      <span class="footer-label">Kontakt</span>
+      <a href={company.phoneHref}>{company.phone}</a>
+      <a href={company.emailHref}>{company.email}</a>
+      <a href={company.emergencyHref}>Störungsdienst: {company.emergency}</a>
+    </div>
+    <div id="fachhandel">
+      <span class="footer-label">Fachgeschäft</span>
+      <span>{company.shopHours}</span>
+      <a href="#fachhandel">Zum Fachhandel</a>
+    </div>
+    <div>
+      <span class="footer-label">Rechtliches</span>
+      <a href="#kontakt">Impressum</a>
+      <a href="#kontakt">Datenschutz</a>
+    </div>
   </div>
-  <p>
-    Vorschau – Kontaktdaten und Rechtstexte werden vor Veröffentlichung geprüft.
+  <p class="site-footer__note">
+    Designvorschau – Projektreferenzen, Formularversand und Rechtstexte sind vor
+    der Veröffentlichung zu vervollständigen.
   </p>
 </footer>

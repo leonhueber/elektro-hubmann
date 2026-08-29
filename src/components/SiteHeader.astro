@@ -1,5 +1,6 @@
 ---
 import { withBase } from '../lib/url';
+import { company } from '../config/site';
 
 interface Props {
   pagePath: string;
@@ -7,6 +8,19 @@ interface Props {
 
 const { pagePath } = Astro.props;
 ---
+
+<div class="info-bar">
+  <div class="info-bar__inner">
+    <a class="info-bar__emergency" href={company.emergencyHref}>
+      <span>Störungsdienst</span>
+      <strong>{company.emergency}</strong>
+    </a>
+    <a href={`${pagePath}#fachhandel`}>
+      <span>Fachgeschäft & Öffnungszeiten</span>
+      <small>{company.shopHours}</small>
+    </a>
+  </div>
+</div>
 
 <header class="site-header">
   <a class="brand" href={pagePath} aria-label="Elektro Hubmann Startseite">
@@ -20,11 +34,12 @@ const { pagePath } = Astro.props;
 
   <nav class="main-nav" aria-label="Hauptnavigation">
     <a href={`${pagePath}#leistungen`}>Leistungen</a>
-    <a href={`${pagePath}#arbeitsweise`}>Arbeitsweise</a>
+    <a href={`${pagePath}#projekte`}>Projekte</a>
     <a href={`${pagePath}#unternehmen`}>Unternehmen</a>
+    <a href={`${pagePath}#kontakt`}>Kontakt</a>
   </nav>
 
-  <a class="button button--small" href={`${pagePath}#kontakt`}
+  <a class="button button--small header-cta" href={`${pagePath}#projektanfrage`}
     >Projekt anfragen</a
   >
 </header>

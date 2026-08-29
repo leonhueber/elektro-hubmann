@@ -1,7 +1,8 @@
 ---
+import HomeSections from '../HomeSections.astro';
 import SiteFooter from '../SiteFooter.astro';
 import SiteHeader from '../SiteHeader.astro';
-import { services } from '../../config/site';
+import { withBase } from '../../lib/url';
 
 const pagePath = Astro.url.pathname;
 ---
@@ -11,78 +12,31 @@ const pagePath = Astro.url.pathname;
 <main id="hauptinhalt">
   <section class="hero hero--a">
     <div class="hero__copy">
-      <span class="eyebrow">Weilbach · Oberösterreich</span>
-      <h1>Elektrotechnik, auf die Sie sich verlassen können.</h1>
+      <span class="eyebrow">Elektro Hubmann · Weißbriach</span>
+      <h1>Elektroinstallationen für Neubau, Sanierung und Gewerbe.</h1>
       <p>
-        Persönliche Beratung, saubere Umsetzung und Lösungen, die langfristig
-        zum Gebäude passen.
+        Von der Planung bis zur fachgerechten Ausführung – in Gitschtal,
+        Hermagor und am Weißensee.
       </p>
       <div class="button-row">
-        <a class="button" href="#kontakt">Projekt anfragen</a>
-        <a class="text-link" href="#leistungen">Leistungen ansehen</a>
+        <a class="button" href="#projektanfrage">Projekt anfragen</a>
+        <a class="button button--secondary" href="#leistungen"
+          >Leistungen ansehen</a
+        >
       </div>
     </div>
-    <div class="hero-visual hero-visual--architecture" aria-hidden="true">
-      <div class="visual-line"></div>
-      <div class="visual-panel"></div>
-      <span>Planung · Installation · Service</span>
+    <div class="hero__media">
+      <img
+        src={withBase('/images/legacy-placeholders/hubmann-slider-4.jpg')}
+        alt="Elektrotechniker bei der Arbeit an einem Verteiler"
+        width="1920"
+        height="1277"
+      />
+      <span>Planung · Ausführung · Service</span>
     </div>
   </section>
 
-  <section class="value-strip" aria-label="Unsere Grundsätze">
-    <span>Verlässlich</span>
-    <span>Kompetent</span>
-    <span>Regional</span>
-    <span>Vorausschauend</span>
-  </section>
-
-  <section class="section" id="leistungen">
-    <div class="section-heading">
-      <span class="eyebrow">Leistungen</span>
-      <h2>Gute Technik beginnt mit einem klaren Plan.</h2>
-    </div>
-    <div class="service-grid service-grid--editorial">
-      {
-        services.map((service) => (
-          <article class="service-card">
-            <span>{service.marker}</span>
-            <h3>{service.title}</h3>
-            <p>{service.description}</p>
-          </article>
-        ))
-      }
-    </div>
-  </section>
-
-  <section class="split-section" id="arbeitsweise">
-    <div class="split-section__visual" aria-hidden="true">EH</div>
-    <div>
-      <span class="eyebrow">Arbeitsweise</span>
-      <h2>Persönlich abgestimmt. Sorgfältig umgesetzt.</h2>
-      <p>
-        Vom ersten Gespräch bis zur fertigen Lösung bleiben Anforderungen,
-        Entscheidungen und nächste Schritte nachvollziehbar.
-      </p>
-    </div>
-  </section>
-
-  <section class="section section--company" id="unternehmen">
-    <span class="eyebrow">Unternehmen</span>
-    <h2>Elektrotechnik mit Verantwortung für die Region.</h2>
-    <p>
-      Elektro Hubmann verbindet fachliche Sorgfalt mit direkter, persönlicher
-      Zusammenarbeit – für private, gewerbliche und landwirtschaftliche
-      Vorhaben.
-    </p>
-  </section>
-
-  <section class="contact-band" id="kontakt">
-    <div>
-      <span class="eyebrow">Nächster Schritt</span>
-      <h2>Erzählen Sie uns von Ihrem Projekt.</h2>
-    </div>
-    <span class="button button--light">Kontaktweg folgt nach Freigabe</span>
-  </section>
+  <HomeSections />
 </main>
 
 <SiteFooter />

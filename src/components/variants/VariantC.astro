@@ -1,7 +1,8 @@
 ---
+import HomeSections from '../HomeSections.astro';
 import SiteFooter from '../SiteFooter.astro';
 import SiteHeader from '../SiteHeader.astro';
-import { services } from '../../config/site';
+import { withBase } from '../../lib/url';
 
 const pagePath = Astro.url.pathname;
 ---
@@ -10,73 +11,30 @@ const pagePath = Astro.url.pathname;
 
 <main id="hauptinhalt">
   <section class="hero hero--c">
-    <div class="regional-mark" aria-hidden="true">
-      <span>Aus der Region</span>
-      <strong>EH</strong>
-      <span>Für die Region</span>
+    <div class="hero__backdrop">
+      <img
+        src={withBase('/images/legacy-placeholders/hubmann-slider-4.jpg')}
+        alt=""
+        width="1920"
+        height="1277"
+      />
     </div>
     <div class="hero__copy">
-      <span class="eyebrow">Elektro Hubmann</span>
-      <h1>Elektrik mit Handschlagqualität.</h1>
-      <p>Persönlich beraten. Sauber umgesetzt. In der Region zuhause.</p>
+      <span class="eyebrow">Aus der Region · Für die Region</span>
+      <h1>Elektroinstallationen für Neubau, Sanierung und Gewerbe.</h1>
+      <p>
+        Von der Planung bis zur fachgerechten Ausführung – in Gitschtal,
+        Hermagor und am Weißensee.
+      </p>
       <div class="button-row">
-        <a class="button" href="#kontakt">Projekt anfragen</a>
-        <a class="button button--outline" href="#leistungen">Leistungen</a>
+        <a class="button" href="#projektanfrage">Projekt anfragen</a>
+        <a class="button button--light" href="#leistungen">Leistungen ansehen</a
+        >
       </div>
     </div>
   </section>
 
-  <section class="section" id="leistungen">
-    <div class="section-heading section-heading--center">
-      <span class="eyebrow">Was wir für Sie tun</span>
-      <h2>Gute Lösungen entstehen im Gespräch.</h2>
-    </div>
-    <div class="service-grid service-grid--regional">
-      {
-        services.map((service) => (
-          <article class="service-card">
-            <span>{service.marker}</span>
-            <h3>{service.title}</h3>
-            <p>{service.description}</p>
-          </article>
-        ))
-      }
-    </div>
-  </section>
-
-  <section class="regional-story" id="arbeitsweise">
-    <div>
-      <span class="eyebrow">Aus der Region. Für die Region.</span>
-      <h2>Kurze Wege und ein Ansprechpartner, der zuhört.</h2>
-      <p>
-        Anforderungen werden gemeinsam geklärt. Daraus entsteht eine Lösung, die
-        zum Gebäude, zur Nutzung und zu den Menschen dahinter passt.
-      </p>
-    </div>
-    <div class="region-shape" aria-hidden="true">
-      <span>Weilbach</span>
-    </div>
-  </section>
-
-  <section class="craft-section" id="unternehmen">
-    <div class="craft-pattern" aria-hidden="true"></div>
-    <div>
-      <span class="eyebrow">Unternehmen</span>
-      <h2>Verlässlich. Persönlich. Regional.</h2>
-      <p>
-        Fachliches Können und respektvolle Zusammenarbeit gehören für Elektro
-        Hubmann zusammen – auf der Baustelle ebenso wie im Beratungsgespräch.
-      </p>
-    </div>
-  </section>
-
-  <section class="contact-band contact-band--regional" id="kontakt">
-    <div>
-      <span class="eyebrow">Lassen Sie uns sprechen</span>
-      <h2>Was dürfen wir für Sie lösen?</h2>
-    </div>
-    <span class="button button--light">Kontaktweg folgt nach Freigabe</span>
-  </section>
+  <HomeSections />
 </main>
 
 <SiteFooter />

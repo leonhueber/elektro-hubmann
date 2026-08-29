@@ -1,0 +1,224 @@
+---
+import { processSteps, projects, services, trustItems } from '../config/site';
+import { withBase } from '../lib/url';
+---
+
+<section class="trust-strip" aria-label="Erfahrung und Arbeitsweise">
+  {
+    trustItems.map(([value, label]) => (
+      <div>
+        <strong>{value}</strong>
+        <span>{label}</span>
+      </div>
+    ))
+  }
+</section>
+
+<section class="section services-section" id="leistungen">
+  <div class="section-heading section-heading--row">
+    <div>
+      <span class="eyebrow">Leistungen</span>
+      <h2>Alles, was ein Gebäude elektrisch stark macht.</h2>
+    </div>
+    <p>
+      Von der ersten Planung bis zur laufenden Betreuung – mit einem regionalen
+      Ansprechpartner für das gesamte Projekt.
+    </p>
+  </div>
+  <div class="service-grid">
+    {
+      services.map((service) => (
+        <article class="service-card">
+          <span class="service-card__number">{service.marker}</span>
+          <h3>{service.title}</h3>
+          <p>{service.description}</p>
+          <small>{service.details}</small>
+          <a href="#projektanfrage" aria-label={`${service.title} anfragen`}>
+            Bereich ansehen <span aria-hidden="true">→</span>
+          </a>
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<section class="projects-section" id="projekte">
+  <div class="section-heading section-heading--row">
+    <div>
+      <span class="eyebrow">Referenzprojekte</span>
+      <h2>Arbeit, die man sehen kann.</h2>
+    </div>
+    <p>
+      Diese sechs Projekttypen zeigen die geplante Struktur. Bilder und Angaben
+      werden vor dem Launch durch echte, freigegebene Referenzen ersetzt.
+    </p>
+  </div>
+  <div class="project-grid">
+    {
+      projects.map((project, index) => (
+        <article class="project-card">
+          <div class="project-card__media">
+            <img
+              src={withBase(project.image)}
+              alt={project.alt}
+              loading={index < 2 ? 'eager' : 'lazy'}
+              width={project.width}
+              height={project.height}
+            />
+            <span>Platzhalterbild</span>
+          </div>
+          <div class="project-card__body">
+            <small>Referenz-Slot {String(index + 1).padStart(2, '0')}</small>
+            <h3>{project.type}</h3>
+            <dl>
+              <div>
+                <dt>Region</dt>
+                <dd>noch zu ergänzen</dd>
+              </div>
+              <div>
+                <dt>Leistungen</dt>
+                <dd>noch zu ergänzen</dd>
+              </div>
+              <div>
+                <dt>Jahr</dt>
+                <dd>noch zu ergänzen</dd>
+              </div>
+            </dl>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<section class="process-section" id="ablauf">
+  <div class="section-heading">
+    <span class="eyebrow">Ablauf der Zusammenarbeit</span>
+    <h2>In fünf klaren Schritten zum fertigen Projekt.</h2>
+  </div>
+  <ol class="process-grid">
+    {
+      processSteps.map(([number, title, description]) => (
+        <li>
+          <span>{number}</span>
+          <h3>{title}</h3>
+          <p>{description}</p>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<section class="company-section" id="unternehmen">
+  <div class="company-section__image">
+    <img
+      src={withBase('/images/legacy-placeholders/hubmann-slider-4.jpg')}
+      alt="Elektrotechniker bei Arbeiten an einem Verteiler"
+      loading="lazy"
+      width="1920"
+      height="1277"
+    />
+    <span>Teamfoto wird ergänzt</span>
+  </div>
+  <div class="company-section__copy">
+    <span class="eyebrow">Familienbetrieb seit 1972</span>
+    <h2>Persönlich verantwortlich. Regional verbunden.</h2>
+    <p>
+      Elektro Hubmann begleitet Projekte im Gitschtal, in Hermagor und am
+      Weißensee mit kurzen Wegen, direkter Abstimmung und über 50 Jahren
+      Erfahrung.
+    </p>
+    <p>
+      Von der Beratung bis zur Übergabe bleibt ein persönlicher Ansprechpartner
+      an Ihrer Seite.
+    </p>
+    <a class="text-link" href="#projektanfrage">Mehr über das Unternehmen →</a>
+  </div>
+</section>
+
+<section class="inquiry-section" id="projektanfrage">
+  <div class="inquiry-section__intro">
+    <span class="eyebrow">Projektanfrage</span>
+    <h2>Was dürfen wir für Sie umsetzen?</h2>
+    <p>
+      Je genauer die ersten Angaben sind, desto gezielter kann das Projekt
+      eingeschätzt werden. Für dringende Störungen bitte direkt anrufen.
+    </p>
+    <a class="emergency-call" href="tel:+436644343187">
+      <span>Störungsdienst</span>
+      <strong>0664 4343187</strong>
+    </a>
+  </div>
+
+  <form class="inquiry-form" aria-describedby="form-preview-note">
+    <div class="form-grid">
+      <label>
+        Name <span aria-hidden="true">*</span>
+        <input type="text" name="name" autocomplete="name" required />
+      </label>
+      <label>
+        Telefonnummer <span aria-hidden="true">*</span>
+        <input type="tel" name="phone" autocomplete="tel" required />
+      </label>
+      <label>
+        E-Mail <span aria-hidden="true">*</span>
+        <input type="email" name="email" autocomplete="email" required />
+      </label>
+      <label>
+        Baustellenort
+        <input type="text" name="location" autocomplete="address-level2" />
+      </label>
+      <label>
+        Projektart
+        <select name="projectType">
+          <option value="">Bitte auswählen</option>
+          <option>Elektroinstallation und Sanierung</option>
+          <option>Photovoltaik und Energie</option>
+          <option>Gebäudetechnik und Sicherheit</option>
+          <option>KNX, Netzwerk und Medien</option>
+          <option>Service und Störungsbehebung</option>
+        </select>
+      </label>
+      <label>
+        Gebäudeart
+        <select name="buildingType">
+          <option value="">Bitte auswählen</option>
+          <option>Neubau</option>
+          <option>Sanierung</option>
+          <option>Gewerbe</option>
+        </select>
+      </label>
+      <label class="form-grid__wide">
+        Gewünschter Zeitraum
+        <input type="text" name="timeframe" placeholder="z. B. Herbst 2026" />
+      </label>
+      <label class="form-grid__wide">
+        Projektbeschreibung <span aria-hidden="true">*</span>
+        <textarea name="description" rows="5" required></textarea>
+      </label>
+      <label class="form-grid__wide file-field">
+        Pläne oder Fotos <span>optional · PDF, JPG oder PNG</span>
+        <input
+          type="file"
+          name="files"
+          accept=".pdf,.jpg,.jpeg,.png"
+          multiple
+        />
+      </label>
+    </div>
+    <label class="privacy-check">
+      <input type="checkbox" required />
+      <span
+        >Ich stimme der Verarbeitung meiner Angaben zur Bearbeitung der Anfrage
+        zu.</span
+      >
+    </label>
+    <p id="form-preview-note" class="form-note">
+      Formular-Vorschau: Der sichere Versand und Datei-Upload werden nach Wahl
+      des Formular-Dienstes aktiviert.
+    </p>
+    <button class="button" type="button" aria-describedby="form-preview-note">
+      Projektanfrage vorbereiten
+    </button>
+  </form>
+</section>
