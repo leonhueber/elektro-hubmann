@@ -151,6 +151,13 @@
   pointer-events: none;
 }
 
+.g-house-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: #fff;
+}
+
 .g-house-layer {
   position: absolute;
   inset: 0;
@@ -917,17 +924,10 @@
     display: none;
   }
   .g-story {
-    height: 440svh;
+    display: none;
   }
-  .g-story-visual {
-    inset: 34px -24% auto -24%;
-    height: 46%;
-  }
-  .g-story-copy-stack {
-    right: 14px;
-    bottom: 16px;
-    left: 14px;
-    height: 51%;
+  .g-static-story {
+    display: block;
   }
   .g-story-copy {
     padding-top: 12px;

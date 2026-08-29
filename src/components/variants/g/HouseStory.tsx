@@ -10,12 +10,13 @@ type StoryChapter = {
   label: string;
   title: string;
   description: string;
-  image: string;
   cta?: string;
   href?: string;
   hint: string;
   callouts?: string[];
 };
+
+const FRAME_COUNT = 120;
 
 const chapters: StoryChapter[] = [
   {
@@ -25,7 +26,6 @@ const chapters: StoryChapter[] = [
     title: 'Ein Haus beginnt mit einem guten Plan.',
     description:
       'Wir planen die komplette Elektrotechnik für Neubau, Sanierung und Gewerbe.',
-    image: 'house-planning-v2.jpg',
     cta: 'Projekt besprechen →',
     href: '#projektanfrage',
     hint: 'Scrollen, um das Haus zu öffnen',
@@ -37,7 +37,6 @@ const chapters: StoryChapter[] = [
     title: 'Im Inneren greift alles ineinander.',
     description:
       'Elektroinstallation, Beleuchtung, Netzwerk und Gebäudetechnik – sauber geplant und umgesetzt.',
-    image: 'house-installation-v2.jpg',
     hint: 'Weiter zum Dach',
     callouts: [
       'Elektroinstallation',
@@ -52,7 +51,6 @@ const chapters: StoryChapter[] = [
     title: 'Auf dem Dach wird das Haus zum Energieerzeuger.',
     description:
       'Photovoltaik, Speicher und elektrische Einbindung – als durchdachtes Gesamtsystem.',
-    image: 'house-energy-v2.jpg',
     cta: 'Photovoltaik anfragen →',
     href: '#projektanfrage',
     hint: 'Weiter zur Prüfung & Übergabe',
@@ -65,7 +63,6 @@ const chapters: StoryChapter[] = [
     title: 'Geprüft. Dokumentiert. Übergeben.',
     description:
       'Wir begleiten das Projekt von der ersten Planung bis zur fachgerechten Übergabe und stehen auch danach für Service und Überprüfungen zur Verfügung.',
-    image: 'house-service-v2.jpg',
     cta: 'Projekt anfragen →',
     href: '#projektanfrage',
     hint: 'Das fertige Haus',
@@ -73,10 +70,6 @@ const chapters: StoryChapter[] = [
 ];
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
-const range = (value: number, start: number, end: number) =>
-  clamp((value - start) / (end - start));
-const ease = (value: number) =>
-  value < 0.5 ? 4 * value * value * value : 1 - Math.pow(-2 * value + 2, 3) / 2;
 
 export function getStoryState(progress: number): HouseStoryState {
   if (progress < 0.24) return 'planning';
@@ -85,47 +78,19 @@ export function getStoryState(progress: number): HouseStoryState {
   return 'service';
 }
 
-export function getLayerMotion(index: number, progress: number) {
-  if (index === 0) {
-    const leave = ease(range(progress, 0.16, 0.3));
-    return {
-      opacity: 1 - leave,
-      x: 30 * leave,
-      y: -2 * leave,
-      scale: 1 - 0.06 * leave,
-    };
-  }
-  if (index === 1) {
-    const enter = ease(range(progress, 0.13, 0.3));
-    const leave = ease(range(progress, 0.45, 0.6));
-    return {
-      opacity: Math.min(enter, 1 - leave),
-      x: -24 * (1 - enter) - 22 * leave,
-      y: 3 * (1 - enter) + 2 * leave,
-      scale: 0.94 + 0.06 * enter + 0.025 * leave,
-    };
-  }
-  if (index === 2) {
-    const enter = ease(range(progress, 0.43, 0.62));
-    const leave = ease(range(progress, 0.72, 0.87));
-    return {
-      opacity: Math.min(enter, 1 - leave),
-      x: 26 * (1 - enter) - 10 * leave,
-      y: 8 * (1 - enter) - 5 * enter - 2 * leave,
-      scale: 0.9 + 0.16 * enter - 0.1 * leave,
-    };
-  }
-  const enter = ease(range(progress, 0.74, 0.92));
-  return {
-    opacity: enter,
-    x: 22 * (1 - enter),
-    y: 3 * (1 - enter),
-    scale: 0.93 + 0.07 * enter,
-  };
+export function getFrameIndex(progress: number) {
+  return Math.min(
+    FRAME_COUNT - 1,
+    Math.round(clamp(progress) * (FRAME_COUNT - 1)),
+  );
 }
 
 function stateIndex(state: HouseStoryState) {
   return chapters.findIndex((chapter) => chapter.id === state);
+}
+
+function frameUrl(baseUrl: string, index: number) {
+  return `${baseUrl}images/version-g/sequence/house-${String(index + 1).padStart(4, '0')}.jpg`;
 }
 
 function ChapterContent({
@@ -175,67 +140,146 @@ function ChapterContent({
 
 export default function HouseStory({ baseUrl }: { baseUrl: string }) {
   const wrapper = useRef<HTMLElement>(null);
-  const [progress, setProgress] = useState(0);
+  const canvas = useRef<HTMLCanvasElement>(null);
+  const frames = useRef<Array<HTMLImageElement | undefined>>([]);
+  const targetFrame = useRef(0);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeIndexRef = useRef(0);
 
   useEffect(() => {
-    let frame = 0;
-    const update = () => {
-      frame = 0;
-      if (!wrapper.current) return;
-      const rect = wrapper.current.getBoundingClientRect();
-      const scrollable = wrapper.current.offsetHeight - window.innerHeight;
-      setProgress(clamp(-rect.top / Math.max(scrollable, 1)));
-    };
-    const onScroll = () => {
-      if (!frame) frame = window.requestAnimationFrame(update);
-    };
-    update();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
-      if (frame) window.cancelAnimationFrame(frame);
-    };
-  }, []);
+    const root = wrapper.current;
+    const surface = canvas.current;
+    if (!root || !surface) return;
 
-  const activeIndex = stateIndex(getStoryState(progress));
-  const progressStyle = {
-    '--g-story-progress': `${progress * 100}%`,
-  } as CSSProperties;
+    let disposed = false;
+    let resizeFrame = 0;
+    let trigger: { kill: () => void } | undefined;
+    const context = surface.getContext('2d', { alpha: false });
+    if (!context) return;
+
+    const nearestLoadedFrame = (wanted: number) => {
+      if (frames.current[wanted]?.complete) return frames.current[wanted];
+      for (let offset = 1; offset < FRAME_COUNT; offset += 1) {
+        const before = frames.current[wanted - offset];
+        const after = frames.current[wanted + offset];
+        if (before?.complete) return before;
+        if (after?.complete) return after;
+      }
+      return undefined;
+    };
+
+    const draw = () => {
+      const image = nearestLoadedFrame(targetFrame.current);
+      if (!image || !surface.width || !surface.height) return;
+      const imageRatio = image.naturalWidth / image.naturalHeight;
+      const canvasRatio = surface.width / surface.height;
+      const width =
+        imageRatio > canvasRatio ? surface.width : surface.height * imageRatio;
+      const height =
+        imageRatio > canvasRatio ? surface.width / imageRatio : surface.height;
+      context.fillStyle = '#fff';
+      context.fillRect(0, 0, surface.width, surface.height);
+      context.drawImage(
+        image,
+        (surface.width - width) / 2,
+        (surface.height - height) / 2,
+        width,
+        height,
+      );
+    };
+
+    const resize = () => {
+      resizeFrame = 0;
+      const bounds = surface.getBoundingClientRect();
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+      surface.width = Math.max(1, Math.round(bounds.width * pixelRatio));
+      surface.height = Math.max(1, Math.round(bounds.height * pixelRatio));
+      draw();
+    };
+
+    const loadFrame = (index: number) =>
+      new Promise<void>((resolve) => {
+        const image = new Image();
+        image.decoding = 'async';
+        image.src = frameUrl(baseUrl, index);
+        frames.current[index] = image;
+        image.onload = () => {
+          if (!disposed && (index === 0 || index === targetFrame.current))
+            draw();
+          resolve();
+        };
+        image.onerror = () => resolve();
+      });
+
+    const preload = async () => {
+      await loadFrame(0);
+      for (let start = 1; start < FRAME_COUNT && !disposed; start += 8) {
+        await Promise.all(
+          Array.from(
+            { length: Math.min(8, FRAME_COUNT - start) },
+            (_, offset) => loadFrame(start + offset),
+          ),
+        );
+      }
+    };
+
+    const setupScroll = async () => {
+      const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
+        import('gsap'),
+        import('gsap/ScrollTrigger'),
+      ]);
+      if (disposed) return;
+      gsap.registerPlugin(ScrollTrigger);
+      trigger = ScrollTrigger.create({
+        trigger: root,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 0.18,
+        invalidateOnRefresh: true,
+        onUpdate: ({ progress }) => {
+          const nextProgress = clamp(progress);
+          targetFrame.current = getFrameIndex(nextProgress);
+          root.style.setProperty(
+            '--g-story-progress',
+            `${nextProgress * 100}%`,
+          );
+          draw();
+          const nextIndex = stateIndex(getStoryState(nextProgress));
+          if (nextIndex !== activeIndexRef.current) {
+            activeIndexRef.current = nextIndex;
+            setActiveIndex(nextIndex);
+          }
+        },
+      });
+    };
+
+    void preload();
+    void setupScroll();
+    resize();
+    const onResize = () => {
+      if (!resizeFrame) resizeFrame = window.requestAnimationFrame(resize);
+    };
+    window.addEventListener('resize', onResize, { passive: true });
+
+    return () => {
+      disposed = true;
+      trigger?.kill();
+      window.removeEventListener('resize', onResize);
+      if (resizeFrame) window.cancelAnimationFrame(resizeFrame);
+      frames.current = [];
+    };
+  }, [baseUrl]);
 
   return (
     <section
       ref={wrapper}
       className="g-story"
       aria-label="Leistungen von der Planung bis zur Übergabe"
-      style={progressStyle}
+      style={{ '--g-story-progress': '0%' } as CSSProperties}
     >
       <div className="g-story-stage">
         <div className="g-story-visual" aria-hidden="true">
-          {chapters.map((chapter, index) => {
-            const motion = getLayerMotion(index, progress);
-            return (
-              <figure
-                className={`g-house-layer g-house-layer--${chapter.id}`}
-                key={chapter.id}
-                style={{
-                  opacity: motion.opacity,
-                  transform: `translate3d(${motion.x}vw, ${motion.y}vh, 0) scale(${motion.scale})`,
-                }}
-              >
-                <img
-                  src={`${baseUrl}images/version-g/${chapter.image}`}
-                  width="1536"
-                  height="1024"
-                  alt=""
-                  loading={index === 0 ? 'eager' : 'lazy'}
-                  fetchPriority={index === 0 ? 'high' : 'auto'}
-                  decoding="async"
-                />
-              </figure>
-            );
-          })}
+          <canvas ref={canvas} className="g-house-canvas" />
         </div>
         <div className="g-story-copy-stack" aria-live="polite">
           {chapters.map((chapter, index) => (

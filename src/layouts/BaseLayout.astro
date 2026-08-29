@@ -10,6 +10,7 @@ interface Props {
   bodyClass?: string;
   canonicalPath?: string;
   ogImage?: string;
+  preloadImage?: string;
   schema?: Record<string, unknown>;
 }
 
@@ -20,6 +21,7 @@ const {
   bodyClass = '',
   canonicalPath = Astro.url.pathname,
   ogImage = '/logo-elektrotechnik-hubmann.png',
+  preloadImage,
   schema,
 } = Astro.props;
 const canonical = new URL(canonicalPath, Astro.site ?? Astro.url.origin);
@@ -34,6 +36,7 @@ const socialImage = new URL(ogImage, Astro.site ?? Astro.url.origin);
     <meta name="description" content={description} />
     <meta name="robots" content="noindex, follow" />
     <meta name="theme-color" content="#e30613" />
+    {preloadImage && <link rel="preload" as="image" href={preloadImage} />}
     <link rel="canonical" href={canonical} />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="de_AT" />

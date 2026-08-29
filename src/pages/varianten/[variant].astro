@@ -39,6 +39,9 @@ const VariantComponent = components[variantId];
   description={`${current.name}: ${current.summary}`}
   activeVariant={variantId}
   bodyClass={`variant variant-${variantId}`}
+  preloadImage={variantId === 'g'
+    ? `${import.meta.env.BASE_URL}images/version-g/sequence/house-0001.jpg`
+    : undefined}
 >
   <VariantComponent />
 </BaseLayout>

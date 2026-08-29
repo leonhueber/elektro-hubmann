@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getLayerMotion, getStoryState } from './HouseStory';
+import { getFrameIndex, getStoryState } from './HouseStory';
 
 describe('getStoryState', () => {
   it.each([
@@ -15,11 +15,11 @@ describe('getStoryState', () => {
     expect(getStoryState(progress)).toBe(expected);
   });
 
-  it('moves image layers continuously between story chapters', () => {
-    expect(getLayerMotion(0, 0).opacity).toBe(1);
-    expect(getLayerMotion(0, 0.3).opacity).toBe(0);
-    expect(getLayerMotion(1, 0.3).opacity).toBe(1);
-    expect(getLayerMotion(2, 0.62).opacity).toBe(1);
-    expect(getLayerMotion(3, 0.92).opacity).toBe(1);
+  it('maps scroll progress to the rendered Blender sequence', () => {
+    expect(getFrameIndex(-1)).toBe(0);
+    expect(getFrameIndex(0)).toBe(0);
+    expect(getFrameIndex(0.5)).toBe(60);
+    expect(getFrameIndex(1)).toBe(119);
+    expect(getFrameIndex(2)).toBe(119);
   });
 });
