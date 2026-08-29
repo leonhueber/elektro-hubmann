@@ -1,0 +1,93 @@
+---
+import SiteFooter from '../SiteFooter.astro';
+import SiteHeader from '../SiteHeader.astro';
+import { processSteps, services } from '../../config/site';
+
+const pagePath = Astro.url.pathname;
+---
+
+<SiteHeader pagePath={pagePath} />
+
+<main id="hauptinhalt">
+  <section class="hero hero--b">
+    <div class="hero__copy">
+      <span class="eyebrow">Elektro Hubmann / Weilbach</span>
+      <h1>Technik, die funktioniert. Service, der bleibt.</h1>
+      <p>
+        Klar geplant, fachgerecht umgesetzt und persönlich begleitet – vom
+        einzelnen Anschluss bis zur vernetzten Gebäudetechnik.
+      </p>
+      <a class="button" href="#kontakt">Projekt besprechen</a>
+    </div>
+    <div class="technical-board" aria-hidden="true">
+      <span>EH / SYSTEM</span>
+      <div></div><div></div><div></div><div></div>
+      <strong>PLAN → BAU → SERVICE</strong>
+    </div>
+  </section>
+
+  <section class="service-rail" aria-label="Kontakt und Service">
+    <strong>Störung melden</strong>
+    <span>Direkter Kontakt</span>
+    <span>Persönliche Rückmeldung</span>
+    <span>Regionaler Service</span>
+  </section>
+
+  <section class="section" id="leistungen">
+    <div class="section-heading section-heading--row">
+      <div>
+        <span class="eyebrow">Leistungen</span>
+        <h2>Unsere Kompetenz. Ihre Lösung.</h2>
+      </div>
+      <p>Vier Bereiche, ein verlässlicher Ansprechpartner.</p>
+    </div>
+    <div class="service-grid service-grid--technical">
+      {
+        services.map((service) => (
+          <article class="service-card">
+            <span>{service.marker}</span>
+            <h3>{service.title}</h3>
+            <p>{service.description}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="process-section" id="arbeitsweise">
+    <div class="section-heading">
+      <span class="eyebrow">Arbeitsweise</span>
+      <h2>Klarer Prozess. Sauberes Ergebnis.</h2>
+    </div>
+    <div class="process-grid">
+      {
+        processSteps.map(([number, title, description]) => (
+          <article>
+            <span>{number}</span>
+            <h3>{title}</h3>
+            <p>{description}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="technical-company" id="unternehmen">
+    <span class="eyebrow">Für Sie vor Ort</span>
+    <h2>Fachkompetenz. Saubere Umsetzung. Regional im Einsatz.</h2>
+    <p>
+      Direkte Abstimmung und nachvollziehbare Entscheidungen stehen bei jedem
+      Projekt im Mittelpunkt.
+    </p>
+  </section>
+
+  <section class="contact-panel" id="kontakt">
+    <strong>Haben Sie ein Projekt oder eine Frage?</strong>
+    <p>
+      Der finale Kontaktweg wird nach Prüfung der Unternehmensdaten ergänzt.
+    </p>
+    <span class="button">Kontakt aufnehmen</span>
+  </section>
+</main>
+
+<SiteFooter />

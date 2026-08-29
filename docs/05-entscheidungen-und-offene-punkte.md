@@ -70,14 +70,16 @@ Ausgangspunkt verwenden und bei Unsicherheit juristisch prüfen.
 - [ ] CMS-Selbstpflege wirklich erforderlich?
 - [ ] Wer ist nach Launch für Inhalte verantwortlich?
 - [ ] Analytics nötig; wenn ja, welche Entscheidungen werden damit getroffen?
-- [ ] Zwei oder drei initiale Designvarianten festgelegt und eindeutig benannt.
+- [x] Drei initiale Designvarianten als A/Architektur, B/Technisch und
+  C/Regional festgelegt.
 - [ ] Hauptversion bestimmt oder Entscheidungstermin und Entscheider festgelegt.
 - [ ] Geklärt, ob Alternativversionen nach der finalen Auswahl öffentlich
   bleiben oder entfernt werden.
 
 ## 6. Technische Architektur
 
-- [ ] Empfohlene statische Architektur akzeptiert oder CMS-Anforderung belegt.
+- [x] Astro/static mit TypeScript und React-Komponenten als Grundarchitektur
+  akzeptiert.
 - [ ] Quellcode-Repository gehört dem Unternehmen.
 - [x] GitHub Pages als öffentliches Website-Hosting gewählt.
 - [x] Repository ist öffentlich; Quellcode und eingecheckte Inhalte sind damit
@@ -87,7 +89,8 @@ Ausgangspunkt verwenden und bei Unsicherheit juristisch prüfen.
 - [ ] Deployment, Backups, Monitoring und Patchverantwortung vereinbart.
 - [ ] Formularversand und Spam-Schutz entschieden.
 - [ ] Datenstandort und Auftragsverarbeitung der Dienstleister geprüft.
-- [ ] Repository-Export und Wiederaufbau von `dist/` als Hosting-Exit getestet.
+- [x] Reproduzierbarer Neuaufbau von `dist/` aus Repository und Lockfile lokal
+  getestet.
 
 ## 7. Domain- und DNS-Zugänge
 

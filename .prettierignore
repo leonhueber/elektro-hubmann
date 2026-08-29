@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.astro/
+docs/
+README.md
+public/**/*.png
+pnpm-lock.yaml

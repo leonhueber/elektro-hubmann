@@ -1,0 +1,30 @@
+---
+import { withBase } from '../lib/url';
+
+interface Props {
+  pagePath: string;
+}
+
+const { pagePath } = Astro.props;
+---
+
+<header class="site-header">
+  <a class="brand" href={pagePath} aria-label="Elektro Hubmann Startseite">
+    <img
+      src={withBase('/logo-elektrotechnik-hubmann.png')}
+      width="287"
+      height="78"
+      alt="Elektrotechnik Hubmann"
+    />
+  </a>
+
+  <nav class="main-nav" aria-label="Hauptnavigation">
+    <a href={`${pagePath}#leistungen`}>Leistungen</a>
+    <a href={`${pagePath}#arbeitsweise`}>Arbeitsweise</a>
+    <a href={`${pagePath}#unternehmen`}>Unternehmen</a>
+  </nav>
+
+  <a class="button button--small" href={`${pagePath}#kontakt`}
+    >Projekt anfragen</a
+  >
+</header>

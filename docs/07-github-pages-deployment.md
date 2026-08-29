@@ -1,8 +1,8 @@
 # Deploymentplan für GitHub Pages
 
 Stand: 29. August 2026  
-Status: GitHub Pages als Zielhosting entschieden; Aktivierung folgt mit dem
-Astro-Projekt
+Status: Astro-Grundprojekt und Deployment-Workflow vorhanden; erstes
+GitHub-Pages-Deployment wird mit dem Implementierungscommit ausgelöst
 
 ## 1. Zielbild
 
@@ -22,13 +22,16 @@ den gemeinsam abgenommenen Stand aller aktiven Varianten.
 Die bestehende Domain, DNS-Zone und E-Mail-Konfiguration bleiben während der
 Entwicklung unangetastet.
 
-## 2. Warum der Workflow noch nicht aktiviert wird
+## 2. Aktueller Implementierungsstand
 
-Aktuell enthält das Repository nur Planung und noch kein Astro-Projekt. Ein
-jetzt eingecheckter Deployment-Workflow würde bei jedem Lauf an fehlendem
-`package.json`, Lockfile oder `dist/` scheitern. `deploy-pages.yml` wird deshalb
-im selben Commit wie das lauffähige Astro-Grundgerüst ergänzt und sofort mit
-einem vollständigen Build geprüft.
+Das Astro-/React-Grundprojekt, `package.json`, `pnpm-lock.yaml` und
+`.github/workflows/deploy-pages.yml` sind vorhanden. Der lokale
+Produktionsbuild erzeugt die Übersichtsseite und alle drei Varianten ohne
+Typfehler. Jeder Push auf `main` startet den offiziellen Astro-Pages-Workflow.
+
+Falls das erste Deployment trotz erfolgreichem Build nicht veröffentlicht,
+muss einmalig im GitHub-Repository unter **Settings → Pages → Source** die
+Option **GitHub Actions** ausgewählt werden.
 
 ## 3. Astro-Konfiguration in den zwei Betriebsphasen
 

@@ -1,0 +1,32 @@
+---
+import VariantA from '../../components/variants/VariantA.astro';
+import VariantB from '../../components/variants/VariantB.astro';
+import VariantC from '../../components/variants/VariantC.astro';
+import { variants, type VariantId } from '../../config/site';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export function getStaticPaths() {
+  return variants.map((variant) => ({
+    params: { variant: variant.id },
+    props: { variantId: variant.id },
+  }));
+}
+
+interface Props {
+  variantId: VariantId;
+}
+
+const { variantId } = Astro.props;
+const current = variants.find((variant) => variant.id === variantId)!;
+const components = { a: VariantA, b: VariantB, c: VariantC };
+const VariantComponent = components[variantId];
+---
+
+<BaseLayout
+  title={`Elektro Hubmann – ${current.name} ${current.direction}`}
+  description={`${current.name}: ${current.summary}`}
+  activeVariant={variantId}
+  bodyClass={`variant variant-${variantId}`}
+>
+  <VariantComponent />
+</BaseLayout>

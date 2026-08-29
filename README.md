@@ -4,7 +4,29 @@ Stand: 29. August 2026
 
 Dieses Verzeichnis enthält die belastbare Planungsgrundlage für den Neubau von
 <https://elektro-hubmann.at/> und die spätere Migration von Domain, DNS und
-E-Mail. Die technische Umsetzung hat noch nicht begonnen.
+E-Mail. Ein erstes lauffähiges Astro-/React-Grundprojekt mit drei öffentlichen
+Designvarianten ist vorhanden; Inhalte und Rechtstexte sind noch nicht final
+freigegeben.
+
+## Lokale Entwicklung
+
+Voraussetzungen: Node.js 24 und pnpm 11.
+
+```bash
+pnpm install --frozen-lockfile
+pnpm dev
+```
+
+Qualitätsprüfung und Produktionsbuild:
+
+```bash
+pnpm format:check
+pnpm build
+```
+
+Der lokale Entwicklungsserver verwendet denselben Basispfad wie GitHub Pages:
+`/elektro-hubmann/`. Die drei Versionen liegen unter `/varianten/a/`,
+`/varianten/b/` und `/varianten/c/`.
 
 ## Dokumente
 
