@@ -1,8 +1,8 @@
 # Konzept für mehrere gleichzeitig öffentliche Website-Versionen
 
 Stand: 29. August 2026  
-Status: verbindliche Architekturentscheidung; konkrete Varianten noch zu
-gestalten und zu benennen
+Status: fünf Varianten umgesetzt und öffentlich bereitgestellt; finales Design
+noch nicht gewählt
 
 ## 1. Ziel
 
@@ -16,17 +16,17 @@ und keine voneinander getrennten Inhaltskopien.
 
 ## 2. Empfohlener Umfang
 
-Zum Start werden zwei, höchstens drei aktive Varianten gebaut. Mehr Varianten
-sind technisch möglich, aber nicht kostenlos: Jede vollständige Variante
-vervielfacht Responsive-, Browser-, Accessibility-, Performance- und
-Abnahmetests. Eine vierte Variante wird erst ergänzt, wenn sie eine wirklich
-neue Designhypothese prüft und nicht nur Farben oder Abstände verändert.
+Aktuell sind fünf Varianten vorhanden. Weitere Varianten werden erst ergänzt,
+wenn sie eine neue Designhypothese prüfen; jede zusätzliche Variante erhöht
+Responsive-, Browser-, Accessibility-, Performance- und Abnahmeaufwand.
 
-Vorläufige neutrale Bezeichnungen:
+Verbindliche Bezeichnungen:
 
 - Version A – ruhig, hochwertig und architekturorientiert;
 - Version B – technisch, präzise und leistungsorientiert;
-- Version C – regional, persönlich und handwerksnah.
+- Version C – regional, persönlich und handwerksnah;
+- Version D – klare Basis aus A mit bildstarken, kreativen Elementen;
+- Version E – kontrastreich, direkt und baustellenorientiert.
 
 Die endgültigen Richtungen werden erst nach Bild-, Marken- und Inhaltsbriefing
 ausgestaltet. Die Namen dürfen nicht als Qualitätsrangfolge verstanden werden.
@@ -39,6 +39,8 @@ Während der Entwicklung unter der GitHub-Projekt-URL:
 https://leonhueber.github.io/elektro-hubmann/varianten/a/
 https://leonhueber.github.io/elektro-hubmann/varianten/b/
 https://leonhueber.github.io/elektro-hubmann/varianten/c/
+https://leonhueber.github.io/elektro-hubmann/varianten/d/
+https://leonhueber.github.io/elektro-hubmann/varianten/e/
 ```
 
 Unterseiten bleiben logisch parallel:
@@ -47,6 +49,8 @@ Unterseiten bleiben logisch parallel:
 /varianten/a/leistungen/elektroinstallationen/
 /varianten/b/leistungen/elektroinstallationen/
 /varianten/c/leistungen/elektroinstallationen/
+/varianten/d/leistungen/elektroinstallationen/
+/varianten/e/leistungen/elektroinstallationen/
 ```
 
 Nach dem Domain-Cutover liegt die gewählte Hauptversion auf den normalen URLs:
@@ -56,10 +60,9 @@ https://elektro-hubmann.at/
 https://elektro-hubmann.at/leistungen/elektroinstallationen/
 ```
 
-Die Alternativen können – sofern bewusst gewünscht – unter
-`/varianten/b/` und `/varianten/c/` live bleiben. Die Hauptversion wird nicht
-zusätzlich unter `/varianten/a/` dupliziert, sobald die Produktionsdomain aktiv
-ist.
+Die Alternativen können – sofern bewusst gewünscht – unter ihren
+`/varianten/.../`-Pfaden live bleiben. Die Hauptversion wird nicht zusätzlich
+unter einem Variantenpfad dupliziert, sobald die Produktionsdomain aktiv ist.
 
 ## 4. Versionsleiste oberhalb des Headers
 
@@ -69,7 +72,7 @@ Website-Header. Sie darf nicht wie die Kundennavigation wirken.
 Vorgesehener Inhalt:
 
 ```text
-Designvorschau    Version A    Version B    Version C
+Designvorschau    Version A    Version B    Version C    Version D    Version E
 ```
 
 Verbindliche UX-Regeln:
@@ -101,7 +104,9 @@ gemeinsame Content Collections
         │
         ├── Layout/Komponenten Version A
         ├── Layout/Komponenten Version B
-        └── Layout/Komponenten Version C
+        ├── Layout/Komponenten Version C
+        ├── Layout/Komponenten Version D
+        └── Layout/Komponenten Version E
                  │
                  └── ein gemeinsamer statischer Astro-Build
                          └── ein GitHub-Pages-Artefakt
@@ -198,11 +203,24 @@ explizit entschieden:
 Ohne diese Entscheidung bleiben Alternativen nicht unbegrenzt als vermeintlich
 gleichwertige Unternehmenswebsites online.
 
-## 9. Abnahmekriterien
+## 9. Aktueller Responsive-Stand
 
-- [ ] Zwei oder maximal drei Varianten sind benannt und fachlich abgegrenzt.
-- [ ] Jede Variante hat eine feste, direkt teilbare URL.
-- [ ] Versionsleiste steht über dem Header und ist auf allen Viewports nutzbar.
+Alle fünf Varianten besitzen dieselbe responsive Grundlogik und eine
+bedienbare Mobile-Navigation. Geprüft wurden Layoutbreiten von 320 bis 1440 px,
+einschließlich der Übergänge 620/621 und 820/821 px. Dabei trat in keiner
+Variante horizontaler Seitenüberlauf auf. Die Detailmatrix steht in
+[Dokument 09](09-responsive-accessibility-eu-checkliste.md).
+
+Accessibility-, Performance- und rechtliche Endabnahme folgen erst auf dem
+final ausgewählten Design; sie sind durch den Responsive-Status nicht ersetzt.
+
+## 10. Abnahmekriterien
+
+- [x] Fünf Varianten sind benannt und fachlich abgegrenzt.
+- [x] Jede Variante hat eine feste, direkt teilbare URL.
+- [x] Versionsleiste steht über dem Header und ist auf allen geprüften Viewports nutzbar.
+- [x] Jede Variante besitzt eine bedienbare Mobile-Navigation.
+- [x] Keine Variante erzeugt in der definierten Breitenmatrix horizontalen Überlauf.
 - [ ] Wechsel erhält Start-, Leistungs- und Kontaktseite korrekt.
 - [ ] Alle Varianten lesen denselben freigegebenen Inhaltsbestand.
 - [ ] Hauptversion ist eindeutig in Konfiguration und Dokumentation markiert.
@@ -212,7 +230,7 @@ gleichwertige Unternehmenswebsites online.
 - [ ] Jede Variante besteht die definierte Browser-, Accessibility- und
   Performanceprüfung.
 
-## 10. Technische Referenzen
+## 11. Technische Referenzen
 
 - [Astro-Routing und statische Routen](https://docs.astro.build/en/guides/routing/)
 - [Google: Indexierung mit `noindex` verhindern](https://developers.google.com/search/docs/crawling-indexing/block-indexing)

@@ -2,6 +2,7 @@
 import '@fontsource/anton/400.css';
 import { IconArrowRight, IconSquareCheck, IconUser } from '@tabler/icons-react';
 import HomeSections from '../HomeSections.astro';
+import MobileNavigation from '../MobileNavigation.astro';
 import SiteFooter from '../SiteFooter.astro';
 import { company } from '../../config/site';
 import { withBase } from '../../lib/url';
@@ -48,9 +49,13 @@ const pagePath = Astro.url.pathname;
         <a href="#unternehmen">Unternehmen</a>
         <a href="#kontakt">Kontakt</a>
       </nav>
-      <a class="button hero-e__header-cta" href="#projektanfrage"
-        >Projekt anfragen</a
-      >
+      <div class="header-actions">
+        <a class="button hero-e__header-cta" href="#projektanfrage">
+          <span class="header-cta__full">Projekt anfragen</span>
+          <span class="header-cta__short">Anfragen</span>
+        </a>
+        <MobileNavigation />
+      </div>
     </header>
 
     <div class="hero-e__content">

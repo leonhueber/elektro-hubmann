@@ -190,6 +190,7 @@ p {
 
 .site-header,
 .preview-header {
+  position: relative;
   width: var(--content);
   min-height: 96px;
   margin-inline: auto;
@@ -220,6 +221,84 @@ p {
 .main-nav a:focus-visible,
 .text-link:hover,
 .text-link:focus-visible {
+  color: var(--red);
+}
+
+.header-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-cta__short,
+.mobile-navigation {
+  display: none;
+}
+
+.mobile-navigation {
+  position: relative;
+  z-index: 20;
+}
+
+.mobile-navigation summary {
+  width: 44px;
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--ink);
+  cursor: pointer;
+  list-style: none;
+}
+
+.mobile-navigation summary::-webkit-details-marker,
+.mobile-navigation summary > span {
+  display: none;
+}
+
+.mobile-navigation__icon--close,
+.mobile-navigation[open] .mobile-navigation__icon--open {
+  display: none;
+}
+
+.mobile-navigation[open] .mobile-navigation__icon--close {
+  display: block;
+}
+
+.mobile-navigation nav {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: min(280px, calc(100vw - 36px));
+  display: grid;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+  box-shadow: 0 18px 45px rgb(16 20 22 / 18%);
+}
+
+.mobile-navigation nav a {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.mobile-navigation nav a:last-child {
+  border-bottom: 0;
+}
+
+.mobile-navigation nav a:hover,
+.mobile-navigation nav a:focus-visible {
+  background: var(--surface);
   color: var(--red);
 }
 
@@ -1211,6 +1290,11 @@ textarea:focus-visible {
   z-index: 1;
 }
 
+.hero-e__topline,
+.hero-e__header {
+  z-index: 2;
+}
+
 .hero-e__topline {
   border-bottom: 1px solid rgb(255 255 255 / 24%);
 }
@@ -1644,6 +1728,32 @@ textarea:focus-visible {
     display: none;
   }
 
+  .mobile-navigation {
+    display: block;
+  }
+
+  .hero-e .mobile-navigation summary {
+    border-color: rgb(255 255 255 / 42%);
+    background: rgb(7 10 12 / 72%);
+    color: var(--white);
+  }
+
+  .hero-e .mobile-navigation nav {
+    border-color: rgb(255 255 255 / 22%);
+    background: #111416;
+  }
+
+  .hero-e .mobile-navigation nav a {
+    border-color: rgb(255 255 255 / 16%);
+    color: var(--white);
+  }
+
+  .hero-e .mobile-navigation nav a:hover,
+  .hero-e .mobile-navigation nav a:focus-visible {
+    background: #222629;
+    color: #ff2735;
+  }
+
   .hero,
   .variant-b .hero {
     width: 100%;
@@ -1765,11 +1875,7 @@ textarea:focus-visible {
   }
 }
 
-@media (max-width: 620px) {
-  :root {
-    --content: min(100% - 28px, 1220px);
-  }
-
+@media (max-width: 700px) {
   .version-switcher {
     align-items: stretch;
     flex-direction: column;
@@ -1791,6 +1897,12 @@ textarea:focus-visible {
     flex: 1;
     padding-inline: 7px;
     font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 620px) {
+  :root {
+    --content: min(100% - 28px, 1220px);
   }
 
   .info-bar__inner {
@@ -1818,17 +1930,30 @@ textarea:focus-visible {
   .site-header,
   .preview-header {
     min-height: 78px;
+    gap: 10px;
   }
 
   .brand img,
   .preview-header img {
-    width: 158px;
+    width: 142px;
   }
 
   .header-cta {
     min-height: 39px;
     padding: 8px 11px;
     font-size: 0.76rem;
+  }
+
+  .header-actions {
+    gap: 6px;
+  }
+
+  .header-cta__full {
+    display: none;
+  }
+
+  .header-cta__short {
+    display: inline;
   }
 
   h1 {
@@ -1918,13 +2043,27 @@ textarea:focus-visible {
     line-height: 1.25;
   }
 
+  .hero-e__topline a:first-child {
+    display: grid;
+    gap: 1px;
+  }
+
+  .hero-e__topline strong {
+    white-space: nowrap;
+  }
+
+  .hero-e__topline a:last-child {
+    justify-content: flex-end;
+    text-align: right;
+  }
+
   .hero-e__header {
     min-height: 80px;
     gap: 14px;
   }
 
   .hero-e__brand img {
-    width: 150px;
+    width: 142px;
   }
 
   .hero-e__header-cta {

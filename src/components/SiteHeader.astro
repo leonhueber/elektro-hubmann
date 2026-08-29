@@ -1,6 +1,7 @@
 ---
 import { withBase } from '../lib/url';
 import { company } from '../config/site';
+import MobileNavigation from './MobileNavigation.astro';
 
 interface Props {
   pagePath: string;
@@ -39,7 +40,14 @@ const { pagePath } = Astro.props;
     <a href={`${pagePath}#kontakt`}>Kontakt</a>
   </nav>
 
-  <a class="button button--small header-cta" href={`${pagePath}#projektanfrage`}
-    >Projekt anfragen</a
-  >
+  <div class="header-actions">
+    <a
+      class="button button--small header-cta"
+      href={`${pagePath}#projektanfrage`}
+    >
+      <span class="header-cta__full">Projekt anfragen</span>
+      <span class="header-cta__short">Anfragen</span>
+    </a>
+    <MobileNavigation />
+  </div>
 </header>

@@ -26,8 +26,23 @@ Entwicklung unangetastet.
 
 Das Astro-/React-Grundprojekt, `package.json`, `pnpm-lock.yaml` und
 `.github/workflows/deploy-pages.yml` sind vorhanden. Der lokale
-Produktionsbuild erzeugt die Übersichtsseite und alle drei Varianten ohne
+Produktionsbuild erzeugt die Übersichtsseite und alle fünf Varianten ohne
 Typfehler. Jeder Push auf `main` startet den offiziellen Astro-Pages-Workflow.
+
+## Einsatzgrenze von GitHub Pages
+
+GitHub Pages wird in diesem Projekt vorerst als öffentliche Designvorschau und
+Abnahmeumgebung verwendet. Die finale kommerzielle Unternehmenswebsite darf
+nicht automatisch auf Pages verbleiben: GitHub beschreibt Pages primär als
+Projekt-Showcase und schließt kostenloses Hosting für ein Online-Geschäft bzw.
+primär auf kommerzielle Transaktionen gerichtete Websites aus. Außerdem werden
+bei Pages-Aufrufen Besucher-IP-Adressen zu Sicherheitszwecken protokolliert.
+
+Vor dem Domain-Cutover sind deshalb Nutzungsbedingungen, Datenschutzrollen,
+Vertragsgrundlage und der tatsächliche Funktionsumfang zu prüfen. Die
+empfohlene Produktionslösung ist ein EU-/AT-tauglicher Hoster mit geklärtem
+AVV, Datenstandort, Logs, Backups und Support. Details und Quellen stehen in
+[Dokument 09](09-responsive-accessibility-eu-checkliste.md).
 
 Falls das erste Deployment trotz erfolgreichem Build nicht veröffentlicht,
 muss einmalig im GitHub-Repository unter **Settings → Pages → Source** die

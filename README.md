@@ -4,7 +4,7 @@ Stand: 29. August 2026
 
 Dieses Verzeichnis enthält die belastbare Planungsgrundlage für den Neubau von
 <https://elektro-hubmann.at/> und die spätere Migration von Domain, DNS und
-E-Mail. Ein erstes lauffähiges Astro-/React-Grundprojekt mit drei öffentlichen
+E-Mail. Ein erstes lauffähiges Astro-/React-Grundprojekt mit fünf öffentlichen
 Designvarianten ist vorhanden; Inhalte und Rechtstexte sind noch nicht final
 freigegeben.
 
@@ -25,8 +25,8 @@ pnpm build
 ```
 
 Der lokale Entwicklungsserver verwendet denselben Basispfad wie GitHub Pages:
-`/elektro-hubmann/`. Die drei Versionen liegen unter `/varianten/a/`,
-`/varianten/b/` und `/varianten/c/`.
+`/elektro-hubmann/`. Die fünf Versionen liegen unter `/varianten/a/` bis
+`/varianten/e/`.
 
 ## Dokumente
 
@@ -50,12 +50,18 @@ Der lokale Entwicklungsserver verwendet denselben Basispfad wie GitHub Pages:
 8. [Live-Versionen](docs/08-live-versionen.md) – mehrere gleichzeitig
    erreichbare Designvarianten, URL-Schema, Versionsleiste, SEO-Regeln und
    Abnahme.
+9. [Responsiveness, Barrierefreiheit und EU-/AT-Checkliste](docs/09-responsive-accessibility-eu-checkliste.md)
+   – umgesetzte Responsive-Matrix sowie verbindliche spätere Accessibility-,
+   Datenschutz-, Rechts- und Hosting-Gates.
 
 ## Design-Mockups
 
 - [Version A – Architektur](docs/mockups/version-a-architektur.png)
 - [Version B – Technisch](docs/mockups/version-b-technisch.png)
 - [Version C – Regional](docs/mockups/version-c-regional.png)
+
+Version D und E wurden direkt als lauffähige Varianten umgesetzt und besitzen
+deshalb kein separates statisches Mockup in diesem Ordner.
 
 Die Bilder sind visuelle Konzepte. Texte, Bilder, Projekte, Personen und
 Kontaktdaten darin sind nicht als freigegebene Unternehmensangaben zu verwenden.

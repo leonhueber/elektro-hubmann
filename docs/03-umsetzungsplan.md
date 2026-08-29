@@ -79,7 +79,7 @@ danach beginnt die Entwicklung.
   umsetzen; kein globales UI-Framework ohne neuen Architekturentscheid;
 - Inhalte über typisierte Astro Content Collections und Markdown/MDX abbilden;
 - Komponenten, Seiten und Inhaltsmodell umsetzen;
-- typisierte Varianten-Registry und maximal drei freigegebene Designvarianten
+- typisierte Varianten-Registry und aktuell fünf freigegebene Designvarianten
   aus demselben Inhaltsbestand erzeugen;
 - barrierefreie Versionsleiste oberhalb des normalen Headers umsetzen; der
   Wechsel erhält nach Möglichkeit die logisch gleiche Unterseite;
@@ -102,6 +102,12 @@ danach beginnt die Entwicklung.
 unter `https://leonhueber.github.io/elektro-hubmann/`; die Produktionsdomain
 wurde noch nicht verändert.
 
+**Aktueller Prototypenstand:** Die Responsiveness der fünf Varianten A–E ist
+einschließlich Mobile-Navigation umgesetzt und über die in
+[Dokument 09](09-responsive-accessibility-eu-checkliste.md) festgehaltene
+Breitenmatrix geprüft. Accessibility, Rechtstexte, Consent und produktive
+Formularverarbeitung werden bewusst erst am final gewählten Design umgesetzt.
+
 ### Phase 5 – Inhaltliche und rechtliche Abnahme
 
 **Arbeiten**
@@ -123,7 +129,7 @@ nicht bloß aus dem Altbestand kopiert.
 
 | Bereich | Mindestumfang |
 |---|---|
-| Viewports | 360, 390, 768, 1024, 1280 und 1440 px |
+| Viewports | 320, 360, 390, 620/621, 768, 820/821, 1024, 1280 und 1440 px |
 | Browser | aktuelles Chrome, Edge, Firefox und Safari/iOS |
 | Eingabe | Maus, Touch und vollständige Tastaturbedienung |
 | Zoom/Reflow | 200 % Zoom und schmale Reflow-Ansicht |
@@ -150,6 +156,8 @@ nicht bloß aus dem Altbestand kopiert.
 WCAG 2.2 AA als Entwicklungs- und Prüfbasis: Semantik, Tastatur, sichtbarer
 Fokus, Alternativtexte, Labels, Kontraste, Fehlerhilfe, Zielgrößen,
 Bewegungsreduktion und Reflow. Eine automatische Prüfung allein reicht nicht.
+Der vollständige Accessibility- und EU-/AT-Prüfumfang steht in
+[Dokument 09](09-responsive-accessibility-eu-checkliste.md).
 
 **Gate:** Keine offenen P0/P1-Fehler; dokumentierte Restpunkte nur mit bewusstem
 Risikoentscheid.

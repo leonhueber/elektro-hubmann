@@ -26,7 +26,7 @@ Abhängigkeit von einem einzelnen Hostinganbieter.
 | UI | Astro-Komponenten | server-/buildseitige Komponenten; Browser-JavaScript nur als begründete Insel |
 | Styling | natives CSS, CSS Custom Properties, Astro-scoped Styles | Design-Tokens zentral, Komponenten lokal; kein Tailwind im Basissetup |
 | Inhalte | Astro Content Collections mit Markdown/MDX | Leistungen, Projekte und Unternehmensinhalte mit Schema validieren |
-| Designvarianten | typisierte Varianten-Registry und getrennte Astro-Layouts | gemeinsame Inhalte, feste URLs, maximal drei aktive Varianten |
+| Designvarianten | typisierte Varianten-Registry und getrennte Astro-Layouts | gemeinsame Inhalte, feste URLs, aktuell fünf aktive Vorschauvarianten |
 | Datenvalidierung | Zod-Schemas bzw. Astro-Schemafunktion | Build bricht bei fehlenden Pflichtfeldern oder ungültigen Slugs ab |
 | Bilder | Astro Image Pipeline | responsive Größen, AVIF/WebP, Fallback, feste Abmessungen gegen Layoutsprünge |
 | Schrift | selbst gehostete WOFF2-Dateien | keine Verbindung zu Google Fonts; nur benötigte Schnitte laden |

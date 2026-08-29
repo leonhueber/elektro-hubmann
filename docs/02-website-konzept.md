@@ -294,7 +294,7 @@ gefährden.
 
 ## 10. Mehrere öffentliche Designversionen
 
-Während der Entwurfs- und Entscheidungsphase werden bis zu drei vollständige
+Während der Entwurfs- und Entscheidungsphase werden aktuell fünf vollständige
 Designvarianten gleichzeitig veröffentlicht. Jede Variante erhält eine feste,
 teilbare URL. Ganz oben über der eigentlichen Hauptnavigation erscheint eine
 schmale Versionsleiste mit den verfügbaren Varianten und einer eindeutigen
