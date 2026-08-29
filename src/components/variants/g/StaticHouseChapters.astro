@@ -8,7 +8,7 @@ const chapters = [
     id: 'planning',
     number: '01',
     label: 'Planung',
-    image: 'house-planning.webp',
+    image: 'house-planning-v2.jpg',
     title: 'Ein Haus beginnt mit einem guten Plan.',
     description:
       'Wir planen die komplette Elektrotechnik für Neubau, Sanierung und Gewerbe.',
@@ -18,7 +18,7 @@ const chapters = [
     id: 'installation',
     number: '02',
     label: 'Installation',
-    image: 'house-installation.webp',
+    image: 'house-installation-v2.jpg',
     title: 'Im Inneren greift alles ineinander.',
     description:
       'Elektroinstallation, Beleuchtung, Netzwerk und Gebäudetechnik – sauber geplant und umgesetzt.',
@@ -32,7 +32,7 @@ const chapters = [
     id: 'energy',
     number: '03',
     label: 'Energie',
-    image: 'house-energy.webp',
+    image: 'house-energy-v2.jpg',
     title: 'Auf dem Dach wird das Haus zum Energieerzeuger.',
     description:
       'Photovoltaik, Speicher und elektrische Einbindung – als durchdachtes Gesamtsystem.',
@@ -43,7 +43,7 @@ const chapters = [
     id: 'service',
     number: '04',
     label: 'Service',
-    image: 'house-service.webp',
+    image: 'house-service-v2.jpg',
     title: 'Geprüft. Dokumentiert. Übergeben.',
     description:
       'Wir begleiten das Projekt von der ersten Planung bis zur fachgerechten Übergabe und stehen auch danach für Service und Überprüfungen zur Verfügung.',
@@ -59,8 +59,8 @@ const chapters = [
         <div class="g-static-visual">
           <img
             src={`${baseUrl}images/version-g/${chapter.image}`}
-            width="780"
-            height="780"
+            width="1536"
+            height="1024"
             alt={`3D-Haus im Zustand ${chapter.label}`}
             loading={chapter.id === 'planning' ? 'eager' : 'lazy'}
             decoding="async"

@@ -143,14 +143,33 @@
   background: #fff;
 }
 
-.g-story-canvas-wrap {
+.g-story-visual {
   position: absolute;
-  inset: 0 8% 0 23%;
+  z-index: 1;
+  inset: 0 7% 0 23%;
+  overflow: hidden;
+  pointer-events: none;
 }
 
-.g-house-canvas {
-  width: 100% !important;
-  height: 100% !important;
+.g-house-layer {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  transform-origin: 58% 58%;
+  will-change: transform, opacity;
+}
+
+.g-house-layer img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.g-house-layer--energy {
+  transform-origin: 62% 36%;
 }
 
 .g-story-copy-stack {
@@ -169,12 +188,12 @@
   justify-content: center;
   padding-bottom: 4vh;
   opacity: 0;
-  transform: translateY(22px);
+  will-change: transform, opacity;
   visibility: hidden;
   transition:
-    opacity 420ms ease,
-    transform 520ms ease,
-    visibility 0s 520ms;
+    opacity 520ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 650ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s 650ms;
   pointer-events: none;
 }
 
@@ -321,6 +340,23 @@
 
 .g-progress li.is-active::before {
   height: 36px;
+}
+
+.g-story-meter {
+  position: absolute;
+  z-index: 6;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: #ececee;
+}
+
+.g-story-meter i {
+  width: var(--g-story-progress, 0%);
+  height: 100%;
+  display: block;
+  background: var(--g-red);
 }
 
 .g-static-story {
@@ -665,7 +701,7 @@
   .g-phone {
     display: none;
   }
-  .g-story-canvas-wrap {
+  .g-story-visual {
     left: 27%;
     right: 5%;
   }
@@ -732,10 +768,85 @@
     color: var(--g-red);
   }
   .g-story {
-    display: none;
+    height: 430svh;
   }
-  .g-static-story {
-    display: block;
+  .g-story-stage {
+    top: calc(44px + 78px);
+    height: calc(100svh - 44px - 78px);
+    min-height: 0;
+  }
+  .g-story-visual {
+    inset: 24px -8% auto -8%;
+    height: 52%;
+  }
+  .g-house-layer {
+    transform-origin: 55% 56%;
+  }
+  .g-story-copy-stack {
+    inset: auto 20px 24px;
+    width: auto;
+    height: 45%;
+  }
+  .g-story-copy {
+    justify-content: flex-start;
+    padding: 24px 0 30px;
+  }
+  .g-story-copy h2 {
+    max-width: 15ch;
+    margin-bottom: 14px;
+    font-size: clamp(2.3rem, 7vw, 3.6rem);
+  }
+  .g-story-description {
+    max-width: 50ch;
+    margin-bottom: 16px;
+  }
+  .g-story-copy .g-eyebrow {
+    margin-bottom: 14px;
+  }
+  .g-callouts {
+    grid-template-columns: repeat(3, auto);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .g-scroll-hint {
+    bottom: 4px;
+  }
+  .g-progress {
+    top: 12px;
+    right: 20px;
+    left: 20px;
+    width: auto;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .g-progress strong {
+    margin: 0;
+  }
+  .g-progress ol {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border: 0;
+    border-bottom: 1px solid var(--g-line);
+  }
+  .g-progress li {
+    height: 28px;
+    justify-content: center;
+    padding: 0;
+    font-size: 0.62rem;
+  }
+  .g-progress li::before {
+    top: auto;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 3px;
+    transition: width 300ms ease;
+  }
+  .g-progress li.is-active::before {
+    width: 100%;
+    height: 3px;
   }
   .g-static-chapter {
     width: var(--g-content);
@@ -805,15 +916,50 @@
   .g-header-cta {
     display: none;
   }
-  .g-static-chapter {
-    padding-block: 42px 62px;
+  .g-story {
+    height: 440svh;
   }
-  .g-static-visual {
-    height: 290px;
-    margin-inline: -14px;
+  .g-story-visual {
+    inset: 34px -24% auto -24%;
+    height: 46%;
+  }
+  .g-story-copy-stack {
+    right: 14px;
+    bottom: 16px;
+    left: 14px;
+    height: 51%;
+  }
+  .g-story-copy {
+    padding-top: 12px;
   }
   .g-story-copy h2 {
-    font-size: clamp(2.35rem, 12vw, 3.2rem);
+    max-width: 13ch;
+    font-size: clamp(2rem, 10.2vw, 2.75rem);
+  }
+  .g-story-description {
+    font-size: 0.88rem;
+    line-height: 1.42;
+  }
+  .g-callouts {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+  .g-callouts li {
+    font-size: 0.68rem;
+  }
+  .g-scroll-hint {
+    display: none;
+  }
+  .g-outline-button {
+    min-height: 44px;
+    padding: 9px 15px;
+  }
+  .g-progress {
+    right: 14px;
+    left: 14px;
+  }
+  .g-progress li span {
+    display: none;
   }
   .g-project-image {
     height: 260px;
