@@ -17,6 +17,7 @@ type StoryChapter = {
 };
 
 const FRAME_COUNT = 120;
+const PRIORITY_FRAMES = [0, 19, 27, 36, 49, 52, 67, 74, 82, 91, 104, 119];
 
 const chapters: StoryChapter[] = [
   {
@@ -72,17 +73,32 @@ const chapters: StoryChapter[] = [
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 
 export function getStoryState(progress: number): HouseStoryState {
-  if (progress < 0.24) return 'planning';
-  if (progress < 0.51) return 'installation';
-  if (progress < 0.78) return 'energy';
+  if (progress < 0.22) return 'planning';
+  if (progress < 0.56) return 'installation';
+  if (progress < 0.82) return 'energy';
   return 'service';
 }
 
 export function getFrameIndex(progress: number) {
-  return Math.min(
-    FRAME_COUNT - 1,
-    Math.round(clamp(progress) * (FRAME_COUNT - 1)),
+  const value = clamp(progress);
+  const segments = [
+    { start: 0, end: 0.1, from: 0, to: 19 },
+    { start: 0.1, end: 0.5, from: 19, to: 49 },
+    { start: 0.5, end: 0.58, from: 49, to: 67 },
+    { start: 0.58, end: 0.82, from: 67, to: 91 },
+    { start: 0.82, end: 1, from: 91, to: FRAME_COUNT - 1 },
+  ];
+  const segment = segments.find(({ end }) => value <= end) ?? segments.at(-1)!;
+  const localProgress = clamp(
+    (value - segment.start) / (segment.end - segment.start),
   );
+  return Math.round(segment.from + (segment.to - segment.from) * localProgress);
+}
+
+export function getMobileFrameIndex(progress: number) {
+  const frame = getFrameIndex(progress);
+  if (frame === FRAME_COUNT - 1) return frame;
+  return Math.min(FRAME_COUNT - 2, Math.round(frame / 2) * 2);
 }
 
 function stateIndex(state: HouseStoryState) {
@@ -142,6 +158,7 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
   const wrapper = useRef<HTMLElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const frames = useRef<Array<HTMLImageElement | undefined>>([]);
+  const requestedFrames = useRef(new Set<number>());
   const targetFrame = useRef(0);
   const [activeIndex, setActiveIndex] = useState(0);
   const activeIndexRef = useRef(0);
@@ -154,16 +171,17 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
     let disposed = false;
     let resizeFrame = 0;
     let trigger: { kill: () => void } | undefined;
+    const mobileSequence = window.matchMedia('(max-width: 620px)').matches;
     const context = surface.getContext('2d', { alpha: false });
     if (!context) return;
 
     const nearestLoadedFrame = (wanted: number) => {
-      if (frames.current[wanted]?.complete) return frames.current[wanted];
+      if (frames.current[wanted]?.naturalWidth) return frames.current[wanted];
       for (let offset = 1; offset < FRAME_COUNT; offset += 1) {
         const before = frames.current[wanted - offset];
         const after = frames.current[wanted + offset];
-        if (before?.complete) return before;
-        if (after?.complete) return after;
+        if (before?.naturalWidth) return before;
+        if (after?.naturalWidth) return after;
       }
       return undefined;
     };
@@ -197,28 +215,38 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
       draw();
     };
 
-    const loadFrame = (index: number) =>
-      new Promise<void>((resolve) => {
+    const loadFrame = (index: number) => {
+      const safeIndex = Math.min(FRAME_COUNT - 1, Math.max(0, index));
+      if (requestedFrames.current.has(safeIndex)) return Promise.resolve();
+      requestedFrames.current.add(safeIndex);
+      return new Promise<void>((resolve) => {
         const image = new Image();
         image.decoding = 'async';
-        image.src = frameUrl(baseUrl, index);
-        frames.current[index] = image;
+        image.src = frameUrl(baseUrl, safeIndex);
+        frames.current[safeIndex] = image;
         image.onload = () => {
-          if (!disposed && (index === 0 || index === targetFrame.current))
+          if (
+            !disposed &&
+            (safeIndex === 0 || safeIndex === targetFrame.current)
+          )
             draw();
           resolve();
         };
         image.onerror = () => resolve();
       });
+    };
 
     const preload = async () => {
       await loadFrame(0);
-      for (let start = 1; start < FRAME_COUNT && !disposed; start += 8) {
+      await Promise.all(PRIORITY_FRAMES.map((index) => loadFrame(index)));
+      const step = mobileSequence ? 2 : 1;
+      const remaining = Array.from(
+        { length: Math.ceil(FRAME_COUNT / step) },
+        (_, index) => Math.min(FRAME_COUNT - 1, index * step),
+      ).filter((index) => !requestedFrames.current.has(index));
+      for (let start = 0; start < remaining.length && !disposed; start += 12) {
         await Promise.all(
-          Array.from(
-            { length: Math.min(8, FRAME_COUNT - start) },
-            (_, offset) => loadFrame(start + offset),
-          ),
+          remaining.slice(start, start + 12).map((index) => loadFrame(index)),
         );
       }
     };
@@ -238,10 +266,23 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
         invalidateOnRefresh: true,
         onUpdate: ({ progress }) => {
           const nextProgress = clamp(progress);
-          targetFrame.current = getFrameIndex(nextProgress);
+          targetFrame.current = mobileSequence
+            ? getMobileFrameIndex(nextProgress)
+            : getFrameIndex(nextProgress);
+          for (const offset of [-4, -2, 0, 2, 4]) {
+            void loadFrame(targetFrame.current + offset);
+          }
           root.style.setProperty(
             '--g-story-progress',
             `${nextProgress * 100}%`,
+          );
+          root.style.setProperty(
+            '--g-canvas-scale',
+            `${1.015 + Math.sin(nextProgress * Math.PI) * 0.035}`,
+          );
+          root.style.setProperty(
+            '--g-canvas-y',
+            `${Math.sin(nextProgress * Math.PI * 2) * -6}px`,
           );
           draw();
           const nextIndex = stateIndex(getStoryState(nextProgress));
@@ -267,6 +308,7 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
       window.removeEventListener('resize', onResize);
       if (resizeFrame) window.cancelAnimationFrame(resizeFrame);
       frames.current = [];
+      requestedFrames.current.clear();
     };
   }, [baseUrl]);
 
@@ -275,11 +317,21 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
       ref={wrapper}
       className="g-story"
       aria-label="Leistungen von der Planung bis zur Übergabe"
+      data-state={chapters[activeIndex]?.id}
       style={{ '--g-story-progress': '0%' } as CSSProperties}
     >
       <div className="g-story-stage">
         <div className="g-story-visual" aria-hidden="true">
           <canvas ref={canvas} className="g-house-canvas" />
+          <div className="g-visual-callouts g-visual-callouts--installation">
+            <span>Verteiler &amp; Prüfung</span>
+            <span>KNX &amp; Beleuchtung</span>
+            <span>Netzwerk &amp; Sicherheit</span>
+          </div>
+          <div className="g-visual-callouts g-visual-callouts--energy">
+            <span>PV-Module</span>
+            <span>Speicher &amp; Einspeisung</span>
+          </div>
         </div>
         <div className="g-story-copy-stack" aria-live="polite">
           {chapters.map((chapter, index) => (

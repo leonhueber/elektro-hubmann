@@ -12,6 +12,7 @@
 - `docs/version-g-qa/blender-scroll-energy-1440x1024.png`
 - `docs/version-g-qa/blender-scroll-service-1440x1024.png`
 - `docs/version-g-qa/blender-static-mobile-390x844.png`
+- Before/after animation audit in `docs/version-g-qa/animation-audit/`
 - Blender proof renders in `docs/version-g-qa/blender/`
 - Editable source scene: `assets/3d/elektro-hubmann-house.blend`
 - Reproducible scene generator: `blender/house_story.py`
@@ -25,8 +26,10 @@ The persistent design-version switcher is a preview-only element and is not part
 - The front and right facade move sideways, the roof lifts away, the camera moves into the cutaway, photovoltaic modules fly into position, and the facade closes for the service state.
 - The cutaway contains floors, partitions, furniture, distribution and network cabinets, KNX controls, lighting and a visible Hubmann-red installation route.
 - The final state removes temporary technical equipment from the exterior while keeping the photovoltaic system.
-- The first sequence frame is preloaded; remaining frames load progressively in small batches.
-- At widths below 621 px and with `prefers-reduced-motion`, the animation is replaced by four complete vertical chapters. No information is lost.
+- The 120 Blender frames now use a deliberately non-linear scroll timeline: opening the facade receives the largest part of the scroll distance, followed by the roof/PV assembly and the closing service state.
+- The first frame, chapter transitions and important intermediate states are loaded first. Frames close to the current scroll target are requested immediately, so fast scrolling no longer leaves the canvas visibly frozen on an old image.
+- The canvas adds restrained scale and vertical camera movement. Installation and energy callouts enter separately to make the system changes easier to follow.
+- At widths below 621 px, a bandwidth-conscious sequence using every second Blender frame remains animated. Only `prefers-reduced-motion` replaces the animation with four complete vertical chapters, without information loss.
 - The 390 × 844 check reports identical client and scroll width and therefore no horizontal overflow.
 - The 1024 × 768 and 768 × 1024 tablet checks also report identical client and scroll width; the animated stage remains active.
 - Header, progress rail, copy, CTAs and the house remain readable at the tested desktop and mobile sizes.
@@ -36,7 +39,7 @@ The persistent design-version switcher is a preview-only element and is not part
 
 - Astro check: passed with zero errors, warnings or hints.
 - ESLint: passed.
-- Vitest: 9/9 assertions passed.
+- Vitest: 10/10 assertions passed.
 - Production build: 26 static pages built successfully.
 
 ## Known content follow-ups
