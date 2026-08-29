@@ -235,3 +235,6 @@ final ausgewählten Design; sie sind durch den Responsive-Status nicht ersetzt.
 - [Astro-Routing und statische Routen](https://docs.astro.build/en/guides/routing/)
 - [Google: Indexierung mit `noindex` verhindern](https://developers.google.com/search/docs/crawling-indexing/block-indexing)
 - [Google: doppelte URLs und Canonicals](https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls)
+# Ergänzung Version G
+
+Version G ist zusätzlich unter `/varianten/g/` erreichbar. Sie verbindet eine reduzierte Architekturästhetik mit einer scrollgesteuerten 3D-Hausdarstellung. Alle Versionen A–G bleiben parallel verfügbar.

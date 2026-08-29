@@ -1,0 +1,46 @@
+---
+import { company } from '../../../config/site';
+interface Props {
+  baseUrl: string;
+}
+const { baseUrl } = Astro.props;
+const root = `${baseUrl.replace(/\/$/, '')}/varianten/g`;
+---
+
+<footer class="g-footer">
+  <div class="g-footer-grid">
+    <div>
+      <img
+        src={`${baseUrl}logo-elektrotechnik-hubmann.png`}
+        width="287"
+        height="78"
+        alt="Elektrotechnik Hubmann"
+      />
+      <p>
+        Elektrotechnik für Neubau, Sanierung und Gewerbe – regional und
+        persönlich.
+      </p>
+    </div>
+    <div>
+      <strong>Kontakt</strong>
+      <a href={company.phoneHref}>{company.phone}</a>
+      <a href={company.emailHref}>{company.email}</a>
+      <span>{company.address}</span>
+    </div>
+    <div>
+      <strong>Seiten</strong>
+      <a href={`${root}/leistungen/`}>Leistungen</a>
+      <a href={`${root}/projekte/`}>Projekte</a>
+      <a href={`${root}/unternehmen/`}>Unternehmen</a>
+      <a href={`${root}/fachhandel/`}>Fachhandel</a>
+    </div>
+    <div>
+      <strong>Rechtliches</strong>
+      <a href={`${root}/impressum/`}>Impressum</a>
+      <a href={`${root}/datenschutz/`}>Datenschutz</a>
+    </div>
+  </div>
+  <p class="g-footer-note">
+    Designvorschau · Inhalte und Rechtstexte vor Veröffentlichung final prüfen.
+  </p>
+</footer>

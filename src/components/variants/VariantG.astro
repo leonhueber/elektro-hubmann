@@ -1,0 +1,101 @@
+---
+import '@fontsource-variable/inter/index.css';
+import '@fontsource-variable/inter-tight/index.css';
+import HouseStory from './g/HouseStory';
+import StaticHouseChapters from './g/StaticHouseChapters.astro';
+import VariantGHeader from './g/VariantGHeader.astro';
+import VariantGFooter from './g/VariantGFooter.astro';
+import { company, projects } from '../../config/site';
+import '../../styles/variant-g.css';
+
+const baseUrl = import.meta.env.BASE_URL;
+const root = `${baseUrl.replace(/\/$/, '')}/varianten/g`;
+const featuredProjects = projects.slice(0, 4);
+---
+
+<VariantGHeader baseUrl={baseUrl} />
+<main id="hauptinhalt" class="g-main">
+  <h1 class="sr-only">
+    Elektroinstallationen für Neubau, Sanierung und Gewerbe
+  </h1>
+  <HouseStory
+    client:media="(min-width: 769px) and (prefers-reduced-motion: no-preference)"
+  />
+  <StaticHouseChapters baseUrl={baseUrl} />
+
+  <section class="g-projects" aria-labelledby="g-projects-title">
+    <div class="g-section-heading">
+      <p class="g-eyebrow">Aus der Praxis</p>
+      <h2 id="g-projects-title">Projekte, die Bestand haben.</h2>
+      <p>
+        Einblicke in unsere Arbeit. Projektdetails werden vor der
+        Veröffentlichung mit verifizierten Angaben ergänzt.
+      </p>
+    </div>
+    <div class="g-project-list">
+      {
+        featuredProjects.map((project, index) => (
+          <a
+            class="g-project-row"
+            href={`${root}/projekte/projekt-${index + 1}/`}
+          >
+            <div class="g-project-image">
+              <img
+                src={`${baseUrl}${project.image.replace(/^\//, '')}`}
+                width={project.width}
+                height={project.height}
+                alt={project.alt}
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            <div>
+              <span>0{index + 1}</span>
+              <h3>{project.type}</h3>
+              <p>Region und ausgeführte Leistungen werden ergänzt.</p>
+              <strong>Projekt ansehen →</strong>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+    <a class="g-text-link" href={`${root}/projekte/`}>Alle Projekte ansehen →</a
+    >
+  </section>
+
+  <section class="g-company-teaser" aria-labelledby="g-company-title">
+    <div>
+      <p class="g-eyebrow">Seit 1972</p>
+      <h2 id="g-company-title">
+        Regional verwurzelt. Persönlich verantwortlich.
+      </h2>
+    </div>
+    <div>
+      <p>
+        Elektro Hubmann ist ein Familienbetrieb aus Weißbriach. Über 50 Jahre
+        Erfahrung, kurze Wege und ein persönlicher Ansprechpartner prägen unsere
+        Arbeit.
+      </p>
+      <a class="g-outline-button" href={`${root}/unternehmen/`}
+        >Unternehmen kennenlernen →</a
+      >
+    </div>
+  </section>
+
+  <section
+    class="g-contact-band"
+    id="projektanfrage"
+    aria-labelledby="g-contact-title"
+  >
+    <p class="g-eyebrow">Ihr nächster Schritt</p>
+    <h2 id="g-contact-title">Ihr Projekt beginnt mit einem Gespräch.</h2>
+    <div class="g-contact-links">
+      <a href={company.phoneHref}>{company.phone}</a>
+      <a href={company.emailHref}>{company.email}</a>
+      <a class="g-solid-button" href={`${root}/kontakt/#projektanfrage`}
+        >Projektanfrage öffnen →</a
+      >
+    </div>
+  </section>
+</main>
+<VariantGFooter baseUrl={baseUrl} />

@@ -29,6 +29,18 @@ export const variants = [
     direction: 'Baustelle',
     summary: 'Kontrastreich, direkt und kraftvoll.',
   },
+  {
+    id: 'f',
+    name: 'Version F',
+    direction: 'Live Circuit',
+    summary: 'Immersiv, scrollgesteuert und kompromisslos modern.',
+  },
+  {
+    id: 'g',
+    name: 'Version G',
+    direction: 'Haus-Story',
+    summary: 'Architektonisch, interaktiv und konsequent reduziert.',
+  },
 ] as const;
 
 export type VariantId = (typeof variants)[number]['id'];

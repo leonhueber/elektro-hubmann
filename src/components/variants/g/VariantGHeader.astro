@@ -1,0 +1,64 @@
+---
+import { company } from '../../../config/site';
+
+interface Props {
+  baseUrl: string;
+  active?: string;
+}
+
+const { baseUrl, active = '' } = Astro.props;
+const root = `${baseUrl.replace(/\/$/, '')}/varianten/g`;
+const nav = [
+  ['Leistungen', `${root}/leistungen/`, 'leistungen'],
+  ['Projekte', `${root}/projekte/`, 'projekte'],
+  ['Unternehmen', `${root}/unternehmen/`, 'unternehmen'],
+  ['Kontakt', `${root}/kontakt/`, 'kontakt'],
+] as const;
+---
+
+<div class="g-info-bar">
+  <div>
+    <a href={company.emergencyHref}
+      >Störungsdienst: <strong>{company.emergency}</strong></a
+    >
+    <a href={`${root}/fachhandel/`}>Fachgeschäft & Öffnungszeiten →</a>
+  </div>
+</div>
+<header class="g-header">
+  <a
+    class="g-logo"
+    href={`${root}/`}
+    aria-label="Elektro Hubmann – Startseite Version G"
+  >
+    <img
+      src={`${baseUrl}logo-elektrotechnik-hubmann.png`}
+      width="287"
+      height="78"
+      alt="Elektrotechnik Hubmann"
+    />
+  </a>
+  <nav class="g-main-nav" aria-label="Hauptnavigation">
+    {
+      nav.map(([label, href, id]) => (
+        <a href={href} aria-current={active === id ? 'page' : undefined}>
+          {label}
+        </a>
+      ))
+    }
+  </nav>
+  <a class="g-phone" href={company.emergencyHref}
+    >Störungsdienst {company.emergency}</a
+  >
+  <a class="g-header-cta" href={`${root}/kontakt/#projektanfrage`}
+    >Projekt anfragen <span aria-hidden="true">→</span></a
+  >
+  <details class="g-mobile-menu">
+    <summary><span>Menü</span></summary>
+    <nav aria-label="Mobile Navigation">
+      {nav.map(([label, href]) => <a href={href}>{label}</a>)}
+      <a href={company.emergencyHref}>Störungsdienst: {company.emergency}</a>
+      <a href={`${root}/fachhandel/`}>Fachgeschäft</a>
+      <a href={`${root}/kontakt/#projektanfrage`}>Projekt anfragen →</a>
+    </nav>
+  </details>
+</header>

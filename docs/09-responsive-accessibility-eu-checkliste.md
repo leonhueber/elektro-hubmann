@@ -198,3 +198,10 @@ Die Produktionsdomain wird erst umgestellt, wenn:
 - [WKO: Barrierefreiheitsgesetz im E-Commerce](https://www.wko.at/internetrecht/barrierefreiheitsgesetz-e-commerce)
 - [GitHub: Terms for Additional Products and Features – Pages](https://docs.github.com/en/site-policy/github-terms/github-terms-for-additional-products-and-features#pages)
 - [GitHub: IP-Protokollierung bei Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection)
+# Ergänzung Version G
+
+- Desktop: sticky 3D-Haus-Story mit normalem Seitenscrolling.
+- Mobile, reduzierte Bewegung und WebGL-Fallback: vier statische, vertikale Kapitel.
+- Canvas ist dekorativ; sämtliche Informationen liegen als semantisches HTML vor.
+- Rechtsseiten sind Entwürfe und müssen vor dem Produktivstart österreichisch-rechtlich und datenschutzrechtlich geprüft werden.
+- Das Kontaktformular simuliert keinen erfolgreichen Versand.

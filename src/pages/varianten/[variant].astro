@@ -4,6 +4,8 @@ import VariantB from '../../components/variants/VariantB.astro';
 import VariantC from '../../components/variants/VariantC.astro';
 import VariantD from '../../components/variants/VariantD.astro';
 import VariantE from '../../components/variants/VariantE.astro';
+import VariantF from '../../components/variants/VariantF.astro';
+import VariantG from '../../components/variants/VariantG.astro';
 import { variants, type VariantId } from '../../config/site';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
@@ -26,6 +28,8 @@ const components = {
   c: VariantC,
   d: VariantD,
   e: VariantE,
+  f: VariantF,
+  g: VariantG,
 };
 const VariantComponent = components[variantId];
 ---

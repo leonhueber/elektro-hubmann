@@ -1,117 +1,53 @@
-# Design QA – Version E
+# Design QA – Version G
 
-## Vergleichsbasis
+**Source visual truth**
 
-- Source visual truth: `docs/version-e-reference/source-design.png`
-- Erste Implementierung: `docs/version-e-qa/e-desktop-pass1.png`
-- Finale Desktop-Implementierung: `docs/version-e-qa/e-desktop-final.png`
-- Tablet: `docs/version-e-qa/e-tablet.png`
-- Mobile Hero: `docs/version-e-qa/e-mobile.png`
-- Mobile Leistungen: `docs/version-e-qa/e-mobile-services-final.png`
-- Mobiles Formular: `docs/version-e-qa/e-mobile-form-final.png`
-- Full-view comparison: `docs/version-e-qa/comparison-full.png`
-- Focused hero comparison: `docs/version-e-qa/comparison-hero.png`
-- Route/state: Version E, Standardzustand, nicht angemeldet
+- `C:/Users/hueberl/.codex/codex-remote-attachments/01a04a96-8142-7883-a181-7e8b120d4281/1090ECC8-E82C-4C9C-9468-9D1B9FE9BACD/1-Foto-1.jpg`
+- Source: 1280 × 910 px, desktop planning state.
 
-## Viewport und Normalisierung
+**Implementation evidence**
 
-- Quelle: 1024 × 1536 px, Dichte 1.
-- Desktop: 1024 px nutzbare CSS-Breite; Capture 1024 × 1533 px,
-  Dichte 1. Für den Vergleich wurde die Implementierung nur vertikal um 3 px
-  auf 1536 px normalisiert.
-- Tablet: angeforderter Viewport 768 × 1024 CSS-px; nutzbare Breite 753 px.
-- Mobile: angeforderter Viewport 390 × 844 CSS-px; nutzbare Breite 375 px.
-- Die zusätzliche 44-px-Leiste für den Versionsumschalter ist eine bewusste
-  Produktanforderung und fehlt in der Designreferenz.
+- `docs/version-g-qa/01-planning-1440x1024.png`
+- `docs/version-g-qa/02-installation-1440x1024.png`
+- `docs/version-g-qa/03-energy-1440x1024.png`
+- `docs/version-g-qa/04-service-1440x1024.png`
+- `docs/version-g-qa/mobile-390x844.png`
+- `docs/version-g-qa/tablet-768x1024.png`
+- `docs/version-g-qa/tablet-1024x768.png`
+- Normalized side-by-side comparison: `docs/version-g-qa/comparison-planning.png`
 
-## Full-view comparison
-
-Die finale Umsetzung übernimmt die wesentliche Komposition der Referenz:
-
-1. vollflächiger dunkler Baustellen-Hero;
-2. Informationsleiste und Navigation direkt auf dem Foto;
-3. dreizeilige Anton-Headline links und Elektriker am Verteiler rechts;
-4. primärer roter CTA und sekundärer unterstrichener Link;
-5. dunkle Vertrauensleiste mit drei gleichgewichteten Argumenten;
-6. weiße Leistungssektion mit Anton-Überschrift und vier Karten in der ersten
-   Reihe.
-
-Der fünfte Leistungsbereich KNX/Netzwerk bleibt erhalten und folgt in einer
-zweiten, zentrierten Reihe. Damit bleibt die freigegebene Inhaltsarchitektur
-vollständig, ohne die Referenzkomposition der ersten Reihe zu verändern.
-
-## Focused comparison
-
-Der kombinierte Hero-Vergleich bestätigt Motiv, Bildfokus, Kontrast,
-Typografie, CTA-Hierarchie und Vertrauensleiste. Das Hero-Foto ist ein
-eigenständiges 1586 × 992 px großes WebP-Asset. Text, Logo, Navigation und
-Buttons sind echte zugängliche Web-Elemente und nicht Bestandteil des Bildes.
-
-## Fidelity surfaces
-
-- Typografie: Anton 400 bildet die schmale, schwere Display-Schrift der
-  Referenz nach. Der Hero läuft auf Desktop in denselben drei Zeilen; Inter
-  bleibt für Navigation, Fließtext und Formulare erhalten.
-- Spacing/Layout: Inhaltskante, Hero-Höhe, Navigationsabstände,
-  Vertrauensleiste und vierteilige erste Service-Reihe folgen der Vorlage.
-  Mobile wird die Struktur linearisiert, ohne Inhalte oder CTAs abzuschneiden.
-- Farben/Tokens: nahezu schwarzer Hintergrund, Weiß und Hubmann-Rot entsprechen
-  der Referenz. Es werden keine dekorativen Verläufe oder Glasflächen benutzt.
-- Bildqualität/Assets: Hero und Logo sind lokale optimierte Assets. Die
-  Leistungsbilder stammen vorläufig aus den bereits lokal gesicherten
-  Website-Motiven; es gibt keine defekten sichtbaren Bilder.
-- Copy: Hero-Botschaft, Regionsbezug, CTAs und Leistungsbezeichnungen folgen
-  der Designreferenz und der vereinbarten Inhaltsstruktur.
+Viewport comparison used CSS pixels at device scale factor 1. Source and implementation were normalized to two 720 × 512 crops for the side-by-side comparison. Browser-owned inspection controls at the bottom edge are not part of the website.
 
 ## Findings
 
-- Keine verbleibenden P0-, P1- oder P2-Abweichungen.
-- [P3] Die vorhandenen Leistungsbilder treffen nicht alle Motive der Referenz
-  exakt. Sie sind bewusst als lokale Platzhalter erhalten, bis echte
-  freigegebene Hubmann-Projektfotos vorliegen.
-- [P3] Die Versionierungsleiste verschiebt den Hero gegenüber der reinen
-  Referenz um 44 px. Das ist beabsichtigt, weil alle fünf Entwürfe live und
-  direkt umschaltbar bleiben sollen.
+- No actionable P0, P1 or P2 issue remains.
+- Typography: Inter Tight and Inter match the reference's reduced grotesk direction; hierarchy, wrapping and optical weights remain legible at all tested widths.
+- Spacing and layout: header, left copy, central house and right progress rail reproduce the reference composition. The live variants bar is an intentional preview-only addition.
+- Colors: pure white, anthracite and exact logo red `#e30613`; no gradients, large color fields or decorative effects were introduced.
+- Image and model quality: the source photorealistic house was intentionally translated into a consistent real-time architectural 3D model so its shell, installation and PV layers can be animated. All four states use the same geometry and camera system.
+- Copy: the requested four story chapters and calls to action are present. Unverified project data is clearly marked instead of fabricated.
+- Responsive behavior: 1440 × 1024, 1024 × 768, 768 × 1024 and 390 × 844 were checked. The earlier 768 px horizontal overflow was fixed by containing the variants switcher.
+- Accessibility: one H1, semantic page landmarks, skip link, focus states, labelled form controls, keyboard-accessible menu, useful alt text and reduced-motion chapters are present.
 
 ## Comparison history
 
-### Pass 1
+1. Initial browser pass: 3D scene stayed blank because the environment preset suspended the scene while loading an external asset. Fix: removed the external environment dependency and retained local lighting. Post-fix evidence showed the house rendering without console errors.
+2. First model pass: two roof planes read as floating slabs. Fix: replaced them with one procedural gable volume and aligned PV modules to the actual roof slopes.
+3. Installation pass: exterior surfaces hid the interior. Fix: remove front/right shell and roof in the installation state while retaining floors, interior walls, lights, systems and the red route.
+4. Tablet pass: seven preview links widened the document at 768 px. Fix: constrain scrolling to the variants navigation. Post-fix document width no longer exceeds the viewport.
 
-- [P2] Die Headline lief auf Desktop über fünf statt drei Zeilen.
-- [P2] Bei 1024 px wurden nur drei statt vier Leistungskarten in der ersten
-  Reihe angezeigt.
-- [P2] Der Hero war dadurch zu hoch und der Leistungsbereich begann zu spät.
+## Interaction checks
 
-### Fixes
-
-- Headlinebreite auf 13 Zeichenbreiten erweitert und die finale Herohöhe auf
-  824 px abgestimmt.
-- Version E auf ein vierteiliges Desktop-Servicegrid umgestellt; Service &
-  Prüfung wird vor KNX/Netzwerk einsortiert.
-- Die fünfte Karte bleibt zentriert in der Folgereihe erhalten.
-
-### Mobile Pass
-
-- [P2] Die Desktop-Position der fünften Servicekarte erzeugte auf Mobile eine
-  implizite dritte Gridspalte und überlagerte Karten.
-- Fix: Unter 820 px wird das Servicegrid explizit zweispaltig; die fünfte Karte
-  spannt zentriert über beide Spalten.
-- Post-fix evidence: `docs/version-e-qa/e-mobile-services-final.png`.
-- Client- und Scrollbreite stimmen auf Mobile mit 375 px überein; keine Karte,
-  Schaltfläche oder Formularfläche ragt aus dem Viewport.
-
-## Interaction and runtime checks
-
-- `Projekt starten` springt zu `#projektanfrage`.
-- `Referenzen ansehen` und die Navigation verwenden funktionierende Anker.
-- Der Versionsumschalter navigiert korrekt zwischen E und D; Version E ist mit
-  `aria-current="page"` markiert.
-- Keine Browser-Konsolenmeldungen und keine defekten sichtbaren Bilder.
-- Astro-, TypeScript- und Produktionsbuild ohne Fehler, Warnungen oder Hinweise.
+- Normal page scrolling switches all four states; no wheel interception.
+- Main navigation and nested Version-G routes resolve.
+- Mobile menu remains a native keyboard-operable disclosure.
+- Empty contact form exposes six invalid required controls.
+- Completed contact form reports that online sending is unavailable and performs no network submission.
+- Browser console: no application errors. Two upstream Three.js deprecation warnings are non-functional library warnings.
 
 ## Follow-up polish
 
-- Das generierte Hero-Motiv und die Service-Platzhalter vor dem offiziellen
-  Firmenlaunch durch rechtlich freigegebene echte Hubmann-Fotos ersetzen.
+- P3: replace design-preview project imagery and metadata once verified reference projects are available.
+- P3: legal pages require Austrian legal and DSGVO review before production indexing.
 
 final result: passed

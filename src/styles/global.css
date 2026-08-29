@@ -1586,7 +1586,7 @@ textarea:focus-visible {
 
 .variant-cards {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
 }
 
@@ -1654,6 +1654,25 @@ textarea:focus-visible {
 
 .variant-card--e > em {
   color: #ff2735;
+}
+
+.variant-card--f {
+  border-color: #2a2c2d;
+  background: #080a0b;
+  color: var(--white);
+  box-shadow:
+    inset 3px 0 #f11321,
+    0 22px 70px rgb(25 25 24 / 18%);
+}
+
+.variant-card--f > em {
+  color: #ff2633;
+}
+
+.variant-card--g {
+  border-color: #c9c9c9;
+  background: #fff;
+  box-shadow: inset 3px 0 #e30613;
 }
 
 @media (max-width: 1050px) {
@@ -1875,16 +1894,31 @@ textarea:focus-visible {
   }
 }
 
+@media (max-width: 860px) {
+  .version-switcher {
+    overflow: hidden;
+  }
+
+  .version-switcher__label {
+    display: none;
+  }
+
+  .version-switcher__links {
+    width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+  }
+
+  .version-switcher a {
+    min-width: 88px;
+  }
+}
+
 @media (max-width: 700px) {
   .version-switcher {
     align-items: stretch;
     flex-direction: column;
     padding: 0;
-  }
-
-  .version-switcher__label {
-    padding: 8px 14px;
-    text-align: center;
   }
 
   .version-switcher__links {

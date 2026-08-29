@@ -1,0 +1,91 @@
+---
+interface Props {
+  baseUrl: string;
+}
+const { baseUrl } = Astro.props;
+const chapters = [
+  {
+    id: 'planning',
+    number: '01',
+    label: 'Planung',
+    image: 'house-planning.webp',
+    title: 'Ein Haus beginnt mit einem guten Plan.',
+    description:
+      'Wir planen die komplette Elektrotechnik für Neubau, Sanierung und Gewerbe.',
+    cta: 'Projekt besprechen →',
+  },
+  {
+    id: 'installation',
+    number: '02',
+    label: 'Installation',
+    image: 'house-installation.webp',
+    title: 'Im Inneren greift alles ineinander.',
+    description:
+      'Elektroinstallation, Beleuchtung, Netzwerk und Gebäudetechnik – sauber geplant und umgesetzt.',
+    callouts: [
+      'Elektroinstallation',
+      'Beleuchtung & KNX',
+      'Netzwerk & Sicherheit',
+    ],
+  },
+  {
+    id: 'energy',
+    number: '03',
+    label: 'Energie',
+    image: 'house-energy.webp',
+    title: 'Auf dem Dach wird das Haus zum Energieerzeuger.',
+    description:
+      'Photovoltaik, Speicher und elektrische Einbindung – als durchdachtes Gesamtsystem.',
+    callouts: ['Photovoltaik', 'Speicher & Einspeisung'],
+    cta: 'Photovoltaik anfragen →',
+  },
+  {
+    id: 'service',
+    number: '04',
+    label: 'Service',
+    image: 'house-service.webp',
+    title: 'Geprüft. Dokumentiert. Übergeben.',
+    description:
+      'Wir begleiten das Projekt von der ersten Planung bis zur fachgerechten Übergabe und stehen auch danach für Service und Überprüfungen zur Verfügung.',
+    cta: 'Projekt anfragen →',
+  },
+] as const;
+---
+
+<div class="g-static-story" aria-label="Projektablauf am Haus">
+  {
+    chapters.map((chapter) => (
+      <section class="g-static-chapter" id={`g-${chapter.id}`}>
+        <div class="g-static-visual">
+          <img
+            src={`${baseUrl}images/version-g/${chapter.image}`}
+            width="780"
+            height="780"
+            alt={`3D-Haus im Zustand ${chapter.label}`}
+            loading={chapter.id === 'planning' ? 'eager' : 'lazy'}
+            decoding="async"
+          />
+        </div>
+        <article class="g-story-copy is-active">
+          <p class="g-eyebrow">
+            <strong>{chapter.number}</strong> · {chapter.label}
+          </p>
+          <h2>{chapter.title}</h2>
+          <p class="g-story-description">{chapter.description}</p>
+          {'callouts' in chapter && chapter.callouts && (
+            <ul class="g-callouts">
+              {chapter.callouts.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          )}
+          {'cta' in chapter && chapter.cta && (
+            <a class="g-outline-button" href="#projektanfrage">
+              {chapter.cta}
+            </a>
+          )}
+        </article>
+      </section>
+    ))
+  }
+</div>

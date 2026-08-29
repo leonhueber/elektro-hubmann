@@ -8,9 +8,22 @@ interface Props {
   description: string;
   activeVariant?: VariantId;
   bodyClass?: string;
+  canonicalPath?: string;
+  ogImage?: string;
+  schema?: Record<string, unknown>;
 }
 
-const { title, description, activeVariant, bodyClass = '' } = Astro.props;
+const {
+  title,
+  description,
+  activeVariant,
+  bodyClass = '',
+  canonicalPath = Astro.url.pathname,
+  ogImage = '/logo-elektrotechnik-hubmann.png',
+  schema,
+} = Astro.props;
+const canonical = new URL(canonicalPath, Astro.site ?? Astro.url.origin);
+const socialImage = new URL(ogImage, Astro.site ?? Astro.url.origin);
 ---
 
 <!doctype html>
@@ -21,6 +34,22 @@ const { title, description, activeVariant, bodyClass = '' } = Astro.props;
     <meta name="description" content={description} />
     <meta name="robots" content="noindex, follow" />
     <meta name="theme-color" content="#e30613" />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="de_AT" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={socialImage} />
+    {
+      schema && (
+        <script
+          is:inline
+          type="application/ld+json"
+          set:html={JSON.stringify(schema)}
+        />
+      )
+    }
     <title>{title}</title>
   </head>
   <body class={bodyClass}>

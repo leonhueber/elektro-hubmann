@@ -405,3 +405,11 @@ real bestätigt wird:
 Dann wird ein separates Architecture Decision Record erstellt. Die bestehende
 statische Website darf nicht schleichend zu einer unübersichtlichen App
 umgebaut werden.
+# Ergänzung Version G: interaktive Haus-Story
+
+Version G ergänzt die bestehende Astro-Architektur um eine gezielte React-Insel mit Three.js, `@react-three/fiber` und `@react-three/drei`. Das 3D-Haus wird ausschließlich auf der Startseite von Version G geladen. Unterseiten bleiben statisches Astro-HTML.
+
+- Normales Seitenscrolling mit `position: sticky`; kein Scroll-Jacking.
+- Prozedurales 3D-Modell mit getrennten Gebäude-, Installations- und Energieebenen.
+- Mobile und `prefers-reduced-motion`: statische Kapitel ohne angeheftete Scrollanimation.
+- GitHub Pages bleibt das Ziel; Formularversand benötigt später einen externen Dienst oder ein separates Backend.
