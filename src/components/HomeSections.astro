@@ -163,15 +163,17 @@ import ServiceIcon from './ServiceIcon';
   <form class="inquiry-form" aria-describedby="form-preview-note">
     <div class="form-grid">
       <label>
-        Name <span aria-hidden="true">*</span>
+        <span class="field-label">Name <span aria-hidden="true">*</span></span>
         <input type="text" name="name" autocomplete="name" required />
       </label>
       <label>
-        Telefonnummer <span aria-hidden="true">*</span>
+        <span class="field-label"
+          >Telefonnummer <span aria-hidden="true">*</span></span
+        >
         <input type="tel" name="phone" autocomplete="tel" required />
       </label>
       <label>
-        E-Mail <span aria-hidden="true">*</span>
+        <span class="field-label">E-Mail <span aria-hidden="true">*</span></span>
         <input type="email" name="email" autocomplete="email" required />
       </label>
       <label>
@@ -203,7 +205,9 @@ import ServiceIcon from './ServiceIcon';
         <input type="text" name="timeframe" placeholder="z. B. Herbst 2026" />
       </label>
       <label class="form-grid__wide">
-        Projektbeschreibung <span aria-hidden="true">*</span>
+        <span class="field-label"
+          >Projektbeschreibung <span aria-hidden="true">*</span></span
+        >
         <textarea name="description" rows="5" required></textarea>
       </label>
       <label class="form-grid__wide file-field">

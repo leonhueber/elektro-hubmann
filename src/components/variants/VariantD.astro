@@ -1,0 +1,54 @@
+---
+import { IconMapPin } from '@tabler/icons-react';
+import HomeSections from '../HomeSections.astro';
+import SiteFooter from '../SiteFooter.astro';
+import SiteHeader from '../SiteHeader.astro';
+import { withBase } from '../../lib/url';
+
+const pagePath = Astro.url.pathname;
+---
+
+<SiteHeader pagePath={pagePath} />
+
+<main id="hauptinhalt">
+  <section class="hero-d" aria-labelledby="hero-d-title">
+    <div class="hero-d__intro">
+      <span class="eyebrow">Aus der Region · Für die Region</span>
+      <h1 id="hero-d-title">
+        Elektroinstallationen für Neubau, Sanierung und Gewerbe.
+      </h1>
+      <p>
+        Von der Planung bis zur fachgerechten Ausführung – in Gitschtal,
+        Hermagor und am Weißensee.
+      </p>
+      <div class="button-row">
+        <a class="button" href="#projektanfrage">Projekt anfragen</a>
+        <a class="button button--secondary" href="#leistungen"
+          >Leistungen ansehen</a
+        >
+      </div>
+    </div>
+
+    <div class="hero-d__media">
+      <img
+        src={withBase('/images/version-d/elektro-hubmann-projekt.webp')}
+        alt="Elektro-Hubmann-Mitarbeiter vor einem modernen Wohnhaus in den Alpen"
+        width="1920"
+        height="800"
+        fetchpriority="high"
+      />
+      <div class="hero-d__badge">
+        <IconMapPin size={34} stroke={1.7} aria-hidden="true" />
+        <div>
+          <strong>Seit 1972</strong>
+          <span>Über 50 Jahre Erfahrung</span>
+          <span>Regional vor Ort</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <HomeSections />
+</main>
+
+<SiteFooter />

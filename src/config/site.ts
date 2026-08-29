@@ -17,6 +17,12 @@ export const variants = [
     direction: 'Regional',
     summary: 'Persönlich, warm und handwerksnah.',
   },
+  {
+    id: 'd',
+    name: 'Version D',
+    direction: 'Hybrid',
+    summary: 'Klar, bildstark und regional verankert.',
+  },
 ] as const;
 
 export type VariantId = (typeof variants)[number]['id'];

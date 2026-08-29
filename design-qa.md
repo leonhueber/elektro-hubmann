@@ -1,103 +1,122 @@
-# Design QA – Leistungsübersicht
+# Design QA – Version D
 
 ## Vergleichsbasis
 
-- Source visual truth:
-  `docs/references/service-cards-reference.png`
-- Desktop implementation:
-  `docs/design-qa/service-showcase-desktop.png`
-- Mobile implementation:
-  `docs/design-qa/service-showcase-mobile.png`
-- Combined comparison:
-  `docs/design-qa/service-showcase-comparison.png`
-- Route/state: Version A, Leistungsübersicht, Standardzustand
+- Source visual truth: `docs/version-d-ideation/selected-option-3.png`
+- Desktop implementation: `docs/version-d-qa/d-desktop-v2.png`
+- Tablet implementation: `docs/version-d-qa/d-tablet-final.png`
+- Mobile implementation: `docs/version-d-qa/d-mobile-v2.png`
+- Mobile Detailaufnahmen: `docs/version-d-qa/d-mobile-services.png` und
+  `docs/version-d-qa/d-mobile-form-final.png`
+- Full-view comparison: `docs/version-d-qa/comparison-full.png`
+- Focused hero comparison: `docs/version-d-qa/comparison-hero.png`
+- Route/state: Version D, Standardzustand, nicht angemeldet
 
 ## Viewport und Normalisierung
 
-- Quelle: 449 × 186 px.
-- Desktop-Browser: 1265 px CSS-Viewport; Komponentenrechteck ca.
-  1217 × 374 CSS-px; Capture 1216 × 374 px.
-- Mobile-Browser: 375 px CSS-Viewport; kein horizontaler Overflow;
-  Komponentenrechteck ca. 347 × 956 CSS-px.
-- Für den kombinierten Vergleich wurde die Quelle proportional auf 374 px Höhe
-  skaliert. Die unterschiedliche Spaltenzahl ist beabsichtigt: Die Referenz
-  zeigt vier Leistungen, die freigegebene Hubmann-Struktur benötigt fünf.
-- Browser-Capture und CSS-Pixel wurden mit Dichte 1 verglichen.
+- Quelle: 1511 × 1041 px, Dichte 1.
+- Desktop: angeforderter Viewport 1440 × 1000 CSS-px; nutzbare Fläche und
+  Capture 1425 × 990 px durch Browser-Chrome und Scrollbar, Dichte 1.
+- Tablet: angeforderter Viewport 768 × 1024 CSS-px; Capture 753 × 1004 px,
+  Dichte 1.
+- Mobile: angeforderter Viewport 390 × 844 CSS-px; Capture 375 × 812 px,
+  Dichte 1.
+- Für den kombinierten Desktopvergleich wurde die Quelle proportional in einen
+  1425 × 1000 px großen weißen Rahmen gesetzt. Die Implementierung wurde auf
+  dieselbe Vergleichsfläche normalisiert.
 
 ## Full-view comparison
 
-Der kombinierte Vergleich bestätigt dieselbe visuelle Hierarchie:
+Quelle und Implementierung verwenden dieselbe sichtbare Reihenfolge:
 
-1. feine obere Begrenzung;
-2. gleichmäßige, vertikal getrennte Spalten;
-3. rotes Line-Icon;
-4. kurze, schwarze Leistungsbezeichnung;
-5. kurzer roter Akzent;
-6. hochformatiges Foto über nahezu die gesamte Spaltenbreite.
+1. dunkler Versionsumschalter;
+2. kompakte Informationsleiste;
+3. weiße Navigation mit Hubmann-Logo;
+4. zentrierter, zweizeiliger Hero mit zwei klaren CTAs;
+5. breites regionales Projektfoto mit asymmetrischer Rundung;
+6. überlagerte Vertrauenskarte;
+7. helle Vertrauens- und Leistungsbereiche.
 
-Die Implementierung ist bewusst etwas großzügiger, da fünf statt vier
-Leistungsgruppen dargestellt werden.
+Die Implementierung übernimmt das Layout des ausgewählten Entwurfs, verwendet
+aber die fünf bereits freigegebenen Vertrauenspunkte statt der drei verkürzten
+Mockup-Punkte. Das ist eine beabsichtigte inhaltliche Abweichung.
 
 ## Focused comparison
 
-Ein zusätzlicher Detailausschnitt war nicht erforderlich, weil der
-Desktop-Capture bereits ausschließlich die Komponente und alle relevanten
-Details zeigt. Die separate Mobile-Aufnahme prüft Umbruch, Spaltenwechsel und
-die ungerade Anzahl von fünf Einträgen.
+Der fokussierte Hero-Vergleich bestätigt die maßgeblichen Details: zentrierte
+Typografie, roter Eyebrow-Text, gleichgewichtete Button-Gruppe, großflächige
+Architekturfotografie und die links unten liegende Vertrauenskarte. Das finale
+Foto ist als eigenständiges WebP-Asset eingebunden; keine UI-Fläche wurde aus
+dem Mockup ausgeschnitten oder als CSS-Grafik nachgebaut.
 
 ## Fidelity surfaces
 
-- Typografie: Gewicht, kompakte Größe, zweizeilige Titel und Zeilenhöhe folgen
-  der Referenz. Lange Hubmann-Bezeichnungen bleiben vollständig lesbar.
-- Spacing/Layout: Spaltenbreite, Innenabstand, vertikale Trennlinien,
-  Akzentabstand und Bildproportion entsprechen der Referenzsprache.
-- Farben/Tokens: Hubmann-Rot, Anthrazit, Weiß und feine graue Linien verwenden
-  das bestehende Markensystem.
-- Bildqualität/Assets: lokal gespeicherte Bilder der bestehenden Website
-  ersetzen die Referenzmotive vorläufig. Keine CSS- oder Platzhaltergrafiken
-  werden als Fotos verwendet.
-- Copy: Die fünf vereinbarten Leistungsgruppen wurden für die kompakte Ansicht
-  sinnvoll gekürzt, ohne die fachliche Zuordnung zu verändern.
+- Typografie: Inter und die bestehende Hubmann-Gewichtsskala bleiben erhalten.
+  Die Desktop-Hauptbotschaft läuft wie in der Quelle über zwei Zeilen; Tablet
+  und Mobile brechen kontrolliert und ohne abgeschnittene Wörter um.
+- Spacing/Layout: Navigation, Hero-Abstände, Bildbreite, asymmetrische Radien
+  und Badge-Position folgen dem Mockup. Die mobile Badge-Karte wird aus dem
+  Bild heraus in den Dokumentfluss überführt, damit sie nichts verdeckt.
+- Farben/Tokens: Weiß, Anthrazit, Hubmann-Rot und warmes Elfenbein entsprechen
+  der ausgewählten Mischung aus Version A und C. Es gibt keine Verläufe oder
+  Glasflächen im Seitenlayout.
+- Bildqualität/Assets: Das Hero-Motiv liegt als 1920 × 800 px großes, 203 KB
+  starkes WebP vor. Es ist scharf, passend beschnitten und zeigt keine
+  fehlerhaften Ressourcen. Logo und UI-Icons bleiben echte Assets bzw. Icons
+  aus `@tabler/icons-react`.
+- Copy: Hauptbotschaft, Region, CTAs und Vertrauensargumente entsprechen der
+  vereinbarten Inhaltsstruktur.
 
 ## Findings
 
-- [P3] Die Platzhalterbilder zeigen noch nicht für jede Karte den exakten
-  Leistungsbereich, insbesondere Photovoltaik.
-  Fix nach Inhaltsfreigabe: durch echte, rechtlich freigegebene Aufnahmen je
-  Leistungsbereich ersetzen.
-- [P3] Die Tabler-Line-Icons treffen Strichstärke und Farbe, sind aber nicht
-  exakt dieselben Piktogramme wie in der Referenz.
-  Akzeptiert: Sie bilden ein konsistentes, frei verfügbares Icon-System.
+- Keine verbleibenden P0-, P1- oder P2-Abweichungen.
+- [P3] Die exakte Zeilenbreite schwankt gegenüber dem generierten Mockup leicht,
+  weil die produktive Seite die bestehende Inter-Schrift und reale
+  Browserbreiten verwendet. Die Hierarchie und der Zweizeilen-Umbruch bleiben
+  erhalten.
+- [P3] Unterhalb des Hero werden fünf statt drei Vertrauenspunkte gezeigt. Das
+  ist bewusst, weil die freigegebene Inhaltsarchitektur alle fünf Punkte
+  verlangt.
 
 ## Comparison history
 
 ### Pass 1
 
-- [P2] Auf Mobile stand die fünfte Karte allein links und erzeugte eine
-  unausgewogene letzte Zeile.
-- Fix: Die letzte Karte spannt auf kleinen Viewports über beide Grid-Spalten
-  und wird mit halber Breite zentriert.
+- [P2] Der Desktop-Hero war zu hoch; die Überschrift lief über drei Zeilen und
+  das Projektfoto begann deutlich zu tief.
+- [P2] Die D-spezifischen Buttons übernahmen den großen Kartenradius und wirkten
+  runder als im ausgewählten Entwurf.
+
+### Fixes
+
+- Headline-Breite und Schriftgröße angepasst, vertikale Abstände reduziert und
+  die Headerhöhe für Version D auf 78 px verdichtet.
+- D-spezifische Buttons auf einen 2-px-Radius gesetzt; Bild-, Projekt- und
+  Form-Radien bleiben davon unabhängig.
 
 ### Pass 2
 
-- Post-fix evidence:
-  `docs/design-qa/service-showcase-mobile.png`.
-- Die fünfte Karte ist zentriert; der Browser meldet 375 px Clientbreite und
-  375 px Scrollbreite, also keinen horizontalen Overflow.
-- Keine verbleibenden P0-, P1- oder P2-Abweichungen.
+- Post-fix evidence: `docs/version-d-qa/d-desktop-v2.png` und
+  `docs/version-d-qa/comparison-hero.png`.
+- Die Überschrift läuft auf Desktop über zwei Zeilen und das Bild beginnt
+  innerhalb des beabsichtigten Above-the-fold-Bereichs.
+- Tablet und Mobile zeigen keinen horizontalen Overflow: Client- und
+  Scrollbreite stimmen mit 753 px bzw. 375 px überein.
+- Servicekarten ordnen sich auf Mobile zweispaltig an; das fünfte Element wird
+  zentriert. Formularfelder bleiben vollständig innerhalb des Viewports.
 
 ## Interaction and runtime checks
 
-- Fünf Kartenlinks vorhanden.
-- Klick auf eine Leistung führt zum Projektanfrage-Abschnitt.
-- Keine Browser-Konsolenfehler.
-- Astro- und TypeScript-Prüfung ohne Fehler, Warnungen oder Hinweise.
+- `Leistungen ansehen` springt zu `#leistungen`.
+- Der Versionsumschalter navigiert von D korrekt zu A; Version D ist mit
+  `aria-current="page"` markiert.
+- Keine Browser-Konsolenmeldungen und keine defekten Bilder.
+- Astro-, TypeScript- und Produktionsbuild ohne Fehler, Warnungen oder Hinweise.
 
 ## Follow-up polish
 
-- Echte Motive für Photovoltaik, Gebäudetechnik, KNX/Netzwerk und Prüfung
-  einsetzen.
-- Optional ein eigenes Hubmann-Iconset auf Basis der finalen Markenunterlagen
-  erstellen.
+- Vor dem finalen Firmenlaunch das generierte Hero-Motiv durch ein rechtlich
+  freigegebenes, echtes Hubmann-Projektfoto ersetzen, sobald passendes Material
+  vorliegt.
 
 final result: passed
