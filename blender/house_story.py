@@ -47,15 +47,25 @@ ROOF_ANGLE = math.radians(27.0)
 ROOF_RIDGE_Z = 8.84
 ROOF_EAVE_X = 5.40
 ROOF_DEPTH = 8.65
-SERVICE_X = 1.58
+SERVICE_X = 1.90
 SERVICE_PIT_Y = -4.72
+SERVICE_CORE_WIDTH = 1.22
+STAIR_CENTER_X = -0.52
+STAIR_VOID_X_MIN = -1.28
+STAIR_VOID_X_MAX = 0.22
+STAIR_VOID_Y_MIN = -1.85
+STAIR_VOID_Y_MAX = 2.68
+LIVING_PARTITION_X = -1.58
+INCLUDE_GALLERY_DECOR = False
+INCLUDE_GALLERY_DOOR = False
 
-# Build in deliberate passes: structure -> furnished -> premium.  The default
-# keeps the complete detail code available but disables it until the building
-# massing and room layout have been approved.
-DETAIL_LEVEL = os.environ.get("HUBMANN_DETAIL_LEVEL", "structure").lower()
+# Build in deliberate passes: structure -> furnished -> premium.  With the
+# massing and room zoning approved, the reproducible default now includes the
+# full roof and interior finish.  Use `structure` or `furnished` for fast QA.
+DETAIL_LEVEL = os.environ.get("HUBMANN_DETAIL_LEVEL", "premium").lower()
 INCLUDE_FURNISHINGS = DETAIL_LEVEL in {"furnished", "premium"}
 INCLUDE_PREMIUM_ROOF = DETAIL_LEVEL == "premium"
+INCLUDE_PREMIUM_DETAILS = DETAIL_LEVEL == "premium"
 
 OPTIONAL_DETAIL_PREFIXES = (
     "Concrete formwork joint",
@@ -909,24 +919,94 @@ def add_floorboards(
     name: str,
     z: float,
     mat: bpy.types.Material,
+    *,
+    stair_opening: bool = False,
 ) -> None:
     if not INCLUDE_FURNISHINGS:
-        add_box(
-            f"{name} continuous finish",
-            (0, 0, z),
-            (9.30, 7.24, 0.055),
-            mat,
-            bevel=0.010,
-        )
+        if stair_opening:
+            add_floor_with_stair_opening(
+                f"{name} continuous finish",
+                z,
+                0.055,
+                mat,
+                x_min=-4.65,
+                x_max=4.65,
+                y_min=-3.62,
+                y_max=3.62,
+                bevel=0.010,
+            )
+        else:
+            add_box(
+                f"{name} continuous finish",
+                (0, 0, z),
+                (9.30, 7.24, 0.055),
+                mat,
+                bevel=0.010,
+            )
         return
     for index in range(22):
         y = -3.55 + index * 0.33
+        if stair_opening and STAIR_VOID_Y_MIN - 0.16 < y < STAIR_VOID_Y_MAX + 0.16:
+            left_width = STAIR_VOID_X_MIN - (-4.65)
+            right_width = 4.65 - STAIR_VOID_X_MAX
+            add_box(
+                f"{name} board left {index}",
+                ((-4.65 + STAIR_VOID_X_MIN) / 2, y, z),
+                (left_width, 0.315, 0.055),
+                mat,
+                bevel=0.008,
+            )
+            add_box(
+                f"{name} board right {index}",
+                ((STAIR_VOID_X_MAX + 4.65) / 2, y, z),
+                (right_width, 0.315, 0.055),
+                mat,
+                bevel=0.008,
+            )
+        else:
+            add_box(
+                f"{name} board {index}",
+                (0, y, z),
+                (9.30, 0.315, 0.055),
+                mat,
+                bevel=0.008,
+            )
+
+
+def add_floor_with_stair_opening(
+    name: str,
+    z: float,
+    thickness: float,
+    mat: bpy.types.Material,
+    *,
+    x_min: float,
+    x_max: float,
+    y_min: float,
+    y_max: float,
+    bevel: float,
+) -> None:
+    """Build four connected floor pieces around a real stairwell void."""
+    pieces = (
+        ("left", x_min, STAIR_VOID_X_MIN, y_min, y_max),
+        ("right", STAIR_VOID_X_MAX, x_max, y_min, y_max),
+        ("front", STAIR_VOID_X_MIN, STAIR_VOID_X_MAX, y_min, STAIR_VOID_Y_MIN),
+        ("rear", STAIR_VOID_X_MIN, STAIR_VOID_X_MAX, STAIR_VOID_Y_MAX, y_max),
+    )
+    for suffix, piece_x_min, piece_x_max, piece_y_min, piece_y_max in pieces:
         add_box(
-            f"{name} board {index}",
-            (0, y, z),
-            (9.30, 0.315, 0.055),
+            f"{name} {suffix}",
+            (
+                (piece_x_min + piece_x_max) / 2,
+                (piece_y_min + piece_y_max) / 2,
+                z,
+            ),
+            (
+                piece_x_max - piece_x_min,
+                piece_y_max - piece_y_min,
+                thickness,
+            ),
             mat,
-            bevel=0.008,
+            bevel=bevel,
         )
 
 
@@ -935,22 +1015,40 @@ def add_dining_chair(
     location: tuple[float, float, float],
     wood: bpy.types.Material,
     dark: bpy.types.Material,
+    *,
+    rotation_z: float = 0.0,
 ) -> None:
     x, y, z = location
-    add_box(f"{name} seat", (x, y, z + 0.43), (0.42, 0.42, 0.075), wood, bevel=0.038)
+    cos_z = math.cos(rotation_z)
+    sin_z = math.sin(rotation_z)
+
+    def local_xy(dx: float, dy: float) -> tuple[float, float]:
+        return (x + dx * cos_z - dy * sin_z, y + dx * sin_z + dy * cos_z)
+
+    add_box(
+        f"{name} seat",
+        (x, y, z + 0.43),
+        (0.42, 0.42, 0.075),
+        wood,
+        rotation=(0, 0, rotation_z),
+        bevel=0.038,
+    )
     for dx in (-0.165, 0.165):
-        add_cylinder(f"{name} back post", (x + dx, y + 0.18, z + 0.73), 0.016, 0.62, dark, vertices=16)
+        post_x, post_y = local_xy(dx, 0.18)
+        add_cylinder(f"{name} back post", (post_x, post_y, z + 0.73), 0.016, 0.62, dark, vertices=16)
+    back_x, back_y = local_xy(0.0, 0.19)
     add_box(
         f"{name} back shell",
-        (x, y + 0.19, z + 0.80),
+        (back_x, back_y, z + 0.80),
         (0.35, 0.055, 0.34),
         wood,
-        rotation=(math.radians(-4), 0, 0),
+        rotation=(math.radians(-4), 0, rotation_z),
         bevel=0.055,
     )
     for dx in (-0.155, 0.155):
         for dy in (-0.15, 0.15):
-            add_cylinder(f"{name} leg", (x + dx, y + dy, z + 0.215), 0.018, 0.43, dark, vertices=16)
+            leg_x, leg_y = local_xy(dx, dy)
+            add_cylinder(f"{name} leg", (leg_x, leg_y, z + 0.215), 0.018, 0.43, dark, vertices=16)
 
 
 def add_uv_sphere(
@@ -1188,13 +1286,23 @@ def build_scene() -> None:
     # a cubic display shelf.
     add_box("Foundation", (0, 0.08, -0.17), (10.72, 8.18, 0.34), concrete, bevel=0.014)
     add_box("Ground floor slab", (0, 0.04, 0.08), (10.58, 8.06, 0.18), concrete, bevel=0.012)
-    add_box("Upper floor slab", (-0.06, 0.16, UPPER_FLOOR_Z), (9.96, 7.96, 0.21), concrete, bevel=0.012)
+    add_floor_with_stair_opening(
+        "Upper floor slab",
+        UPPER_FLOOR_Z,
+        0.21,
+        concrete,
+        x_min=-5.04,
+        x_max=4.92,
+        y_min=-3.82,
+        y_max=4.14,
+        bevel=0.012,
+    )
     add_box("Upper ceiling slab", (-0.10, 0.22, UPPER_CEILING_Z), (9.78, 7.78, 0.20), concrete, bevel=0.012)
     add_box("Front balcony", (-0.06, -3.74, UPPER_FLOOR_Z), (9.96, 1.42, 0.18), concrete, bevel=0.012)
     add_box("Terrace", (-0.30, -4.02, 0.11), (10.05, 1.40, 0.16), concrete, bevel=0.012)
-    add_box("Entrance step lower", (-0.75, -5.05, -0.23), (4.10, 0.50, 0.14), concrete, bevel=0.012)
-    add_box("Entrance step middle", (-0.75, -4.86, -0.10), (3.92, 0.50, 0.14), concrete, bevel=0.012)
-    add_box("Entrance step upper", (-0.75, -4.67, 0.03), (3.74, 0.50, 0.14), concrete, bevel=0.012)
+    add_box("Entrance step lower", (-1.55, -5.05, -0.23), (4.00, 0.50, 0.14), concrete, bevel=0.012)
+    add_box("Entrance step middle", (-1.55, -4.86, -0.10), (3.82, 0.50, 0.14), concrete, bevel=0.012)
+    add_box("Entrance step upper", (-1.55, -4.67, 0.03), (3.64, 0.50, 0.14), concrete, bevel=0.012)
     # Deep cut-wall returns replace the former two-storey corner posts.  Their
     # visible side faces give the section weight without creating a cage.
     for x in (-5.02, 5.02):
@@ -1204,10 +1312,10 @@ def build_scene() -> None:
     # One continuous service spine ties basement, distribution and upper-floor
     # routing together.  The reference reads as a cut through a real house
     # because this core connects the storeys instead of leaving two open trays.
-    add_box("Upper service core wall", (SERVICE_X, -2.84, 4.74), (1.44, 0.36, 2.70), interior_white, bevel=0.014)
-    add_box("Upper service core left reveal", (SERVICE_X - 0.63, -3.06, 4.74), (0.18, 0.28, 2.70), concrete, bevel=0.012)
-    add_box("Upper service core right reveal", (SERVICE_X + 0.63, -3.06, 4.74), (0.18, 0.28, 2.70), concrete, bevel=0.012)
-    add_box("Upper service core head", (SERVICE_X, -3.06, 6.06), (1.44, 0.28, 0.18), concrete, bevel=0.010)
+    add_box("Upper service core wall", (SERVICE_X, -2.84, 4.74), (SERVICE_CORE_WIDTH, 0.36, 2.70), interior_white, bevel=0.014)
+    add_box("Upper service core left reveal", (SERVICE_X - 0.52, -3.06, 4.74), (0.18, 0.28, 2.70), concrete, bevel=0.012)
+    add_box("Upper service core right reveal", (SERVICE_X + 0.52, -3.06, 4.74), (0.18, 0.28, 2.70), concrete, bevel=0.012)
+    add_box("Upper service core head", (SERVICE_X, -3.06, 6.06), (SERVICE_CORE_WIDTH, 0.28, 0.18), concrete, bevel=0.010)
 
     # Subtle formwork joints and tie holes keep the exposed concrete legible at
     # the final website resolution without turning it into a noisy texture.
@@ -1356,9 +1464,19 @@ def build_scene() -> None:
 
     # Interior architecture and furniture, visible after the facade opens.
     add_box("Ground floor finish", (0, 0, 0.24), (9.4, 7.4, 0.10), floor_mat, bevel=0.018)
-    add_box("Upper floor finish", (0, 0, 3.43), (9.4, 7.4, 0.10), floor_mat, bevel=0.018)
+    add_floor_with_stair_opening(
+        "Upper floor finish",
+        3.43,
+        0.10,
+        floor_mat,
+        x_min=-4.70,
+        x_max=4.70,
+        y_min=-3.70,
+        y_max=3.70,
+        bevel=0.018,
+    )
     add_floorboards("Ground floor", 0.315, floor_mat)
-    add_floorboards("Upper floor", 3.505, floor_mat)
+    add_floorboards("Upper floor", 3.505, floor_mat, stair_opening=True)
     add_box("Kitchen wall", (2.75, 3.05, 1.72), (3.8, 0.16, 2.8), interior_white, bevel=0.025)
     add_box("Ground corridor wall left", (-1.58, 2.72, 1.72), (0.48, 0.16, 2.82), interior_white, bevel=0.018)
     add_box("Ground corridor wall right", (0.10, 2.72, 1.72), (0.64, 0.16, 2.82), interior_white, bevel=0.018)
@@ -1366,18 +1484,18 @@ def build_scene() -> None:
     # Real room-separating walls, split around door openings.  The previous
     # model had furniture on two open platforms; these walls establish the
     # living / circulation / service / kitchen hierarchy visible in the mockup.
-    add_box("Ground living partition front", (-1.34, -2.18, 1.72), (0.20, 2.48, 2.82), interior_white, bevel=0.018)
-    add_box("Ground living partition rear", (-1.34, 1.88, 1.72), (0.20, 3.02, 2.82), interior_white, bevel=0.018)
-    add_box("Ground living door lintel", (-1.34, -0.24, 2.90), (0.20, 1.40, 0.42), interior_white, bevel=0.018)
+    add_box("Ground living partition front", (LIVING_PARTITION_X, -2.76, 1.72), (0.20, 1.20, 2.82), interior_white, bevel=0.018)
+    add_box("Ground living partition rear", (LIVING_PARTITION_X, 1.30, 1.72), (0.20, 4.10, 2.82), interior_white, bevel=0.018)
+    add_box("Ground living door lintel", (LIVING_PARTITION_X, -1.42, 2.90), (0.20, 1.48, 0.42), interior_white, bevel=0.018)
     # Camera-facing room shells are deliberately deeper than decorative wall
     # planes.  They keep the cutaway readable as architecture instead of a
     # collection of furniture floating on two slabs.
     add_box("Bedroom rear lining", (-3.40, 1.72, 4.82), (2.65, 0.12, 2.64), warm_greige, bevel=0.018)
     add_box("Bedroom partition", (-2.05, 2.62, 4.82), (0.18, 2.05, 2.66), interior_white, bevel=0.022)
     add_box("Bedroom partition cut face", (-2.05, 1.53, 4.82), (0.24, 0.20, 2.66), interior_white, bevel=0.022)
-    add_box("Bedroom cut partition front", (-1.70, -2.16, 4.82), (0.20, 2.54, 2.66), interior_white, bevel=0.020)
-    add_box("Bedroom cut partition rear", (-1.70, 1.86, 4.82), (0.20, 3.04, 2.66), interior_white, bevel=0.020)
-    add_box("Bedroom door lintel", (-1.70, -0.22, 5.95), (0.20, 1.34, 0.38), interior_white, bevel=0.018)
+    add_box("Bedroom cut partition front", (-1.70, -2.40, 4.82), (0.20, 1.18, 2.66), interior_white, bevel=0.020)
+    add_box("Bedroom cut partition rear", (-1.70, 1.34, 4.82), (0.20, 4.18, 2.66), interior_white, bevel=0.020)
+    add_box("Bedroom door lintel", (-1.70, -1.15, 5.95), (0.20, 1.34, 0.38), interior_white, bevel=0.018)
     add_box("Upper corridor wall left", (-1.99, 2.74, 4.82), (0.36, 0.16, 2.66), interior_white, bevel=0.018)
     add_box("Upper corridor wall right", (-0.71, 2.74, 4.82), (0.48, 0.16, 2.66), interior_white, bevel=0.018)
     add_box("Upper corridor lintel", (-1.35, 2.74, 5.96), (0.92, 0.16, 0.28), interior_white, bevel=0.018)
@@ -1436,9 +1554,10 @@ def build_scene() -> None:
     add_box("Gallery rail", (3.88, 0.01, 4.75), (1.68, 0.035, 0.035), dark, bevel=0.008)
     for x in (3.10, 3.62, 4.14, 4.66):
         add_box("Gallery post", (x, 0.01, 4.36), (0.028, 0.045, 0.82), dark, bevel=0.005)
-    add_box("Gallery console", (4.05, 2.42, 3.94), (1.30, 0.38, 0.42), wood, bevel=0.035)
-    add_box("Gallery console shadow", (4.05, 2.20, 3.94), (1.12, 0.018, 0.025), dark, bevel=0.004)
-    add_plant("Gallery plant", (4.46, 2.32, 3.56), ceramic, leaf, earth, scale=0.40)
+    if INCLUDE_GALLERY_DECOR:
+        add_box("Gallery console", (4.05, 2.42, 3.94), (1.30, 0.38, 0.42), wood, bevel=0.035)
+        add_box("Gallery console shadow", (4.05, 2.20, 3.94), (1.12, 0.018, 0.025), dark, bevel=0.004)
+        add_plant("Gallery plant", (4.46, 2.32, 3.56), ceramic, leaf, earth, scale=0.40)
 
     # The wall build-up is visible in the cut edges, as in the reference render.
     for x in (-4.70, 4.70):
@@ -1459,22 +1578,50 @@ def build_scene() -> None:
     for x in (-4.55, 4.55):
         add_box("Side skirting", (x, 0, 0.43), (0.045, 7.1, 0.10), interior_white, bevel=0.008)
 
-    # Staircase.  It sits left of the service spine and stays visible as the
-    # central vertical circulation element in every proof angle.
-    for step in range(13):
+    # A buildable straight stair rises from the front hall to a real opening in
+    # the upper floor.  Seventeen treads keep the rise plausible and land flush
+    # with the upper finish instead of stopping below a solid slab.
+    stair_step_count = 17
+    stair_y_start = -1.65
+    stair_y_step = 0.22
+    stair_z_start = 0.40
+    stair_z_step = 3.00 / (stair_step_count - 1)
+    for step in range(stair_step_count):
+        step_y = stair_y_start + step * stair_y_step
+        step_z = stair_z_start + step * stair_z_step
         add_box(
             "Oak stair",
-            (-0.48, 1.95 - step * 0.25, 0.38 + step * 0.22),
-            (1.42, 0.34, 0.16),
+            (STAIR_CENTER_X, step_y, step_z),
+            (1.24, 0.30, 0.16),
             floor_mat,
             bevel=0.025,
         )
-    add_curve("Stair handrail", [(0.30, 2.1, 0.78), (0.30, -1.15, 3.55)], dark, bevel_depth=0.028)
-    add_curve("Stair oak stringer left", [(-1.18, 2.12, 0.25), (-1.18, -1.18, 3.18)], wood, bevel_depth=0.075, smooth=False)
-    add_curve("Stair oak stringer right", [(0.22, 2.12, 0.25), (0.22, -1.18, 3.18)], wood, bevel_depth=0.075, smooth=False)
-    add_box("Stair glass balustrade", (0.24, 0.42, 2.02), (0.045, 3.18, 1.08), glass, rotation=(math.radians(-42), 0, 0), bevel=0.012)
-    add_box("Stair upper landing", (-0.48, -1.37, 3.10), (1.54, 0.82, 0.16), floor_mat, bevel=0.025)
-    add_plant("Stair plant", (-1.25, 1.70, 0.36), ceramic, leaf, earth, scale=0.80)
+        if INCLUDE_PREMIUM_DETAILS and step < stair_step_count - 1:
+            add_box(
+                "Oak stair riser",
+                (
+                    STAIR_CENTER_X,
+                    step_y + stair_y_step / 2,
+                    step_z + stair_z_step / 2,
+                ),
+                (1.18, 0.07, stair_z_step + 0.02),
+                wood,
+                bevel=0.018,
+            )
+    stair_right_x = STAIR_CENTER_X + 0.69
+    stair_left_x = STAIR_CENTER_X - 0.69
+    stair_last_y = stair_y_start + (stair_step_count - 1) * stair_y_step
+    add_curve("Stair handrail", [(stair_right_x, stair_y_start, 0.80), (stair_right_x, stair_last_y, 3.80)], dark, bevel_depth=0.028)
+    add_curve("Stair oak stringer left", [(stair_left_x, stair_y_start, 0.30), (stair_left_x, stair_last_y, 3.34)], wood, bevel_depth=0.075, smooth=False)
+    add_curve("Stair oak stringer right", [(stair_right_x, stair_y_start, 0.30), (stair_right_x, stair_last_y, 3.34)], wood, bevel_depth=0.075, smooth=False)
+    add_box("Stair upper landing", (STAIR_CENTER_X, 2.28, 3.43), (1.42, 0.78, 0.14), floor_mat, bevel=0.025)
+    add_box("Stairwell glass side", (STAIR_VOID_X_MAX + 0.04, 0.42, 3.96), (0.045, 3.90, 0.92), glass, bevel=0.012)
+    add_box("Stairwell side rail", (STAIR_VOID_X_MAX + 0.04, 0.42, 4.44), (0.055, 3.96, 0.055), dark, bevel=0.008)
+    for y in (-1.48, -0.55, 0.38, 1.31, 2.24):
+        add_box("Stairwell side post", (STAIR_VOID_X_MAX + 0.04, y, 3.97), (0.055, 0.055, 0.96), dark, bevel=0.006)
+    add_box("Stairwell glass end", (STAIR_CENTER_X, STAIR_VOID_Y_MIN - 0.02, 3.96), (1.42, 0.045, 0.92), glass, bevel=0.012)
+    add_box("Stairwell end rail", (STAIR_CENTER_X, STAIR_VOID_Y_MIN - 0.02, 4.44), (1.48, 0.055, 0.055), dark, bevel=0.008)
+    add_plant("Stair plant", (STAIR_CENTER_X - 0.88, -1.22, 0.36), ceramic, leaf, earth, scale=0.80)
 
     # Minimal furniture and kitchen for scale.
     add_box("Kitchen base", (2.65, 2.62, 0.78), (3.55, 0.65, 1.02), wood, bevel=0.035)
@@ -1497,39 +1644,62 @@ def build_scene() -> None:
     for x in (-3.22, -1.88):
         for y in (-0.30, 0.20):
             add_cylinder("Coffee table leg", (x, y - 2.80, 0.42), 0.025, 0.40, dark, vertices=16)
+    add_cylinder("Nested coffee table top", (-2.16, -2.42, 0.68), 0.42, 0.075, dark, vertices=40)
+    for x, y in ((-2.40, -2.62), (-1.92, -2.62), (-2.16, -2.16)):
+        add_cylinder("Nested coffee table leg", (x, y, 0.48), 0.022, 0.40, dark, vertices=16)
     add_box("Media cabinet", (-1.75, 3.46, 0.76), (2.15, 0.40, 0.50), wood, bevel=0.04)
     add_box("Television", (-1.75, 3.22, 1.66), (1.72, 0.055, 1.02), dark, bevel=0.025)
     add_box("Living media pier", (-1.10, 1.55, 1.68), (0.15, 1.18, 2.72), interior_white, bevel=0.018)
     add_box("Living side television", (-1.00, 1.55, 1.76), (0.055, 0.92, 1.05), dark, bevel=0.025)
     add_box("Living side lowboard", (-0.96, 1.55, 0.72), (0.42, 1.30, 0.46), wood, bevel=0.035)
     add_plant("Living plant", (-4.12, 2.40, 0.36), ceramic, leaf, earth, scale=0.92)
-    add_box("Dining table", (2.65, -0.75, 0.95), (2.15, 0.95, 0.10), wood, bevel=0.035)
-    for x in (1.85, 3.45):
-        for y in (-1.28, -0.52):
+    dining_x = 3.18
+    dining_y = -0.68
+    add_box("Dining table", (dining_x, dining_y, 0.95), (2.32, 1.02, 0.10), wood, bevel=0.035)
+    for x in (2.28, 4.08):
+        for y in (-1.06, -0.30):
             add_cylinder("Table leg", (x, y, 0.52), 0.045, 0.86, dark)
-    for index, (x, y) in enumerate(((1.80, -1.35), (2.65, -1.35), (3.50, -1.35), (1.80, -0.15), (2.65, -0.15), (3.50, -0.15))):
-        add_dining_chair(f"Dining chair {index}", (x, y, 0.30), wood, dark)
-    add_box("Upper bed base", (-3.55, 0.58, 3.66), (1.78, 1.98, 0.14), wood, bevel=0.055)
-    add_box("Upper mattress", (-3.55, 0.56, 3.82), (1.70, 1.90, 0.18), fabric, bevel=0.070)
-    add_soft_quilt("Upper duvet", (-3.55, 0.22, 3.99), (1.72, 1.48), bedding)
+    chair_positions = (
+        (2.30, -1.38, math.pi),
+        (3.18, -1.38, math.pi),
+        (4.06, -1.38, math.pi),
+        (2.30, 0.02, 0.0),
+        (3.18, 0.02, 0.0),
+        (4.06, 0.02, 0.0),
+    )
+    for index, (x, y, rotation_z) in enumerate(chair_positions):
+        add_dining_chair(
+            f"Dining chair {index}",
+            (x, y, 0.30),
+            wood,
+            dark,
+            rotation_z=rotation_z,
+        )
+    # Pull the bedroom toward the cut plane so the bed reads as the main upper
+    # room, matching the installation reference instead of disappearing behind
+    # the central partition.
+    add_box("Bedroom feature wall", (-3.55, 0.62, 4.82), (2.70, 0.12, 2.64), warm_greige, bevel=0.018)
+    add_box("Upper bed base", (-3.55, -0.46, 3.66), (1.78, 2.08, 0.14), wood, bevel=0.055)
+    add_box("Upper mattress", (-3.55, -0.48, 3.82), (1.70, 2.00, 0.18), fabric, bevel=0.070)
+    add_soft_quilt("Upper duvet", (-3.55, -0.82, 3.99), (1.72, 1.55), bedding)
     for index, x in enumerate((-3.88, -3.22)):
         add_box(
             "Bed pillow",
-            (x, 1.05, 4.01),
+            (x, 0.04, 4.01),
             (0.62, 0.34, 0.11),
             bedding,
             rotation=(math.radians(2), 0, math.radians(-4 if index == 0 else 4)),
             bevel=0.085,
         )
-    add_box("Upper headboard", (-3.55, 1.57, 4.10), (1.78, 0.12, 0.56), wood, bevel=0.045)
-    add_box("Bedroom rug", (-3.55, -0.02, 3.57), (2.36, 2.22, 0.035), linen, bevel=0.025)
+    add_box("Upper headboard", (-3.55, 0.52, 4.10), (1.78, 0.12, 0.56), wood, bevel=0.045)
+    add_box("Bedroom rug", (-3.55, -0.96, 3.57), (2.36, 2.46, 0.035), linen, bevel=0.025)
     for x in (-4.56, -2.55):
-        add_box("Bedroom nightstand", (x, 1.30, 3.80), (0.42, 0.38, 0.46), wood, bevel=0.045)
-        add_box("Nightstand drawer gap", (x, 1.095, 3.86), (0.34, 0.014, 0.018), dark, bevel=0.003)
-        add_cylinder("Bedroom lamp stem", (x, 1.30, 4.23), 0.018, 0.38, dark, vertices=16)
-        add_cone("Bedroom lamp shade", (x, 1.30, 4.45), 0.09, 0.19, 0.23, linen, vertices=32)
-    add_box("Bedroom rear art frame", (-3.55, 1.64, 5.08), (1.08, 0.055, 0.78), dark, bevel=0.018)
-    add_box("Bedroom rear art", (-3.55, 1.605, 5.08), (0.94, 0.028, 0.64), ceramic, bevel=0.008)
+        add_box("Bedroom nightstand", (x, 0.28, 3.80), (0.42, 0.38, 0.46), wood, bevel=0.045)
+        add_box("Nightstand drawer gap", (x, 0.075, 3.86), (0.34, 0.014, 0.018), dark, bevel=0.003)
+        add_cylinder("Bedroom lamp stem", (x, 0.28, 4.23), 0.018, 0.38, dark, vertices=16)
+        add_cone("Bedroom lamp shade", (x, 0.28, 4.45), 0.09, 0.19, 0.23, linen, vertices=32)
+    add_box("Bedroom rear art frame", (-3.55, 0.55, 5.08), (1.08, 0.055, 0.78), dark, bevel=0.018)
+    add_box("Bedroom rear art", (-3.55, 0.515, 5.08), (0.94, 0.028, 0.64), ceramic, bevel=0.008)
 
     # Bathroom and kitchen fixtures add believable scale and material contrast.
     add_box("Bathroom floor", (1.02, 1.25, 3.54), (2.42, 2.36, 0.06), stone_tile, bevel=0.012, parent=bathroom_group)
@@ -1568,10 +1738,13 @@ def build_scene() -> None:
         add_box("Kitchen front gap", (x, 2.185, 0.83), (0.018, 0.026, 0.82), dark, bevel=0.003)
     add_box("Refrigerator", (4.18, 2.30, 1.68), (0.78, 0.72, 2.66), ceramic, bevel=0.035)
     add_box("Refrigerator divide", (4.18, 1.91, 1.57), (0.62, 0.022, 0.025), dark, bevel=0.004)
-    add_plant("Dining plant", (2.65, -0.75, 1.02), ceramic, leaf, earth, scale=0.42)
+    add_plant("Dining plant", (dining_x, dining_y, 1.02), ceramic, leaf, earth, scale=0.42)
 
     # Doors, art and pendant fixtures give every visible room a finished focal point.
-    for index, (x, y, z) in enumerate(((-0.65, 2.61, 1.68), (-1.35, 2.62, 4.70), (3.78, 2.75, 4.70))):
+    door_locations = [(-0.65, 2.61, 1.68), (-1.35, 2.62, 4.70)]
+    if INCLUDE_GALLERY_DOOR:
+        door_locations.append((3.78, 2.75, 4.70))
+    for index, (x, y, z) in enumerate(door_locations):
         add_box(f"Oak interior door {index}", (x, y, z), (1.00, 0.10, 2.36), wood, bevel=0.035)
         add_box(f"Door leaf reveal {index}", (x, y - 0.062, z), (0.82, 0.018, 2.14), dark, bevel=0.008)
         add_box(f"Door leaf face {index}", (x, y - 0.076, z), (0.76, 0.014, 2.08), wood, bevel=0.012)
@@ -1579,21 +1752,54 @@ def build_scene() -> None:
         add_box(f"Door frame right {index}", (x + 0.55, y - 0.025, z), (0.075, 0.14, 2.48), wood, bevel=0.012)
         add_box(f"Door frame top {index}", (x, y - 0.025, z + 1.22), (1.18, 0.14, 0.075), wood, bevel=0.012)
         add_cylinder(f"Door handle {index}", (x + 0.34, y - 0.08, z), 0.025, 0.18, dark, rotation=(math.pi / 2, 0, 0), vertices=16)
-    for index, x in enumerate((2.0, 2.65, 3.3)):
-        add_cylinder(f"Pendant cable {index}", (x, -0.75, 2.72), 0.014, 0.64, dark, vertices=12)
-        add_cone(f"Pendant shade {index}", (x, -0.75, 2.35), 0.06, 0.18, 0.22, dark, vertices=24)
-        add_cylinder(f"Pendant glow {index}", (x, -0.75, 2.24), 0.055, 0.05, warm_light, vertices=20)
+    for index, x in enumerate((2.38, 3.18, 3.98)):
+        add_cylinder(f"Pendant cable {index}", (x, dining_y, 2.66), 0.016, 0.78, dark, vertices=12)
+        add_cone(f"Pendant shade {index}", (x, dining_y, 2.20), 0.075, 0.23, 0.28, dark, vertices=24)
+        add_cylinder(f"Pendant glow {index}", (x, dining_y, 2.06), 0.070, 0.055, warm_light, vertices=20)
+
+    if INCLUDE_PREMIUM_DETAILS:
+        # A restrained layer of daily-use objects adds scale and finish without
+        # turning the architectural cutaway into visual clutter.
+        for row_index, y in enumerate((-1.00, -0.36)):
+            for place_index, x in enumerate((2.36, 3.18, 4.00)):
+                add_box(
+                    "Dining placemat",
+                    (x, y, 1.015),
+                    (0.38, 0.27, 0.012),
+                    linen,
+                    bevel=0.018,
+                )
+                add_cylinder("Dining plate", (x, y, 1.040), 0.13, 0.025, ceramic, vertices=32)
+                glass_x = x + (0.15 if row_index == 0 else -0.15)
+                add_cylinder("Dining glass", (glass_x, y + 0.02, 1.135), 0.035, 0.17, glass, vertices=24)
+
+        add_box("Living coffee table book", (-2.76, -2.87, 0.695), (0.42, 0.28, 0.045), warm_greige, rotation=(0, 0, math.radians(7)), bevel=0.018)
+        add_box("Living coffee table magazine", (-2.46, -2.83, 0.720), (0.38, 0.25, 0.025), ceramic, rotation=(0, 0, math.radians(-5)), bevel=0.012)
+        add_cylinder("Living floor lamp base", (-4.05, -1.02, 0.40), 0.20, 0.055, dark, vertices=32)
+        add_cylinder("Living floor lamp stem", (-4.05, -1.02, 1.16), 0.020, 1.50, dark, vertices=20)
+        add_cone("Living floor lamp shade", (-4.05, -1.02, 1.88), 0.12, 0.28, 0.34, linen, vertices=32)
+        add_cylinder("Living floor lamp glow", (-4.05, -1.02, 1.72), 0.08, 0.04, warm_light, vertices=24)
+
+        add_box("Bedroom throw", (-3.55, -1.18, 4.08), (1.72, 0.48, 0.07), linen, bevel=0.060)
+        add_box("Bathroom folded towel", (1.02, 1.78, 4.43), (0.46, 0.22, 0.07), linen, bevel=0.045, parent=bathroom_group)
+        add_box("Bathroom hand towel", (0.35, 2.16, 4.87), (0.40, 0.035, 0.58), linen, bevel=0.035, parent=bathroom_group)
+
+        add_box("Kitchen induction cooktop", (3.20, 2.14, 1.415), (0.76, 0.46, 0.025), dark, bevel=0.035)
+        for x, y, radius in ((3.00, 2.02, 0.105), (3.38, 2.02, 0.085), (3.00, 2.28, 0.085), (3.38, 2.28, 0.105)):
+            add_cylinder("Kitchen induction zone", (x, y, 1.435), radius, 0.008, concrete_recess, vertices=32)
+        add_box("Kitchen extractor", (3.20, 2.66, 2.42), (0.92, 0.36, 0.16), dark, bevel=0.035)
+        add_box("Kitchen extractor light", (3.20, 2.46, 2.32), (0.52, 0.025, 0.035), warm_light, bevel=0.008)
 
     # Electrical distribution, KNX/network modules and the red system path.
     # The technical wall faces the open front of the cutaway so that the
     # installation remains legible even at website scale.
-    add_box("Technical service wall", (SERVICE_X, -2.82, 1.72), (1.44, 0.42, 2.84), interior_white, bevel=0.018)
-    add_box("Service core left reveal", (SERVICE_X - 0.63, -3.07, 1.72), (0.22, 0.32, 2.84), concrete, bevel=0.018)
-    add_box("Service core right reveal", (SERVICE_X + 0.63, -3.07, 1.72), (0.22, 0.32, 2.84), concrete, bevel=0.018)
-    add_box("Service core head", (SERVICE_X, -3.07, 2.98), (1.44, 0.32, 0.28), concrete, bevel=0.018)
-    add_box("Service core sill", (SERVICE_X, -3.07, 0.47), (1.44, 0.32, 0.22), concrete, bevel=0.018)
-    add_box("Distribution cabinet", (SERVICE_X, -3.08, 1.70), (0.98, 0.25, 2.10), interior_white, bevel=0.022)
-    add_box("Distribution recess", (SERVICE_X, -3.23, 1.70), (0.82, 0.075, 1.82), dark, bevel=0.012)
+    add_box("Technical service wall", (SERVICE_X, -2.82, 1.72), (SERVICE_CORE_WIDTH, 0.42, 2.84), interior_white, bevel=0.018)
+    add_box("Service core left reveal", (SERVICE_X - 0.52, -3.07, 1.72), (0.20, 0.32, 2.84), concrete, bevel=0.018)
+    add_box("Service core right reveal", (SERVICE_X + 0.52, -3.07, 1.72), (0.20, 0.32, 2.84), concrete, bevel=0.018)
+    add_box("Service core head", (SERVICE_X, -3.07, 2.98), (SERVICE_CORE_WIDTH, 0.32, 0.28), concrete, bevel=0.018)
+    add_box("Service core sill", (SERVICE_X, -3.07, 0.47), (SERVICE_CORE_WIDTH, 0.32, 0.22), concrete, bevel=0.018)
+    add_box("Distribution cabinet", (SERVICE_X, -3.08, 1.70), (0.90, 0.25, 2.10), interior_white, bevel=0.022)
+    add_box("Distribution recess", (SERVICE_X, -3.23, 1.70), (0.74, 0.075, 1.82), dark, bevel=0.012)
     for row in range(7):
         rail_z = 1.02 + row * 0.225
         add_box("DIN rail", (SERVICE_X, -3.285, rail_z), (0.72, 0.035, 0.025), ceramic, bevel=0.006)
@@ -1628,8 +1834,8 @@ def build_scene() -> None:
             bevel_depth=0.012,
             smooth=True,
         )
-    add_box("Cabinet open door", (SERVICE_X + 0.58, -3.02, 1.70), (0.055, 0.82, 2.04), glass, rotation=(0, 0, math.radians(-6)), bevel=0.018)
-    for device_index, device_x in enumerate((SERVICE_X - 0.58, SERVICE_X + 0.58)):
+    add_box("Cabinet open door", (SERVICE_X + 0.52, -3.02, 1.70), (0.055, 0.72, 2.04), glass, rotation=(0, 0, math.radians(-6)), bevel=0.018)
+    for device_index, device_x in enumerate((SERVICE_X - 0.48, SERVICE_X + 0.48)):
         add_box(
             f"Service automation enclosure {device_index}",
             (device_x, -3.31, 2.77),
