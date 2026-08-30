@@ -10,10 +10,10 @@ describe('getStoryState', () => {
     [0, 'planning'],
     [0.219, 'planning'],
     [0.22, 'installation'],
-    [0.559, 'installation'],
-    [0.56, 'energy'],
-    [0.819, 'energy'],
-    [0.82, 'service'],
+    [0.599, 'installation'],
+    [0.6, 'energy'],
+    [0.879, 'energy'],
+    [0.88, 'service'],
     [1, 'service'],
   ] as const)('maps %s to %s', (progress, expected) => {
     expect(getStoryState(progress)).toBe(expected);

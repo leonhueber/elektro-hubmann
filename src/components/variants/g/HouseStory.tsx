@@ -74,8 +74,8 @@ const clamp = (value: number) => Math.min(1, Math.max(0, value));
 
 export function getStoryState(progress: number): HouseStoryState {
   if (progress < 0.22) return 'planning';
-  if (progress < 0.56) return 'installation';
-  if (progress < 0.82) return 'energy';
+  if (progress < 0.6) return 'installation';
+  if (progress < 0.88) return 'energy';
   return 'service';
 }
 
