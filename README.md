@@ -4,8 +4,8 @@ Stand: 29. August 2026
 
 Dieses Verzeichnis enthält die belastbare Planungsgrundlage für den Neubau von
 <https://elektro-hubmann.at/> und die spätere Migration von Domain, DNS und
-E-Mail. Ein erstes lauffähiges Astro-/React-Grundprojekt mit fünf öffentlichen
-Designvarianten ist vorhanden; Inhalte und Rechtstexte sind noch nicht final
+E-Mail. Die ausgewählte Haus-Story-Website ist als Astro-/React-Projekt
+umgesetzt; Inhalte, Referenzprojekte und Rechtstexte sind noch nicht final
 freigegeben.
 
 ## Lokale Entwicklung
@@ -25,8 +25,8 @@ pnpm build
 ```
 
 Der lokale Entwicklungsserver verwendet denselben Basispfad wie GitHub Pages:
-`/elektro-hubmann/`. Die fünf Versionen liegen unter `/varianten/a/` bis
-`/varianten/e/`.
+`/elektro-hubmann/`. Die Website beginnt direkt auf
+`/elektro-hubmann/`; einen Variantenumschalter gibt es nicht mehr.
 
 ## Dokumente
 
@@ -47,24 +47,18 @@ Der lokale Entwicklungsserver verwendet denselben Basispfad wie GitHub Pages:
 7. [GitHub-Pages-Deployment](docs/07-github-pages-deployment.md) – öffentlicher
    Betrieb, GitHub Actions, Projekt-URL, Custom Domain, DNS-Reihenfolge und
    Rollback.
-8. [Live-Versionen](docs/08-live-versionen.md) – mehrere gleichzeitig
-   erreichbare Designvarianten, URL-Schema, Versionsleiste, SEO-Regeln und
-   Abnahme.
+8. [Designentscheidung Haus-Story](docs/08-designentscheidung-version-g.md) –
+   Auswahl der früheren Version G als einzige Website, URL-Struktur,
+   technische Basis und Launch-Gates.
 9. [Responsiveness, Barrierefreiheit und EU-/AT-Checkliste](docs/09-responsive-accessibility-eu-checkliste.md)
    – umgesetzte Responsive-Matrix sowie verbindliche spätere Accessibility-,
    Datenschutz-, Rechts- und Hosting-Gates.
 
-## Design-Mockups
+## Ausgewähltes Design
 
-- [Version A – Architektur](docs/mockups/version-a-architektur.png)
-- [Version B – Technisch](docs/mockups/version-b-technisch.png)
-- [Version C – Regional](docs/mockups/version-c-regional.png)
-
-Version D und E wurden direkt als lauffähige Varianten umgesetzt und besitzen
-deshalb kein separates statisches Mockup in diesem Ordner.
-
-Die Bilder sind visuelle Konzepte. Texte, Bilder, Projekte, Personen und
-Kontaktdaten darin sind nicht als freigegebene Unternehmensangaben zu verwenden.
+Die Website verwendet die reduzierte Haus-Story: Ein vorgerendertes Blender-Haus
+führt auf der Startseite scrollgesteuert durch Planung, Installation, Energie
+und Service. Frühere Designvarianten und ihre Vorschau-Assets wurden entfernt.
 
 ## Leitentscheidung
 

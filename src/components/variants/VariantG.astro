@@ -9,7 +9,7 @@ import { company, projects } from '../../config/site';
 import '../../styles/variant-g.css';
 
 const baseUrl = import.meta.env.BASE_URL;
-const root = `${baseUrl.replace(/\/$/, '')}/varianten/g`;
+const root = baseUrl.replace(/\/$/, '');
 const featuredProjects = projects.slice(0, 4);
 ---
 
@@ -23,6 +23,16 @@ const featuredProjects = projects.slice(0, 4);
     client:media="(prefers-reduced-motion: no-preference)"
   />
   <StaticHouseChapters baseUrl={baseUrl} />
+  <noscript>
+    <style is:inline>
+      .g-story {
+        display: none;
+      }
+      .g-static-story {
+        display: block;
+      }
+    </style>
+  </noscript>
 
   <section class="g-projects" aria-labelledby="g-projects-title">
     <div class="g-section-heading">

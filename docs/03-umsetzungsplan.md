@@ -79,10 +79,10 @@ danach beginnt die Entwicklung.
   umsetzen; kein globales UI-Framework ohne neuen Architekturentscheid;
 - Inhalte über typisierte Astro Content Collections und Markdown/MDX abbilden;
 - Komponenten, Seiten und Inhaltsmodell umsetzen;
-- typisierte Varianten-Registry und aktuell fünf freigegebene Designvarianten
-  aus demselben Inhaltsbestand erzeugen;
-- barrierefreie Versionsleiste oberhalb des normalen Headers umsetzen; der
-  Wechsel erhält nach Möglichkeit die logisch gleiche Unterseite;
+- ausgewählte Haus-Story als einzige Startseite und normale Unterseiten aus
+  demselben Inhaltsbestand erzeugen;
+- scrollgesteuerte Bildsequenz mit statischer Reduced-Motion- und
+  No-JavaScript-Alternative umsetzen;
 - responsive Navigation und erreichbare Telefon-/Mailaktionen bauen;
 - Bilder mit Astros Bildpipeline responsive als AVIF/WebP plus Fallback
   ausliefern und lokal benötigte Fonts selbst hosten;
@@ -102,11 +102,11 @@ danach beginnt die Entwicklung.
 unter `https://leonhueber.github.io/elektro-hubmann/`; die Produktionsdomain
 wurde noch nicht verändert.
 
-**Aktueller Prototypenstand:** Die Responsiveness der fünf Varianten A–E ist
-einschließlich Mobile-Navigation umgesetzt und über die in
+**Aktueller Prototypenstand:** Die Responsiveness der ausgewählten Haus-Story
+ist einschließlich Mobile-Navigation umgesetzt und über die in
 [Dokument 09](09-responsive-accessibility-eu-checkliste.md) festgehaltene
 Breitenmatrix geprüft. Accessibility, Rechtstexte, Consent und produktive
-Formularverarbeitung werden bewusst erst am final gewählten Design umgesetzt.
+Formularverarbeitung bleiben eigene Launch-Gates.
 
 ### Phase 5 – Inhaltliche und rechtliche Abnahme
 
@@ -134,7 +134,7 @@ nicht bloß aus dem Altbestand kopiert.
 | Eingabe | Maus, Touch und vollständige Tastaturbedienung |
 | Zoom/Reflow | 200 % Zoom und schmale Reflow-Ansicht |
 | Seiten | jede öffentliche Seite, 404, Weiterleitungen, Formularzustände |
-| Varianten | jede aktive Variante auf Startseite, Navigation, Kontakt und mindestens einer Leistungsseite |
+| Startseite | alle vier Story-Zustände, statische Fallback-Kapitel und nachfolgende Inhaltsbereiche |
 | Kontakt | `tel:`, `mailto:`, Karte/Route und Formular |
 | SEO | Titles, Descriptions, H1, Canonical, Sitemap, robots, Schema |
 | Sicherheit | HTTPS, Mixed Content, Header, Abhängigkeiten, Secret-Scan |

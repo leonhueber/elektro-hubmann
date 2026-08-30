@@ -1,12 +1,9 @@
 ---
-import VersionSwitcher from '../components/VersionSwitcher';
-import type { VariantId } from '../config/site';
 import '../styles/global.css';
 
 interface Props {
   title: string;
   description: string;
-  activeVariant?: VariantId;
   bodyClass?: string;
   canonicalPath?: string;
   ogImage?: string;
@@ -17,10 +14,9 @@ interface Props {
 const {
   title,
   description,
-  activeVariant,
   bodyClass = '',
   canonicalPath = Astro.url.pathname,
-  ogImage = '/logo-elektrotechnik-hubmann.png',
+  ogImage = `${import.meta.env.BASE_URL}logo-elektrotechnik-hubmann.png`,
   preloadImage,
   schema,
 } = Astro.props;
@@ -32,7 +28,7 @@ const socialImage = new URL(ogImage, Astro.site ?? Astro.url.origin);
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <meta name="robots" content="noindex, follow" />
     <meta name="theme-color" content="#e30613" />
@@ -57,10 +53,6 @@ const socialImage = new URL(ogImage, Astro.site ?? Astro.url.origin);
   </head>
   <body class={bodyClass}>
     <a class="skip-link" href="#hauptinhalt">Zum Inhalt springen</a>
-    <VersionSwitcher
-      active={activeVariant}
-      baseUrl={import.meta.env.BASE_URL}
-    />
     <slot />
   </body>
 </html>

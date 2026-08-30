@@ -3,7 +3,3 @@ export function withBase(path = ''): string {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
   return `${base}${normalizedPath}`;
 }
-
-export function variantPath(variant: string): string {
-  return withBase(`/varianten/${variant}/`);
-}

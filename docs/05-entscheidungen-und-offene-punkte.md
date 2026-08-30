@@ -64,17 +64,15 @@ Ausgangspunkt verwenden und bei Unsicherheit juristisch prüfen.
 
 - [ ] Hauptziel der Startseite priorisiert: Störung, Projekt oder Fachhandel.
 - [ ] Finale Navigation und Leistungscluster freigegeben.
-- [ ] Stilrichtung anhand echter visueller Entwürfe ausgewählt.
+- [x] Haus-Story als Stilrichtung anhand echter visueller Entwürfe ausgewählt.
 - [ ] Logofarben `#E30613`, `#1D1D1B`, `#FFED00` als Markenbasis bestätigt.
 - [ ] Sprache nur Deutsch oder später weitere Sprache?
 - [ ] CMS-Selbstpflege wirklich erforderlich?
 - [ ] Wer ist nach Launch für Inhalte verantwortlich?
 - [ ] Analytics nötig; wenn ja, welche Entscheidungen werden damit getroffen?
-- [x] Drei initiale Designvarianten als A/Architektur, B/Technisch und
-  C/Regional festgelegt.
-- [ ] Hauptversion bestimmt oder Entscheidungstermin und Entscheider festgelegt.
-- [ ] Geklärt, ob Alternativversionen nach der finalen Auswahl öffentlich
-  bleiben oder entfernt werden.
+- [x] Frühere Designvarianten bewertet und verworfen.
+- [x] Haus-Story als einzige Hauptversion bestimmt.
+- [x] Alternativversionen aus Code, Navigation und öffentlichem Build entfernt.
 
 ## 6. Technische Architektur
 

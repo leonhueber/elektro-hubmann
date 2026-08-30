@@ -14,10 +14,9 @@ Die Veröffentlichung erfolgt in zwei bewusst getrennten Stufen:
    `https://leonhueber.github.io/elektro-hubmann/`;
 2. erst nach Freigabe Anbindung von `https://elektro-hubmann.at` und `www`.
 
-Innerhalb desselben Deployments werden mehrere Designvarianten unter festen
-Unterpfaden veröffentlicht. Es gibt dafür keine getrennten Pages-Sites und
-keine voneinander abweichenden Branch-Deployments; ein Commit beschreibt immer
-den gemeinsam abgenommenen Stand aller aktiven Varianten.
+Das Deployment veröffentlicht ausschließlich die ausgewählte Haus-Story auf
+den normalen Seitenpfaden. Frühere Variantenpfade gehören nicht mehr zum
+öffentlichen Produkt.
 
 Die bestehende Domain, DNS-Zone und E-Mail-Konfiguration bleiben während der
 Entwicklung unangetastet.
@@ -26,12 +25,12 @@ Entwicklung unangetastet.
 
 Das Astro-/React-Grundprojekt, `package.json`, `pnpm-lock.yaml` und
 `.github/workflows/deploy-pages.yml` sind vorhanden. Der lokale
-Produktionsbuild erzeugt die Übersichtsseite und alle fünf Varianten ohne
-Typfehler. Jeder Push auf `main` startet den offiziellen Astro-Pages-Workflow.
+Produktionsbuild erzeugt die Startseite und alle Unterseiten ohne Typfehler.
+Jeder Push auf `main` startet den offiziellen Astro-Pages-Workflow.
 
 ## Einsatzgrenze von GitHub Pages
 
-GitHub Pages wird in diesem Projekt vorerst als öffentliche Designvorschau und
+GitHub Pages wird in diesem Projekt vorerst als öffentliche Abnahmeumgebung und
 Abnahmeumgebung verwendet. Die finale kommerzielle Unternehmenswebsite darf
 nicht automatisch auf Pages verbleiben: GitHub beschreibt Pages primär als
 Projekt-Showcase und schließt kostenloses Hosting für ein Online-Geschäft bzw.
@@ -206,8 +205,8 @@ statischen Hoster ist möglich, ohne Domain, Mail oder Inhaltsmodell umzubauen.
 - [ ] Repository-Quelle in Settings auf GitHub Actions gestellt.
 - [ ] Projekt-URL ist öffentlich erreichbar und alle Assets laden.
 - [ ] Basispfad, Canonicals und Sitemap sind korrekt.
-- [ ] Alle aktiven Varianten und ihre Versionsleiste sind erreichbar.
-- [ ] Nur die Hauptversion ist in Sitemap und Suchindex vorgesehen.
+- [ ] Startseite und alle produktiven Unterseiten sind erreichbar.
+- [ ] Die Suchmaschinenindexierung bleibt bis zur Inhalts- und Rechtsfreigabe deaktiviert.
 - [ ] 404 und Redirect-Matrix sind geprüft.
 - [ ] Externer Uptime-Monitor ist vorbereitet.
 - [ ] Custom Domain ist vor DNS-Änderung verifiziert und eingetragen.

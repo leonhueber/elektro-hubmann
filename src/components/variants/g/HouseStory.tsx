@@ -343,7 +343,11 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
             />
           ))}
         </div>
-        <nav className="g-progress" aria-label="Fortschritt der Haus-Story">
+        <div
+          className="g-progress"
+          role="group"
+          aria-label="Fortschritt der Haus-Story"
+        >
           <strong>
             <span>{chapters[activeIndex]?.number}</span> / 04
           </strong>
@@ -357,7 +361,7 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
               </li>
             ))}
           </ol>
-        </nav>
+        </div>
         <div className="g-story-meter" aria-hidden="true">
           <i />
         </div>

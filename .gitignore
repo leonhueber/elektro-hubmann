@@ -6,3 +6,9 @@ dist/
 .tools/
 .pnpm-store/
 *.blend1
+__pycache__/
+*.py[cod]
+blender/debug_projection.py
+blender/validate_render.py
+docs/version-g-qa/blender/static-*.jpg
+docs/version-g-qa/blender/validation/

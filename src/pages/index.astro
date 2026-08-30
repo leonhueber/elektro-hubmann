@@ -1,46 +1,35 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { variants } from '../config/site';
-import { variantPath, withBase } from '../lib/url';
+import VariantG from '../components/variants/VariantG.astro';
+import { company } from '../config/site';
+import { withBase } from '../lib/url';
+
+const canonicalPath = withBase('/');
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Electrician',
+  name: company.name,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Weißbriach 94',
+    postalCode: '9622',
+    addressLocality: 'Weißbriach',
+    addressCountry: 'AT',
+  },
+  telephone: '+43 4286 240',
+  email: company.email,
+  url: new URL(canonicalPath, Astro.site ?? Astro.url.origin).href,
+};
 ---
 
 <BaseLayout
-  title="Elektro Hubmann – Designvorschau"
-  description="Sieben Designrichtungen für den Neubau der Elektro-Hubmann-Website."
-  bodyClass="preview-index"
+  title="Elektroinstallationen in Gitschtal, Hermagor und am Weißensee – Elektro Hubmann"
+  description="Elektro Hubmann plant und realisiert Elektroinstallationen, Gebäudetechnik und Photovoltaik für Neubau, Sanierung und Gewerbe."
+  bodyClass="variant variant-g"
+  canonicalPath={canonicalPath}
+  ogImage={withBase('/images/version-g/sequence/house-0120.jpg')}
+  preloadImage={withBase('/images/version-g/sequence/house-0001.jpg')}
+  schema={schema}
 >
-  <header class="preview-header">
-    <img
-      src={withBase('/logo-elektrotechnik-hubmann.png')}
-      width="287"
-      height="78"
-      alt="Elektrotechnik Hubmann"
-    />
-    <span>Website-Neubau · Arbeitsstand</span>
-  </header>
-
-  <main id="hauptinhalt" class="preview-main">
-    <span class="eyebrow">Sieben Richtungen · ein gemeinsamer Inhalt</span>
-    <h1>Welche Gestaltung passt zu Elektro Hubmann?</h1>
-    <p class="preview-intro">
-      Alle Versionen sind live, direkt vergleichbar und bewusst noch nicht für
-      Suchmaschinen freigegeben.
-    </p>
-
-    <div class="variant-cards">
-      {
-        variants.map((variant) => (
-          <a
-            class={`variant-card variant-card--${variant.id}`}
-            href={variantPath(variant.id)}
-          >
-            <span>{variant.name}</span>
-            <strong>{variant.direction}</strong>
-            <p>{variant.summary}</p>
-            <em>Version öffnen →</em>
-          </a>
-        ))
-      }
-    </div>
-  </main>
+  <VariantG />
 </BaseLayout>

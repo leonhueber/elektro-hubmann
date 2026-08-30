@@ -1,4 +1,4 @@
-# Design QA – Version G Blender House Story
+# Design QA – ausgewählte Blender-Haus-Story
 
 ## Visual reference
 
@@ -16,8 +16,10 @@
 - Blender proof renders in `docs/version-g-qa/blender/`
 - Editable source scene: `assets/3d/elektro-hubmann-house.blend`
 - Reproducible scene generator: `blender/house_story.py`
+- Root route checked in the Codex in-app browser on 30 August 2026.
 
-The persistent design-version switcher is a preview-only element and is not part of the selected design.
+The former design-version switcher and variants A–F have been removed. The
+house story now starts directly at the website root.
 
 ## Result
 
@@ -34,17 +36,22 @@ The persistent design-version switcher is a preview-only element and is not part
 - The 1024 × 768 and 768 × 1024 tablet checks also report identical client and scroll width; the animated stage remains active.
 - Header, progress rail, copy, CTAs and the house remain readable at the tested desktop and mobile sizes.
 - Browser console check: no errors or warnings.
+- Header and story stage begin without the former 44 px switcher offset.
+- Navigation links resolve directly below `/elektro-hubmann/` on GitHub Pages.
 
 ## Technical checks
 
 - Astro check: passed with zero errors, warnings or hints.
 - ESLint: passed.
 - Vitest: 10/10 assertions passed.
-- Production build: 26 static pages built successfully.
+- Production build: 20 static pages built successfully.
 
 ## Known content follow-ups
 
 - The building is a fictional design model based on the approved mockup and must not be presented as a real Elektro Hubmann reference project.
+- The improved Blender source is committed separately from the stable web
+  sequence. Replacing all 120 public frames requires one uninterrupted final
+  render and visual approval.
 - Project imagery and metadata still need verified real references.
 - Legal pages still require Austrian legal and DSGVO review before production indexing.
 

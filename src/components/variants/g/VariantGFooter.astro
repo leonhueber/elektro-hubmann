@@ -4,7 +4,7 @@ interface Props {
   baseUrl: string;
 }
 const { baseUrl } = Astro.props;
-const root = `${baseUrl.replace(/\/$/, '')}/varianten/g`;
+const root = baseUrl.replace(/\/$/, '');
 ---
 
 <footer class="g-footer">
@@ -41,6 +41,6 @@ const root = `${baseUrl.replace(/\/$/, '')}/varianten/g`;
     </div>
   </div>
   <p class="g-footer-note">
-    Designvorschau · Inhalte und Rechtstexte vor Veröffentlichung final prüfen.
+    Inhalte und Rechtstexte vor Veröffentlichung final prüfen.
   </p>
 </footer>

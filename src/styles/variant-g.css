@@ -23,12 +23,6 @@
   outline-offset: 4px;
 }
 
-.variant-g .version-switcher {
-  position: sticky;
-  top: 0;
-  z-index: 80;
-}
-
 .g-info-bar {
   position: relative;
   z-index: 50;
@@ -61,7 +55,7 @@
 .g-header {
   position: sticky;
   z-index: 60;
-  top: 44px;
+  top: 0;
   min-height: var(--g-header);
   display: grid;
   grid-template-columns: 210px 1fr auto auto;
@@ -136,8 +130,8 @@
 
 .g-story-stage {
   position: sticky;
-  top: calc(44px + var(--g-header));
-  height: calc(100svh - 44px - var(--g-header));
+  top: var(--g-header);
+  height: calc(100svh - var(--g-header));
   min-height: 610px;
   overflow: hidden;
   background: #fff;
@@ -423,10 +417,38 @@
   display: none;
 }
 
+.g-static-chapter {
+  width: var(--g-content);
+  margin-inline: auto;
+  padding-block: clamp(72px, 8vw, 120px);
+  border-bottom: 1px solid var(--g-line);
+}
+
+.g-static-visual {
+  height: min(58vw, 720px);
+}
+
 .g-static-visual img {
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+
+.g-static-chapter .g-story-copy {
+  position: relative;
+  width: min(680px, 100%);
+  padding: 36px 0 0;
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+.g-static-chapter .g-story-copy h2 {
+  max-width: 13ch;
+}
+
+.g-static-chapter .g-scroll-hint {
+  display: none;
 }
 
 .g-projects,
@@ -778,7 +800,7 @@
     --g-content: min(100% - 40px, 1180px);
   }
   .g-header {
-    top: 44px;
+    top: 0;
     min-height: 78px;
     grid-template-columns: 1fr auto auto;
     padding-inline: 20px;
@@ -831,8 +853,8 @@
     height: 480svh;
   }
   .g-story-stage {
-    top: calc(44px + 78px);
-    height: calc(100svh - 44px - 78px);
+    top: 78px;
+    height: calc(100svh - 78px);
     min-height: 0;
   }
   .g-story-visual {
@@ -967,7 +989,7 @@
     text-align: right;
   }
   .g-header {
-    top: 44px;
+    top: 0;
     grid-template-columns: 1fr auto;
   }
   .g-header-cta {
@@ -977,8 +999,8 @@
     height: 520svh;
   }
   .g-story-stage {
-    top: calc(44px + 78px);
-    height: calc(100svh - 44px - 78px);
+    top: 78px;
+    height: calc(100svh - 78px);
   }
   .g-story-visual {
     inset: 34px -20% auto -20%;

@@ -26,7 +26,7 @@ Abhängigkeit von einem einzelnen Hostinganbieter.
 | UI | Astro-Komponenten | server-/buildseitige Komponenten; Browser-JavaScript nur als begründete Insel |
 | Styling | natives CSS, CSS Custom Properties, Astro-scoped Styles | Design-Tokens zentral, Komponenten lokal; kein Tailwind im Basissetup |
 | Inhalte | Astro Content Collections mit Markdown/MDX | Leistungen, Projekte und Unternehmensinhalte mit Schema validieren |
-| Designvarianten | typisierte Varianten-Registry und getrennte Astro-Layouts | gemeinsame Inhalte, feste URLs, aktuell fünf aktive Vorschauvarianten |
+| Designsystem | ausgewählte Haus-Story mit einem Astro-Layout | eine konsistente Website auf normalen URLs ohne Variantenlogik |
 | Datenvalidierung | Zod-Schemas bzw. Astro-Schemafunktion | Build bricht bei fehlenden Pflichtfeldern oder ungültigen Slugs ab |
 | Bilder | Astro Image Pipeline | responsive Größen, AVIF/WebP, Fallback, feste Abmessungen gegen Layoutsprünge |
 | Schrift | selbst gehostete WOFF2-Dateien | keine Verbindung zu Google Fonts; nur benötigte Schnitte laden |
@@ -220,7 +220,7 @@ dieser technischen Annahme.
 │   ├── components/
 │   │   ├── layout/
 │   │   ├── navigation/
-│   │   ├── variants/
+│   │   ├── house-story/
 │   │   ├── sections/
 │   │   └── ui/
 │   ├── content/
@@ -228,9 +228,8 @@ dieser technischen Annahme.
 │   │   └── projects/
 │   ├── layouts/
 │   ├── pages/
-│   │   └── varianten/
 │   ├── config/
-│   │   └── variants.ts
+│   │   └── site.ts
 │   ├── styles/
 │   └── utils/
 ├── tests/
@@ -264,10 +263,9 @@ Jeder Pull Request muss automatisch bestehen:
 8. automatisierter axe-Scan;
 9. Lighthouse-Budget für die Kernseiten.
 
-Zusätzlich prüft CI jede aktive Designvariante mindestens auf Startseite,
-Navigation, Kontakt und einer Leistungsseite. Ein Buildfehler in einer
-Alternative blockiert das gemeinsame Deployment, weil alle Varianten als ein
-Pages-Artefakt veröffentlicht werden.
+Zusätzlich prüft CI die Startseite, Navigation, Kontakt, mindestens eine
+Leistungsseite und die statische Reduced-Motion-Darstellung. Jede öffentliche
+Route wird als Teil desselben Pages-Artefakts gebaut.
 
 GitHub empfiehlt für Node-Projekte eine fest konfigurierte Node-Version und
 reproduzierbare Build-/Testschritte in GitHub Actions:
@@ -405,11 +403,14 @@ real bestätigt wird:
 Dann wird ein separates Architecture Decision Record erstellt. Die bestehende
 statische Website darf nicht schleichend zu einer unübersichtlichen App
 umgebaut werden.
-# Ergänzung Version G: interaktive Haus-Story
+# Interaktive Haus-Story
 
-Version G ergänzt die bestehende Astro-Architektur um eine gezielte React-Insel mit Three.js, `@react-three/fiber` und `@react-three/drei`. Das 3D-Haus wird ausschließlich auf der Startseite von Version G geladen. Unterseiten bleiben statisches Astro-HTML.
+Die ausgewählte Website ergänzt die Astro-Architektur um eine gezielte
+React-Insel. Das in Blender modellierte Haus wird als vorgerenderte
+120-Frame-Sequenz auf ein Canvas gezeichnet und über GSAP ScrollTrigger mit dem
+normalen Seitenfortschritt verbunden. Unterseiten bleiben statisches Astro-HTML.
 
 - Normales Seitenscrolling mit `position: sticky`; kein Scroll-Jacking.
-- Prozedurales 3D-Modell mit getrennten Gebäude-, Installations- und Energieebenen.
+- Reproduzierbares Blender-Modell mit getrennten Gebäude-, Installations- und Energieebenen.
 - Mobile und `prefers-reduced-motion`: statische Kapitel ohne angeheftete Scrollanimation.
 - GitHub Pages bleibt das Ziel; Formularversand benötigt später einen externen Dienst oder ein separates Backend.

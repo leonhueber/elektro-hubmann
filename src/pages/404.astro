@@ -1,0 +1,32 @@
+---
+import '@fontsource-variable/inter/index.css';
+import '@fontsource-variable/inter-tight/index.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import VariantGHeader from '../components/variants/g/VariantGHeader.astro';
+import VariantGFooter from '../components/variants/g/VariantGFooter.astro';
+import { withBase } from '../lib/url';
+import '../styles/variant-g.css';
+
+const baseUrl = import.meta.env.BASE_URL;
+---
+
+<BaseLayout
+  title="Seite nicht gefunden – Elektro Hubmann"
+  description="Die angeforderte Seite wurde nicht gefunden."
+  bodyClass="variant variant-g"
+  canonicalPath={withBase('/404.html')}
+>
+  <VariantGHeader baseUrl={baseUrl} />
+  <main id="hauptinhalt" class="g-page">
+    <header class="g-page-hero">
+      <p class="g-eyebrow"><strong>404</strong> · Nicht gefunden</p>
+      <h1>Diese Seite gibt es nicht.</h1>
+      <p>
+        Der Link ist möglicherweise veraltet. Auf der Startseite finden Sie alle
+        aktuellen Leistungen und Kontaktmöglichkeiten.
+      </p>
+      <a class="g-outline-button" href={withBase('/')}>Zur Startseite →</a>
+    </header>
+  </main>
+  <VariantGFooter baseUrl={baseUrl} />
+</BaseLayout>

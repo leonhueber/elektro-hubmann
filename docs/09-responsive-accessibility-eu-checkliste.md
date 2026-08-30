@@ -6,8 +6,8 @@ Rechts-/Datenschutzumsetzung für das finale Design vorgemerkt
 
 ## 1. Klare Abgrenzung
 
-In der aktuellen Iteration wurde ausschließlich die responsive Darstellung der
-fünf Designvarianten umgesetzt. Die vorhandenen rechtlichen Seiten, Texte und
+In der aktuellen Iteration wurde die responsive Darstellung der ausgewählten
+Haus-Story umgesetzt. Die vorhandenen rechtlichen Seiten, Texte und
 das Anfrageformular sind weiterhin Entwürfe und dürfen nicht als fachlich oder
 rechtlich freigegeben verstanden werden.
 
@@ -18,8 +18,8 @@ Verträge abgeschlossen oder Termine verbindlich gebucht werden können.
 
 | Bereich | Aktueller Status | Zeitpunkt der Umsetzung |
 |---|---|---|
-| Responsiveness A–E | umgesetzt und lokal geprüft | jetzt |
-| Accessibility/WCAG | Ziel und Prüfumfang definiert | nach Auswahl des finalen Designs |
+| Responsiveness Haus-Story | umgesetzt und lokal geprüft | jetzt |
+| Accessibility/WCAG | Ziel und Prüfumfang definiert | vor finaler Freigabe |
 | Impressum/Offenlegung | Altbestand als ungeeignet erkannt | vor Produktionslaunch |
 | Datenschutz/Consent | Datenflussprüfung ausständig | vor Aktivierung von Formularen oder Drittanbietern |
 | BaFG-Anwendbarkeit | fachlich/rechtlich zu klären | vor Freigabe des Funktionsumfangs |
@@ -27,17 +27,14 @@ Verträge abgeschlossen oder Termine verbindlich gebucht werden können.
 
 ## 2. Umgesetzte Responsiveness
 
-Die gemeinsame responsive Basis gilt für Version A bis E:
+Die responsive Basis gilt für die ausgewählte Haus-Story:
 
 - eigenständige Mobile-Navigation bis einschließlich 820 px;
 - Desktop-Navigation ab 821 px;
-- kompakte Versionsleiste bis 700 px, ohne abgeschnittene Varianten;
 - verkürzte Header-Aktion und kleinere Logos auf schmalen Smartphones;
-- responsive Hero-, Trust-, Leistungs-, Projekt-, Unternehmens-, Formular-
-  und Footer-Layouts;
+- responsive Story-, Projekt-, Unternehmens-, Formular- und Footer-Layouts;
 - einspaltiges Formular und einspaltige Projektkarten auf Smartphones;
-- zwei Leistungsspalten auf Smartphones, variantenabhängig zwei oder drei auf
-  Tablets und größere Raster auf Desktop;
+- statische, vertikale Hauskapitel auf kleinen Geräten und bei reduzierter Bewegung;
 - umbrechende Aktionsgruppen, skalierende Typografie und kontrollierte
   Bildausschnitte;
 - kein horizontaler Seitenüberlauf in der geprüften Matrix;
@@ -45,22 +42,21 @@ Die gemeinsame responsive Basis gilt für Version A bis E:
 
 ### Geprüfte Matrix
 
-Am 29. August 2026 wurden alle fünf Varianten bei folgenden sichtbaren
-Layoutbreiten geprüft:
+Die Haus-Story wird bei folgenden sichtbaren Layoutbreiten geprüft:
 
-| Breiten | Versionen | Ergebnis |
+| Breiten | Website | Ergebnis |
 |---|---|---|
-| 320, 360 und 390 px | A–E | kein horizontaler Überlauf; Mobile-Menü und Kernlayouts nutzbar |
-| 620, 621 und 685 px | A–E | Versionsleiste und Header wechseln ohne Zwischenbereichsfehler |
-| 768, 805 und 820 px | A–E | Tablet-Raster und Mobile-Navigation stabil |
-| 900 und 1024 px | A–E | Desktop-Navigation und Zwischenraster stabil |
-| 1280 und 1440 px | A–E | Desktop-Layout ohne Überlauf |
+| 320, 360 und 390 px | Haus-Story | kein horizontaler Überlauf; Mobile-Menü und Kernlayouts nutzbar |
+| 620, 621 und 685 px | Haus-Story | Header und Story wechseln ohne Zwischenbereichsfehler |
+| 768, 805 und 820 px | Haus-Story | Tablet-Raster und Mobile-Navigation stabil |
+| 900 und 1024 px | Haus-Story | Desktop-Navigation und Zwischenraster stabil |
+| 1280 und 1440 px | Haus-Story | Desktop-Layout ohne Überlauf |
 
-Zusätzlich wurden in A–E die vier Mobile-Menüziele geöffnet und der Sprung zu
-`#projekte` geprüft. Der Astro-Typecheck und Produktionsbuild laufen ohne
-Diagnosen durch.
+Zusätzlich werden die Mobile-Menüziele, die vier Story-Zustände und der Sprung
+zur Projektanfrage geprüft. Der Astro-Typecheck und Produktionsbuild müssen
+ohne Diagnosen durchlaufen.
 
-### Erneut zu prüfen, sobald das finale Design gewählt ist
+### Vor der finalen Freigabe erneut zu prüfen
 
 - reale iOS-/Safari- und Android-/Chrome-Geräte;
 - Querformat und sehr niedrige Viewports;
@@ -155,7 +151,7 @@ Bestätigungsprozesse fachlich geprüft werden.
 
 ## 5. Hosting-Entscheidung
 
-GitHub Pages bleibt für die öffentliche Designvorschau und technische Abnahme
+GitHub Pages bleibt für die öffentliche technische Abnahme
 nutzbar. Für die finale kommerzielle Unternehmenswebsite ist es derzeit keine
 freigegebene Hostingentscheidung:
 
@@ -167,8 +163,8 @@ freigegebene Hostingentscheidung:
 - Vertragslage, Datenschutzrollen, Datenübermittlung, Support, Logging und
   Wiederherstellung müssen vor einem Domain-Cutover belastbar bewertet werden.
 
-Empfehlung: Varianten weiter über die GitHub-Projekt-URL abnehmen, die finale
-Website anschließend bei einem für den kommerziellen EU-/AT-Betrieb geeigneten
+Empfehlung: Website weiter über die GitHub-Projekt-URL abnehmen und sie
+anschließend bei einem für den kommerziellen EU-/AT-Betrieb geeigneten
 Provider mit geklärtem AVV, Datenstandort, Logs, Backups und Support betreiben.
 Die Domain- und E-Mail-Migration bleibt davon getrennt.
 
@@ -198,7 +194,7 @@ Die Produktionsdomain wird erst umgestellt, wenn:
 - [WKO: Barrierefreiheitsgesetz im E-Commerce](https://www.wko.at/internetrecht/barrierefreiheitsgesetz-e-commerce)
 - [GitHub: Terms for Additional Products and Features – Pages](https://docs.github.com/en/site-policy/github-terms/github-terms-for-additional-products-and-features#pages)
 - [GitHub: IP-Protokollierung bei Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection)
-# Ergänzung Version G
+# Ergänzung Haus-Story
 
 - Desktop: sticky 3D-Haus-Story mit normalem Seitenscrolling.
 - Mobile, reduzierte Bewegung und WebGL-Fallback: vier statische, vertikale Kapitel.

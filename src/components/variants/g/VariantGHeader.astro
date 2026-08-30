@@ -7,7 +7,7 @@ interface Props {
 }
 
 const { baseUrl, active = '' } = Astro.props;
-const root = `${baseUrl.replace(/\/$/, '')}/varianten/g`;
+const root = baseUrl.replace(/\/$/, '');
 const nav = [
   ['Leistungen', `${root}/leistungen/`, 'leistungen'],
   ['Projekte', `${root}/projekte/`, 'projekte'],
@@ -25,11 +25,7 @@ const nav = [
   </div>
 </div>
 <header class="g-header">
-  <a
-    class="g-logo"
-    href={`${root}/`}
-    aria-label="Elektro Hubmann – Startseite Version G"
-  >
+  <a class="g-logo" href={`${root}/`} aria-label="Elektro Hubmann – Startseite">
     <img
       src={`${baseUrl}logo-elektrotechnik-hubmann.png`}
       width="287"
@@ -55,7 +51,13 @@ const nav = [
   <details class="g-mobile-menu">
     <summary><span>Menü</span></summary>
     <nav aria-label="Mobile Navigation">
-      {nav.map(([label, href]) => <a href={href}>{label}</a>)}
+      {
+        nav.map(([label, href, id]) => (
+          <a href={href} aria-current={active === id ? 'page' : undefined}>
+            {label}
+          </a>
+        ))
+      }
       <a href={company.emergencyHref}>Störungsdienst: {company.emergency}</a>
       <a href={`${root}/fachhandel/`}>Fachgeschäft</a>
       <a href={`${root}/kontakt/#projektanfrage`}>Projekt anfragen →</a>

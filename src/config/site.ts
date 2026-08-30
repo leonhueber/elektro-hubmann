@@ -1,50 +1,3 @@
-export const variants = [
-  {
-    id: 'a',
-    name: 'Version A',
-    direction: 'Architektur',
-    summary: 'Ruhig, hochwertig und großzügig.',
-  },
-  {
-    id: 'b',
-    name: 'Version B',
-    direction: 'Technisch',
-    summary: 'Präzise, modular und leistungsorientiert.',
-  },
-  {
-    id: 'c',
-    name: 'Version C',
-    direction: 'Regional',
-    summary: 'Persönlich, warm und handwerksnah.',
-  },
-  {
-    id: 'd',
-    name: 'Version D',
-    direction: 'Hybrid',
-    summary: 'Klar, bildstark und regional verankert.',
-  },
-  {
-    id: 'e',
-    name: 'Version E',
-    direction: 'Baustelle',
-    summary: 'Kontrastreich, direkt und kraftvoll.',
-  },
-  {
-    id: 'f',
-    name: 'Version F',
-    direction: 'Live Circuit',
-    summary: 'Immersiv, scrollgesteuert und kompromisslos modern.',
-  },
-  {
-    id: 'g',
-    name: 'Version G',
-    direction: 'Haus-Story',
-    summary: 'Architektonisch, interaktiv und konsequent reduziert.',
-  },
-] as const;
-
-export type VariantId = (typeof variants)[number]['id'];
-
 export const company = {
   name: 'Elektro Hubmann',
   proprietor: 'Ing. Peter Hubmann',
@@ -59,16 +12,9 @@ export const company = {
     'Mo–Fr 09:00–12:00 und 15:00–17:30 · Mi & Fr nachmittags geschlossen',
 } as const;
 
-export const trustItems = [
-  ['Seit 1972', 'Familienbetrieb'],
-  ['50+ Jahre', 'Erfahrung'],
-  ['Regional', 'Vor Ort'],
-  ['Komplett', 'Planung & Ausführung'],
-  ['Persönlich', 'Ein Ansprechpartner'],
-] as const;
-
 export const services = [
   {
+    slug: 'elektroinstallation-sanierung',
     title: 'Elektroinstallation und Sanierung',
     shortTitle: 'Neubau & Sanierung',
     description:
@@ -81,6 +27,7 @@ export const services = [
     imageHeight: 1277,
   },
   {
+    slug: 'photovoltaik-energie',
     title: 'Photovoltaik und Energie',
     shortTitle: 'Photovoltaik & Energie',
     description:
@@ -93,6 +40,7 @@ export const services = [
     imageHeight: 1277,
   },
   {
+    slug: 'gebaeudetechnik-sicherheit',
     title: 'Gebäudetechnik und Sicherheit',
     shortTitle: 'Gebäudetechnik & Sicherheit',
     description:
@@ -105,6 +53,7 @@ export const services = [
     imageHeight: 1080,
   },
   {
+    slug: 'knx-netzwerk-medien',
     title: 'KNX, Netzwerk und Medien',
     shortTitle: 'KNX, Netzwerk & Medien',
     description:
@@ -117,6 +66,7 @@ export const services = [
     imageHeight: 618,
   },
   {
+    slug: 'pruefung-service-stoerung',
     title: 'Prüfung, Service und Störungsbehebung',
     shortTitle: 'Service & Prüfung',
     description:
@@ -173,32 +123,4 @@ export const projects = [
     width: 1920,
     height: 1080,
   },
-] as const;
-
-export const processSteps = [
-  [
-    '01',
-    'Projekt anfragen',
-    'Vorhaben, Baustellenort und Zeitrahmen übermitteln.',
-  ],
-  [
-    '02',
-    'Besichtigung und Beratung',
-    'Situation vor Ort prüfen und Anforderungen gemeinsam klären.',
-  ],
-  [
-    '03',
-    'Planung und Angebot',
-    'Eine nachvollziehbare Lösung mit transparentem Angebot erstellen.',
-  ],
-  [
-    '04',
-    'Umsetzung',
-    'Die Arbeiten koordiniert und fachgerecht auf der Baustelle ausführen.',
-  ],
-  [
-    '05',
-    'Prüfung und Übergabe',
-    'Anlage prüfen, dokumentieren und persönlich übergeben.',
-  ],
 ] as const;
