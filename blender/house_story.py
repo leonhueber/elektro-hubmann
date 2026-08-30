@@ -21,6 +21,8 @@ ROOT = Path(__file__).resolve().parents[1]
 BLEND_PATH = ROOT / "assets" / "3d" / "elektro-hubmann-house.blend"
 QA_DIR = ROOT / "docs" / "version-g-qa" / "blender"
 PROOF_DIR = QA_DIR / "final"
+STORY_PROOF_DIR = QA_DIR / "story-proofs"
+FLOORPLAN_DIR = QA_DIR / "floorplans"
 SEQUENCE_DIR = ROOT / "public" / "images" / "version-g" / "sequence"
 PBR_DIR = ROOT / "assets" / "third-party" / "polyhaven"
 
@@ -50,14 +52,24 @@ ROOF_DEPTH = 8.65
 SERVICE_X = 1.90
 SERVICE_PIT_Y = -4.72
 SERVICE_CORE_WIDTH = 1.22
+SERVER_ROOM_CENTER_X = SERVICE_X
+SERVER_ROOM_CENTER_Y = SERVICE_PIT_Y
+SERVER_ROOM_WIDTH = 3.05
+SERVER_ROOM_DEPTH = 2.20
+SERVER_ROOM_FLOOR_Z = -1.76
+SERVER_ROOM_WALL_TOP_Z = 0.16
 STAIR_CENTER_X = -0.52
 STAIR_VOID_X_MIN = -1.28
 STAIR_VOID_X_MAX = 0.22
 STAIR_VOID_Y_MIN = -1.85
 STAIR_VOID_Y_MAX = 2.68
 LIVING_PARTITION_X = -1.58
-INCLUDE_GALLERY_DECOR = False
-INCLUDE_GALLERY_DOOR = False
+BEDROOM_PARTITION_X = -1.55
+BATHROOM_LEFT_X = 0.82
+BATHROOM_RIGHT_X = 2.92
+BATHROOM_FRONT_Y = -1.65
+BATHROOM_REAR_Y = 3.35
+BATHROOM_DOOR_Y = 2.18
 
 # Build in deliberate passes: structure -> furnished -> premium.  With the
 # massing and room zoning approved, the reproducible default now includes the
@@ -104,6 +116,11 @@ OPTIONAL_DETAIL_PREFIXES = (
 DISTRIBUTION_PREFIXES = (
     "Distribution cabinet",
     "Distribution recess",
+    "Distribution frame",
+    "Distribution cable duct",
+    "Distribution terminal",
+    "Distribution main breaker",
+    "Distribution label",
     "DIN rail",
     "DIN module",
     "DIN toggle",
@@ -121,9 +138,9 @@ PROOF_VIEWS = (
         "filename": "01-installation-reference.png",
         "camera": "QA Camera Installation",
         "frame": 52,
-        "location": (19.5, -29.5, 9.7),
-        "target": (0.0, -0.45, 3.58),
-        "lens": 68.0,
+        "location": (22.0, -32.0, 10.0),
+        "target": (0.0, -0.62, 2.62),
+        "lens": 62.0,
         "shift_y": -0.02,
     },
     {
@@ -485,10 +502,12 @@ def add_curve(
 
 
 def add_studio_floor_with_service_opening(mat: bpy.types.Material) -> bpy.types.Object:
-    """Create a grounded studio plane while leaving the network pit visible."""
+    """Create a grounded studio plane while leaving the server room visible."""
     outer = 35.0
-    x_min, x_max = SERVICE_X - 0.94, SERVICE_X + 0.94
-    y_min, y_max = SERVICE_PIT_Y - 0.78, SERVICE_PIT_Y + 0.78
+    x_min = SERVER_ROOM_CENTER_X - SERVER_ROOM_WIDTH / 2 - 0.16
+    x_max = SERVER_ROOM_CENTER_X + SERVER_ROOM_WIDTH / 2 + 0.16
+    y_min = SERVER_ROOM_CENTER_Y - SERVER_ROOM_DEPTH / 2 - 0.16
+    y_max = SERVER_ROOM_CENTER_Y + SERVER_ROOM_DEPTH / 2 + 0.16
     z = -0.39
     vertices = [
         (-outer, -outer, z), (outer, -outer, z), (outer, y_min, z), (-outer, y_min, z),
@@ -601,6 +620,38 @@ def add_proof_camera(
     return camera
 
 
+def add_floorplan_label(
+    name: str,
+    text: str,
+    location: tuple[float, float, float],
+    text_material: bpy.types.Material,
+    badge_material: bpy.types.Material,
+    *,
+    size: float = 0.31,
+) -> tuple[bpy.types.Object, bpy.types.Object]:
+    """Add a compact, top-readable room badge for orthographic plan proofs."""
+    width = max(0.95, len(text) * size * 0.49)
+    badge = add_box(
+        f"PLAN {name} badge",
+        (location[0], location[1], location[2] - 0.025),
+        (width, size * 1.55, 0.045),
+        badge_material,
+        bevel=0.065,
+    )
+    text_data = bpy.data.curves.new(f"PLAN {name} text data", type="FONT")
+    text_data.body = text
+    text_data.align_x = "CENTER"
+    text_data.align_y = "CENTER"
+    text_data.size = size
+    text_data.extrude = 0.006
+    text_data.bevel_depth = 0.003
+    text_object = bpy.data.objects.new(f"PLAN {name} text", text_data)
+    bpy.context.collection.objects.link(text_object)
+    text_object.location = location
+    text_object.data.materials.append(text_material)
+    return badge, text_object
+
+
 def add_front_window(
     name: str,
     x: float,
@@ -634,6 +685,7 @@ def add_side_window(
     parent: bpy.types.Object,
     *,
     x: float = 5.06,
+    mullion: bool = False,
 ) -> None:
     add_box(f"{name} glass", (x, y, z), (0.08, width, height), glass, bevel=0.015, parent=parent)
     bar = 0.11
@@ -641,6 +693,83 @@ def add_side_window(
         add_box(f"{name} frame", (x + 0.055, y_pos, z), (0.13, bar, height + bar), frame, bevel=0.015, parent=parent)
     for z_pos in (z - height / 2, z + height / 2):
         add_box(f"{name} frame", (x + 0.055, y, z_pos), (0.13, width + bar, bar), frame, bevel=0.015, parent=parent)
+    if mullion:
+        add_box(f"{name} mullion", (x + 0.06, y, z), (0.13, bar, height), frame, bevel=0.012, parent=parent)
+
+
+def add_side_wall_with_openings(
+    name: str,
+    x: float,
+    z: float,
+    height: float,
+    y_min: float,
+    y_max: float,
+    openings: tuple[tuple[str, float, float, float, float], ...],
+    mat: bpy.types.Material,
+    parent: bpy.types.Object,
+    *,
+    thickness: float = 0.28,
+) -> None:
+    """Tile a side wall around exact rectangular openings without overlaps."""
+    wall_bottom = z - height / 2
+    wall_top = z + height / 2
+    cursor = y_min
+
+    for index, (opening_name, opening_y, opening_z, width, opening_height) in enumerate(
+        sorted(openings, key=lambda opening: opening[1])
+    ):
+        opening_start = opening_y - width / 2
+        opening_end = opening_y + width / 2
+        opening_bottom = opening_z - opening_height / 2
+        opening_top = opening_z + opening_height / 2
+        if opening_start < cursor - 1e-6 or opening_end > y_max + 1e-6:
+            raise ValueError(f"Overlapping or out-of-bounds side opening: {opening_name}")
+        if opening_bottom < wall_bottom or opening_top > wall_top:
+            raise ValueError(f"Vertically out-of-bounds side opening: {opening_name}")
+
+        pier_width = opening_start - cursor
+        if pier_width > 1e-6:
+            add_box(
+                f"{name} pier {index}",
+                (x, cursor + pier_width / 2, z),
+                (thickness, pier_width, height),
+                mat,
+                bevel=0.012,
+                parent=parent,
+            )
+
+        sill_height = opening_bottom - wall_bottom
+        if sill_height > 1e-6:
+            add_box(
+                f"{name} sill {opening_name}",
+                (x, opening_y, wall_bottom + sill_height / 2),
+                (thickness, width, sill_height),
+                mat,
+                bevel=0.012,
+                parent=parent,
+            )
+        lintel_height = wall_top - opening_top
+        if lintel_height > 1e-6:
+            add_box(
+                f"{name} lintel {opening_name}",
+                (x, opening_y, opening_top + lintel_height / 2),
+                (thickness, width, lintel_height),
+                mat,
+                bevel=0.012,
+                parent=parent,
+            )
+        cursor = opening_end
+
+    if cursor < y_max - 1e-6:
+        pier_width = y_max - cursor
+        add_box(
+            f"{name} pier end",
+            (x, cursor + pier_width / 2, z),
+            (thickness, pier_width, height),
+            mat,
+            bevel=0.012,
+            parent=parent,
+        )
 
 
 def add_roof_tile_source(
@@ -1234,6 +1363,7 @@ def build_scene() -> None:
     bedding = textile_material("Soft white bedding", (0.88, 0.86, 0.82, 1), roughness=0.98)
     ceramic = material("Warm ceramic", (0.89, 0.86, 0.80, 1), roughness=0.32)
     equipment = material("Technical enclosure grey", (0.48, 0.50, 0.51, 1), roughness=0.44, metallic=0.04)
+    cabinet_white = material("Distribution cabinet powder coat", (0.74, 0.76, 0.76, 1), roughness=0.42, metallic=0.12)
     mirror = material("Mirror", (0.12, 0.13, 0.14, 1), roughness=0.08, metallic=1.0)
     stone_tile = pbr_material(
         "Bathroom stone PBR",
@@ -1271,11 +1401,15 @@ def build_scene() -> None:
     pv_group = empty("ANIM Photovoltaic")
     technical_group = empty("ANIM Energy equipment")
     distribution_group = empty("ANIM Distribution cabinet")
-    network_pit_group = empty("ANIM Network pit")
-    network_cover_group = empty("ANIM Network pit cover")
+    server_room_group = empty("ANIM Server room")
+    server_cover_group = empty("ANIM Server room cover")
     exploded_panels = empty("STATIC Exploded facade panels")
     bathroom_group = empty("STATIC Bathroom fit-out")
-    bathroom_group.location = (-0.60, -0.40, 0.0)
+    # The installation mockup places the bathroom in the upper-right room.
+    # Its children now use the same world datum as the architecture; keeping a
+    # zero-offset parent prevents the former double-translation that pushed
+    # walls and fixtures through the facade in plan view.
+    bathroom_group.location = (0.0, 0.0, 0.0)
 
     add_box("Exploded left wall panel", (-6.35, -3.10, 6.35), (0.22, 1.18, 1.94), concrete, bevel=0.018, parent=exploded_panels)
     add_box("Exploded right wall panel", (6.55, 1.15, 6.24), (0.22, 1.36, 2.00), white, bevel=0.018, parent=exploded_panels)
@@ -1403,36 +1537,66 @@ def build_scene() -> None:
         y=UPPER_FRONT_Y - 0.18,
     )
 
-    # Right facade around openings.
-    for y, width in ((-3.35, 1.02), (-0.35, 2.1), (3.18, 1.15)):
-        add_box("Right wall ground", (GROUND_RIGHT_X, y, 1.67), (0.28, width, 2.92), white, parent=facade_side)
-    add_side_window(
-        "Dining side", -1.85, 1.67, 1.75, 2.3, glass, dark, facade_side,
-        x=GROUND_RIGHT_X + 0.18,
+    # Right facade follows the energy mockup: solid piers frame two deliberate
+    # openings, while the rear glazing sits behind a separate timber screen.
+    # Building the complete rectangles avoids the former wall/window overlap
+    # and gives every window a real sill and lintel.
+    ground_side_openings = (
+        ("Dining side", -1.85, 1.67, 1.75, 2.30),
+        ("Screened patio side", 1.70, 1.67, 1.95, 2.30),
+    )
+    add_side_wall_with_openings(
+        "Right wall ground",
+        GROUND_RIGHT_X,
+        1.67,
+        2.92,
+        GROUND_FRONT_Y,
+        HOUSE_HALF_DEPTH,
+        ground_side_openings,
+        white,
+        facade_side,
     )
     add_side_window(
-        "Service side", 1.92, 1.67, 1.35, 1.55, glass, dark, facade_side,
+        "Dining side", -1.85, 1.67, 1.75, 2.30, glass, dark, facade_side,
+        x=GROUND_RIGHT_X + 0.18,
+        mullion=True,
+    )
+    add_side_window(
+        "Screened patio side", 1.70, 1.67, 1.95, 2.30, glass, dark, facade_side,
         x=GROUND_RIGHT_X + 0.18,
     )
-    for y, width in ((-3.05, 0.70), (-0.05, 2.05), (3.07, 1.05)):
-        add_box("Right wall upper", (UPPER_HALF_WIDTH, y, 4.74), (0.28, width, 2.72), white, parent=facade_side)
+    upper_side_openings = (
+        ("Upper side", -1.75, 4.80, 1.75, 1.20),
+        ("Upper screened side", 1.65, 4.82, 1.85, 2.05),
+    )
+    add_side_wall_with_openings(
+        "Right wall upper",
+        UPPER_HALF_WIDTH,
+        4.74,
+        2.72,
+        UPPER_FRONT_Y,
+        UPPER_REAR_Y,
+        upper_side_openings,
+        white,
+        facade_side,
+    )
     add_side_window(
         "Upper side",
-        -1.90,
-        4.84,
-        1.65,
-        2.06,
+        -1.75,
+        4.80,
+        1.75,
+        1.20,
         glass,
         dark,
         facade_side,
         x=UPPER_HALF_WIDTH + 0.18,
     )
     add_side_window(
-        "Upper rear side",
-        1.75,
-        4.84,
-        1.55,
-        1.96,
+        "Upper screened side",
+        1.65,
+        4.82,
+        1.85,
+        2.05,
         glass,
         dark,
         facade_side,
@@ -1444,16 +1608,16 @@ def build_scene() -> None:
         x = 3.04 + index * 0.17
         add_box("Upper timber slat", (x, UPPER_FRONT_Y - 0.19, 4.86), (0.105, 0.16, 2.48), wood, bevel=0.018, parent=facade_front)
     for index in range(9):
-        y = -0.3 + index * 0.19
-        add_box("Side timber slat", (UPPER_HALF_WIDTH + 0.18, y, 4.86), (0.16, 0.105, 2.48), wood, bevel=0.018, parent=facade_side)
+        y = 0.84 + index * 0.205
+        add_box("Side timber slat", (UPPER_HALF_WIDTH + 0.38, y, 4.82), (0.10, 0.07, 1.94), wood, bevel=0.015, parent=facade_side)
     for index in range(11):
-        y = 0.20 + index * 0.19
+        y = 0.75 + index * 0.19
         add_box(
             "Ground side timber slat",
-            (GROUND_RIGHT_X + 0.18, y, 1.70),
-            (0.16, 0.105, 2.58),
+            (GROUND_RIGHT_X + 0.38, y, 1.67),
+            (0.10, 0.07, 2.18),
             wood,
-            bevel=0.018,
+            bevel=0.015,
             parent=facade_side,
         )
 
@@ -1478,61 +1642,92 @@ def build_scene() -> None:
     add_floorboards("Ground floor", 0.315, floor_mat)
     add_floorboards("Upper floor", 3.505, floor_mat, stair_opening=True)
     add_box("Kitchen wall", (2.75, 3.05, 1.72), (3.8, 0.16, 2.8), interior_white, bevel=0.025)
-    add_box("Ground corridor wall left", (-1.58, 2.72, 1.72), (0.48, 0.16, 2.82), interior_white, bevel=0.018)
-    add_box("Ground corridor wall right", (0.10, 2.72, 1.72), (0.64, 0.16, 2.82), interior_white, bevel=0.018)
-    add_box("Ground corridor lintel", (-0.65, 2.72, 2.94), (1.30, 0.16, 0.32), interior_white, bevel=0.018)
-    # Real room-separating walls, split around door openings.  The previous
-    # model had furniture on two open platforms; these walls establish the
-    # living / circulation / service / kitchen hierarchy visible in the mockup.
+    # A compact door wall closes the space below the landing without pinching
+    # the main entrance-to-stair route.
+    add_box("Ground hall rear wall left", (-1.48, 2.72, 1.72), (0.28, 0.16, 2.82), interior_white, bevel=0.018)
+    add_box("Ground hall rear wall right", (0.18, 2.72, 1.72), (0.28, 0.16, 2.82), interior_white, bevel=0.018)
+    add_box("Ground hall door lintel", (-0.65, 2.72, 2.94), (1.38, 0.16, 0.32), interior_white, bevel=0.018)
+    # The living room is separated from circulation by one continuous wall
+    # with a deliberate 1.4 m opening near the entrance.
     add_box("Ground living partition front", (LIVING_PARTITION_X, -2.76, 1.72), (0.20, 1.20, 2.82), interior_white, bevel=0.018)
     add_box("Ground living partition rear", (LIVING_PARTITION_X, 1.30, 1.72), (0.20, 4.10, 2.82), interior_white, bevel=0.018)
     add_box("Ground living door lintel", (LIVING_PARTITION_X, -1.42, 2.90), (0.20, 1.48, 0.42), interior_white, bevel=0.018)
-    # Camera-facing room shells are deliberately deeper than decorative wall
-    # planes.  They keep the cutaway readable as architecture instead of a
-    # collection of furniture floating on two slabs.
-    add_box("Bedroom rear lining", (-3.40, 1.72, 4.82), (2.65, 0.12, 2.64), warm_greige, bevel=0.018)
-    add_box("Bedroom partition", (-2.05, 2.62, 4.82), (0.18, 2.05, 2.66), interior_white, bevel=0.022)
-    add_box("Bedroom partition cut face", (-2.05, 1.53, 4.82), (0.24, 0.20, 2.66), interior_white, bevel=0.022)
-    add_box("Bedroom cut partition front", (-1.70, -2.40, 4.82), (0.20, 1.18, 2.66), interior_white, bevel=0.020)
-    add_box("Bedroom cut partition rear", (-1.70, 1.34, 4.82), (0.20, 4.18, 2.66), interior_white, bevel=0.020)
-    add_box("Bedroom door lintel", (-1.70, -1.15, 5.95), (0.20, 1.34, 0.38), interior_white, bevel=0.018)
-    add_box("Upper corridor wall left", (-1.99, 2.74, 4.82), (0.36, 0.16, 2.66), interior_white, bevel=0.018)
-    add_box("Upper corridor wall right", (-0.71, 2.74, 4.82), (0.48, 0.16, 2.66), interior_white, bevel=0.018)
-    add_box("Upper corridor lintel", (-1.35, 2.74, 5.96), (0.92, 0.16, 0.28), interior_white, bevel=0.018)
-    add_box("Bathroom side partition", (1.70, 3.08, 4.82), (0.18, 0.62, 2.66), interior_white, bevel=0.022)
-    add_box("Bathroom side cut face", (1.70, 2.72, 4.82), (0.22, 0.16, 2.66), interior_white, bevel=0.022)
-    add_box("Bathroom feature wall", (1.02, 2.50, 4.82), (2.18, 0.12, 2.64), stone_tile, bevel=0.018, parent=bathroom_group)
-    for x in (0.30, 1.02, 1.74):
-        add_box("Bathroom vertical tile joint", (x, 2.435, 4.82), (0.005, 0.006, 2.50), ceramic, bevel=0.001, parent=bathroom_group)
+
+    # Upper floor: bedroom left, landing in the middle, bathroom directly over
+    # the installation spine and a narrow gallery along the right facade.  This
+    # is the same zoning hierarchy shown in the installation mockup.
+    add_box("Bedroom partition front", (BEDROOM_PARTITION_X, -0.45, 4.82), (0.20, 4.90, 2.66), interior_white, bevel=0.020)
+    add_box("Bedroom partition rear", (BEDROOM_PARTITION_X, 3.20, 4.82), (0.20, 0.50, 2.66), interior_white, bevel=0.020)
+    add_box("Bedroom door lintel", (BEDROOM_PARTITION_X, 2.48, 5.95), (0.20, 0.96, 0.38), interior_white, bevel=0.018)
+
+    bathroom_center_x = (BATHROOM_LEFT_X + BATHROOM_RIGHT_X) / 2
+    bathroom_center_y = (BATHROOM_FRONT_Y + BATHROOM_REAR_Y) / 2
+    bathroom_door_half = 0.47
+    add_box(
+        "Bathroom left partition front",
+        (BATHROOM_LEFT_X, (BATHROOM_FRONT_Y + BATHROOM_DOOR_Y - bathroom_door_half) / 2, 4.82),
+        (0.18, BATHROOM_DOOR_Y - bathroom_door_half - BATHROOM_FRONT_Y, 2.66),
+        interior_white,
+        bevel=0.022,
+        parent=bathroom_group,
+    )
+    add_box(
+        "Bathroom left partition rear",
+        (BATHROOM_LEFT_X, (BATHROOM_DOOR_Y + bathroom_door_half + BATHROOM_REAR_Y) / 2, 4.82),
+        (0.18, BATHROOM_REAR_Y - BATHROOM_DOOR_Y - bathroom_door_half, 2.66),
+        interior_white,
+        bevel=0.022,
+        parent=bathroom_group,
+    )
+    add_box(
+        "Bathroom side door lintel",
+        (BATHROOM_LEFT_X, BATHROOM_DOOR_Y, 5.95),
+        (0.18, 0.94, 0.38),
+        interior_white,
+        bevel=0.018,
+        parent=bathroom_group,
+    )
+    add_box(
+        "Bathroom gallery partition",
+        (BATHROOM_RIGHT_X, bathroom_center_y, 4.82),
+        (0.18, BATHROOM_REAR_Y - BATHROOM_FRONT_Y, 2.66),
+        interior_white,
+        bevel=0.022,
+        parent=bathroom_group,
+    )
+    # The closed plan has a real front wall. It travels with the facade during
+    # the cutaway beat so the complete bathroom remains visible in frame 52.
+    add_box(
+        "Bathroom front reveal wall",
+        (bathroom_center_x, BATHROOM_FRONT_Y, 4.82),
+        (BATHROOM_RIGHT_X - BATHROOM_LEFT_X, 0.18, 2.66),
+        interior_white,
+        bevel=0.022,
+        parent=facade_front,
+    )
+    add_box(
+        "Bathroom feature wall",
+        (bathroom_center_x, BATHROOM_REAR_Y, 4.82),
+        (BATHROOM_RIGHT_X - BATHROOM_LEFT_X, 0.12, 2.64),
+        stone_tile,
+        bevel=0.018,
+        parent=bathroom_group,
+    )
+    for x in (1.18, 1.86, 2.54):
+        add_box("Bathroom vertical tile joint", (x, BATHROOM_REAR_Y - 0.065, 4.82), (0.005, 0.006, 2.50), ceramic, bevel=0.001, parent=bathroom_group)
     for z in (4.14, 4.82, 5.50):
-        add_box("Bathroom horizontal tile joint", (1.02, 2.435, z), (2.06, 0.006, 0.005), ceramic, bevel=0.001, parent=bathroom_group)
-    add_box("Gallery rear lining", (3.62, 3.68, 4.82), (2.18, 0.10, 2.64), interior_white, bevel=0.018)
-    add_box("Gallery return wall", (3.12, 2.30, 4.82), (0.15, 2.38, 2.66), interior_white, bevel=0.025)
-    add_box("Bathroom gallery partition", (2.28, 2.08, 4.82), (0.20, 2.72, 2.66), interior_white, bevel=0.022)
-    for index in range(10):
-        add_box(
-            "Gallery interior timber slat",
-            (3.45 + index * 0.15, 3.57, 4.84),
-            (0.075, 0.10, 2.40),
-            wood,
-            bevel=0.012,
-        )
-    # The open cut must stay plane and architectural.  A window placed directly
-    # in that cut looked like a detached black panel, so the gallery glazing is
-    # recessed into the rear wall instead.
-    add_box("Gallery rear window view", (3.78, 3.70, 4.84), (1.46, 0.035, 2.12), landscape, bevel=0.012)
-    for x in (3.00, 4.56):
-        add_box("Gallery rear window jamb", (x, 3.64, 4.84), (0.10, 0.10, 2.26), dark, bevel=0.010)
-    for z in (3.75, 5.93):
-        add_box("Gallery rear window frame", (3.78, 3.64, z), (1.66, 0.10, 0.10), dark, bevel=0.010)
+        add_box("Bathroom horizontal tile joint", (bathroom_center_x, BATHROOM_REAR_Y - 0.065, z), (1.96, 0.006, 0.005), ceramic, bevel=0.001, parent=bathroom_group)
+
+    # The gallery remains open toward the balcony; bathroom daylight comes
+    # from the two deliberately framed openings in the right facade.
 
     # Recesses, shadow gaps and service penetrations are small details in
     # geometry, but they create the high-frequency edge information visible in
     # the reference render.
     for x in (-4.35, -3.65, -2.95, -2.25):
         add_box("Bedroom ceiling shadow gap", (x, 3.57, 6.09), (0.50, 0.025, 0.025), dark, bevel=0.003)
-    for x in (0.28, 0.77, 1.26, 1.75):
-        add_box("Bathroom ceiling shadow gap", (x, 2.57, 6.09), (0.38, 0.025, 0.025), dark, bevel=0.003)
+    for x in (1.12, 1.68, 2.24, 2.76):
+        add_box("Bathroom ceiling shadow gap", (x, 3.27, 6.09), (0.42, 0.025, 0.025), dark, bevel=0.003, parent=bathroom_group)
     add_cylinder("Upper service junction", (1.62, 0.78, 5.72), 0.14, 0.08, dark, rotation=(math.pi / 2, 0, 0), vertices=32)
     add_cylinder("Upper service indicator", (1.62, 0.73, 5.72), 0.055, 0.025, red, rotation=(math.pi / 2, 0, 0), vertices=24)
 
@@ -1549,15 +1744,8 @@ def build_scene() -> None:
     for z in (0.53, 2.91):
         add_box("Living side window frame", (-4.66, -0.45, z), (0.10, 1.88, 0.11), dark, bevel=0.010)
 
-    # A restrained glass gallery edge replaces the toy-like fully open upper floor.
-    add_box("Gallery glass", (3.88, 0.05, 4.34), (1.62, 0.025, 0.78), glass, bevel=0.008)
-    add_box("Gallery rail", (3.88, 0.01, 4.75), (1.68, 0.035, 0.035), dark, bevel=0.008)
-    for x in (3.10, 3.62, 4.14, 4.66):
-        add_box("Gallery post", (x, 0.01, 4.36), (0.028, 0.045, 0.82), dark, bevel=0.005)
-    if INCLUDE_GALLERY_DECOR:
-        add_box("Gallery console", (4.05, 2.42, 3.94), (1.30, 0.38, 0.42), wood, bevel=0.035)
-        add_box("Gallery console shadow", (4.05, 2.20, 3.94), (1.12, 0.018, 0.025), dark, bevel=0.004)
-        add_plant("Gallery plant", (4.46, 2.32, 3.56), ceramic, leaf, earth, scale=0.40)
+    # The gallery is a usable continuation of the landing, not another void.
+    # The only balustrade needed upstairs is the one around the actual stairwell.
 
     # The wall build-up is visible in the cut edges, as in the reference render.
     for x in (-4.70, 4.70):
@@ -1629,30 +1817,31 @@ def build_scene() -> None:
     add_box("Kitchen wall units", (3.25, 2.82, 2.22), (2.35, 0.46, 0.82), wood, bevel=0.035)
     add_box("Tall kitchen unit", (4.05, 2.70, 1.72), (0.82, 0.58, 2.70), wood, bevel=0.035)
     add_box("Built-in oven", (4.05, 2.37, 1.65), (0.62, 0.045, 0.72), dark, bevel=0.025)
-    add_box("Sofa seat", (-2.55, -1.50, 0.63), (2.65, 0.98, 0.34), fabric, bevel=0.14)
-    add_box("Sofa back", (-2.55, -1.10, 1.05), (2.65, 0.24, 0.72), fabric, bevel=0.12)
-    for x in (-3.18, -2.55, -1.92):
-        add_box("Sofa cushion", (x, -1.60, 0.84), (0.56, 0.68, 0.20), fabric, bevel=0.13)
-    for x in (-3.77, -1.33):
-        add_box("Sofa arm", (x, -1.50, 0.82), (0.22, 0.98, 0.56), fabric, bevel=0.12)
-    add_box("Sofa cushion linen", (-3.12, -1.18, 1.20), (0.48, 0.15, 0.46), linen, rotation=(math.radians(4), 0, math.radians(-7)), bevel=0.11)
-    add_box("Sofa cushion accent", (-2.28, -1.18, 1.17), (0.42, 0.15, 0.42), fabric, rotation=(math.radians(4), 0, math.radians(6)), bevel=0.10)
-    add_box("Living rug", (-2.55, -2.25, 0.39), (3.45, 2.30, 0.035), linen, bevel=0.03)
-    add_box("Lounge chair seat", (-4.05, -2.70, 0.70), (0.88, 0.76, 0.22), linen, rotation=(0, 0, math.radians(-12)), bevel=0.12)
-    add_box("Lounge chair back", (-4.05, -2.45, 1.08), (0.88, 0.20, 0.72), linen, rotation=(math.radians(-10), 0, math.radians(-12)), bevel=0.12)
-    add_box("Coffee table top", (-2.55, -2.85, 0.62), (1.7, 0.74, 0.08), wood, bevel=0.035)
-    for x in (-3.22, -1.88):
-        for y in (-0.30, 0.20):
-            add_cylinder("Coffee table leg", (x, y - 2.80, 0.42), 0.025, 0.40, dark, vertices=16)
-    add_cylinder("Nested coffee table top", (-2.16, -2.42, 0.68), 0.42, 0.075, dark, vertices=40)
-    for x, y in ((-2.40, -2.62), (-1.92, -2.62), (-2.16, -2.16)):
+    # Living furniture shares one axis: sofa on the exterior wall, coffee
+    # tables in the middle and media unit on the partition opposite it.
+    living_y = 1.38
+    add_box("Sofa seat", (-3.82, living_y, 0.63), (0.96, 2.36, 0.34), fabric, bevel=0.14)
+    add_box("Sofa back", (-4.22, living_y, 1.05), (0.24, 2.36, 0.72), fabric, bevel=0.12)
+    for y in (0.72, 1.38, 2.04):
+        add_box("Sofa cushion", (-3.76, y, 0.84), (0.68, 0.56, 0.20), fabric, bevel=0.13)
+    for y in (0.26, 2.50):
+        add_box("Sofa arm", (-3.82, y, 0.82), (0.96, 0.22, 0.56), fabric, bevel=0.12)
+    add_box("Sofa cushion linen", (-4.08, 0.76, 1.18), (0.15, 0.46, 0.48), linen, rotation=(math.radians(4), 0, math.radians(-4)), bevel=0.11)
+    add_box("Sofa cushion accent", (-4.06, 1.66, 1.16), (0.15, 0.42, 0.42), fabric, rotation=(math.radians(4), 0, math.radians(5)), bevel=0.10)
+    add_box("Living rug", (-2.85, living_y, 0.39), (2.50, 3.05, 0.035), linen, bevel=0.03)
+    add_box("Lounge chair seat", (-3.75, -1.30, 0.70), (0.88, 0.76, 0.22), linen, rotation=(0, 0, math.radians(-24)), bevel=0.12)
+    add_box("Lounge chair back", (-3.88, -1.08, 1.08), (0.88, 0.20, 0.72), linen, rotation=(math.radians(-10), 0, math.radians(-24)), bevel=0.12)
+    add_box("Coffee table top", (-2.78, living_y, 0.62), (1.18, 0.78, 0.08), wood, bevel=0.035)
+    for x in (-3.22, -2.34):
+        for y in (1.10, 1.66):
+            add_cylinder("Coffee table leg", (x, y, 0.42), 0.025, 0.40, dark, vertices=16)
+    add_cylinder("Nested coffee table top", (-2.72, 0.66, 0.68), 0.38, 0.075, dark, vertices=40)
+    for x, y in ((-2.94, 0.45), (-2.50, 0.45), (-2.72, 0.88)):
         add_cylinder("Nested coffee table leg", (x, y, 0.48), 0.022, 0.40, dark, vertices=16)
-    add_box("Media cabinet", (-1.75, 3.46, 0.76), (2.15, 0.40, 0.50), wood, bevel=0.04)
-    add_box("Television", (-1.75, 3.22, 1.66), (1.72, 0.055, 1.02), dark, bevel=0.025)
-    add_box("Living media pier", (-1.10, 1.55, 1.68), (0.15, 1.18, 2.72), interior_white, bevel=0.018)
-    add_box("Living side television", (-1.00, 1.55, 1.76), (0.055, 0.92, 1.05), dark, bevel=0.025)
-    add_box("Living side lowboard", (-0.96, 1.55, 0.72), (0.42, 1.30, 0.46), wood, bevel=0.035)
-    add_plant("Living plant", (-4.12, 2.40, 0.36), ceramic, leaf, earth, scale=0.92)
+    add_box("Living media pier", (-1.48, living_y, 1.68), (0.15, 1.72, 2.72), interior_white, bevel=0.018)
+    add_box("Living side television", (-1.39, living_y, 1.76), (0.055, 1.28, 1.05), dark, bevel=0.025)
+    add_box("Living side lowboard", (-1.34, living_y, 0.72), (0.42, 1.62, 0.46), wood, bevel=0.035)
+    add_plant("Living plant", (-4.18, 3.05, 0.36), ceramic, leaf, earth, scale=0.82)
     dining_x = 3.18
     dining_y = -0.68
     add_box("Dining table", (dining_x, dining_y, 0.95), (2.32, 1.02, 0.10), wood, bevel=0.035)
@@ -1675,58 +1864,97 @@ def build_scene() -> None:
             dark,
             rotation_z=rotation_z,
         )
-    # Pull the bedroom toward the cut plane so the bed reads as the main upper
-    # room, matching the installation reference instead of disappearing behind
-    # the central partition.
-    add_box("Bedroom feature wall", (-3.55, 0.62, 4.82), (2.70, 0.12, 2.64), warm_greige, bevel=0.018)
-    add_box("Upper bed base", (-3.55, -0.46, 3.66), (1.78, 2.08, 0.14), wood, bevel=0.055)
-    add_box("Upper mattress", (-3.55, -0.48, 3.82), (1.70, 2.00, 0.18), fabric, bevel=0.070)
-    add_soft_quilt("Upper duvet", (-3.55, -0.82, 3.99), (1.72, 1.55), bedding)
-    for index, x in enumerate((-3.88, -3.22)):
+    # The bed is anchored to the solid left wall and rotated across the room.
+    # This is both plan-correct and visible from the open-front cutaway camera.
+    bedroom_y = -0.42
+    add_box("Bedroom feature wall", (-4.08, bedroom_y, 4.82), (0.12, 2.34, 2.64), warm_greige, bevel=0.018)
+    add_box("Upper bed base", (-3.02, bedroom_y, 3.66), (2.02, 1.62, 0.14), wood, bevel=0.055)
+    add_box("Upper mattress", (-3.00, bedroom_y, 3.82), (1.94, 1.56, 0.18), fabric, bevel=0.070)
+    add_soft_quilt("Upper duvet", (-2.72, bedroom_y, 3.99), (1.50, 1.58), bedding)
+    for index, y in enumerate((-0.72, -0.12)):
         add_box(
             "Bed pillow",
-            (x, 0.04, 4.01),
-            (0.62, 0.34, 0.11),
+            (-3.68, y, 4.01),
+            (0.34, 0.56, 0.11),
             bedding,
             rotation=(math.radians(2), 0, math.radians(-4 if index == 0 else 4)),
             bevel=0.085,
         )
-    add_box("Upper headboard", (-3.55, 0.52, 4.10), (1.78, 0.12, 0.56), wood, bevel=0.045)
-    add_box("Bedroom rug", (-3.55, -0.96, 3.57), (2.36, 2.46, 0.035), linen, bevel=0.025)
-    for x in (-4.56, -2.55):
-        add_box("Bedroom nightstand", (x, 0.28, 3.80), (0.42, 0.38, 0.46), wood, bevel=0.045)
-        add_box("Nightstand drawer gap", (x, 0.075, 3.86), (0.34, 0.014, 0.018), dark, bevel=0.003)
-        add_cylinder("Bedroom lamp stem", (x, 0.28, 4.23), 0.018, 0.38, dark, vertices=16)
-        add_cone("Bedroom lamp shade", (x, 0.28, 4.45), 0.09, 0.19, 0.23, linen, vertices=32)
-    add_box("Bedroom rear art frame", (-3.55, 0.55, 5.08), (1.08, 0.055, 0.78), dark, bevel=0.018)
-    add_box("Bedroom rear art", (-3.55, 0.515, 5.08), (0.94, 0.028, 0.64), ceramic, bevel=0.008)
+    add_box("Upper headboard", (-4.00, bedroom_y, 4.10), (0.12, 1.66, 0.56), wood, bevel=0.045)
+    add_box("Bedroom rug", (-2.92, bedroom_y, 3.57), (2.60, 2.22, 0.035), linen, bevel=0.025)
+    for y in (-1.32, 0.48):
+        add_box("Bedroom nightstand", (-3.94, y, 3.80), (0.38, 0.34, 0.46), wood, bevel=0.045)
+        add_box("Nightstand drawer gap", (-3.735, y, 3.86), (0.014, 0.28, 0.018), dark, bevel=0.003)
+        add_cylinder("Bedroom lamp stem", (-3.94, y, 4.23), 0.018, 0.38, dark, vertices=16)
+        add_cone("Bedroom lamp shade", (-3.94, y, 4.45), 0.09, 0.19, 0.23, linen, vertices=32)
+    add_box("Bedroom wardrobe", (-1.82, 1.10, 4.72), (0.42, 1.52, 2.38), wood, bevel=0.035)
+    add_box("Bedroom wardrobe reveal", (-2.045, 1.10, 4.72), (0.018, 1.32, 2.18), dark, bevel=0.004)
+    add_box("Bedroom bench", (-2.00, bedroom_y, 3.82), (0.42, 1.18, 0.42), linen, bevel=0.075)
+    add_box("Bedroom wall art frame", (-4.015, bedroom_y, 5.08), (0.055, 1.08, 0.78), dark, bevel=0.018)
+    add_box("Bedroom wall art", (-3.980, bedroom_y, 5.08), (0.028, 0.94, 0.64), ceramic, bevel=0.008)
 
     # Bathroom and kitchen fixtures add believable scale and material contrast.
-    add_box("Bathroom floor", (1.02, 1.25, 3.54), (2.42, 2.36, 0.06), stone_tile, bevel=0.012, parent=bathroom_group)
-    for x in (0.42, 1.02, 1.62):
-        add_box("Bathroom floor joint", (x, 1.25, 3.575), (0.005, 2.22, 0.004), ceramic, bevel=0, parent=bathroom_group)
-    for y in (0.52, 1.25, 1.98):
-        add_box("Bathroom floor cross joint", (1.02, y, 3.577), (2.28, 0.005, 0.004), ceramic, bevel=0, parent=bathroom_group)
-    add_box("Bathroom vanity", (1.02, 2.12, 4.02), (1.08, 0.52, 0.54), wood, bevel=0.035, parent=bathroom_group)
-    add_box("Bathroom drawer shadow", (1.02, 1.848, 4.02), (0.94, 0.018, 0.018), dark, bevel=0.003, parent=bathroom_group)
-    for x in (0.76, 1.28):
-        add_box("Bathroom drawer split", (x, 1.837, 4.02), (0.010, 0.012, 0.45), dark, bevel=0.002, parent=bathroom_group)
-    add_box("Bathroom basin", (1.02, 1.98, 4.34), (0.68, 0.40, 0.13), ceramic, bevel=0.055, parent=bathroom_group)
-    add_box("Bathroom mirror backing", (1.02, 2.418, 5.04), (0.96, 0.025, 0.88), dark, bevel=0.018, parent=bathroom_group)
-    for x in (0.53, 1.51):
-        add_box("Bathroom mirror vertical glow", (x, 2.395, 5.04), (0.032, 0.014, 0.92), warm_light, bevel=0.010, parent=bathroom_group)
+    bathroom_center = (
+        (BATHROOM_LEFT_X + BATHROOM_RIGHT_X) / 2,
+        (BATHROOM_FRONT_Y + BATHROOM_REAR_Y) / 2,
+    )
+    bathroom_width = BATHROOM_RIGHT_X - BATHROOM_LEFT_X
+    bathroom_depth = BATHROOM_REAR_Y - BATHROOM_FRONT_Y
+    add_box("Bathroom floor", (bathroom_center[0], bathroom_center[1], 3.54), (bathroom_width - 0.16, bathroom_depth - 0.16, 0.06), stone_tile, bevel=0.012, parent=bathroom_group)
+    for x in (1.18, 1.87, 2.56):
+        add_box("Bathroom floor joint", (x, bathroom_center[1], 3.575), (0.005, bathroom_depth - 0.28, 0.004), ceramic, bevel=0, parent=bathroom_group)
+    for y in (-1.00, -0.28, 0.44, 1.16, 1.88, 2.60):
+        add_box("Bathroom floor cross joint", (bathroom_center[0], y, 3.577), (bathroom_width - 0.28, 0.005, 0.004), ceramic, bevel=0, parent=bathroom_group)
+
+    # Vanity on the rear wall, centred on the service spine below.
+    vanity_x = 1.52
+    add_box("Bathroom vanity", (vanity_x, 3.05, 4.02), (1.02, 0.48, 0.54), wood, bevel=0.035, parent=bathroom_group)
+    add_box("Bathroom drawer shadow", (vanity_x, 2.798, 4.02), (0.90, 0.018, 0.018), dark, bevel=0.003, parent=bathroom_group)
+    for x in (1.27, 1.77):
+        add_box("Bathroom drawer split", (x, 2.787, 4.02), (0.010, 0.012, 0.45), dark, bevel=0.002, parent=bathroom_group)
+    add_box("Bathroom basin", (vanity_x, 2.92, 4.34), (0.64, 0.36, 0.13), ceramic, bevel=0.055, parent=bathroom_group)
+    add_box("Bathroom mirror backing", (vanity_x, 3.275, 5.04), (0.94, 0.025, 0.88), dark, bevel=0.018, parent=bathroom_group)
+    for x in (1.04, 2.00):
+        add_box("Bathroom mirror vertical glow", (x, 3.252, 5.04), (0.032, 0.014, 0.92), warm_light, bevel=0.010, parent=bathroom_group)
     for z in (4.59, 5.49):
-        add_box("Bathroom mirror horizontal glow", (1.02, 2.395, z), (0.98, 0.014, 0.032), warm_light, bevel=0.010, parent=bathroom_group)
-    add_box("Bathroom mirror face", (1.02, 2.382, 5.04), (0.86, 0.018, 0.78), mirror, bevel=0.016, parent=bathroom_group)
-    add_cylinder("Bathroom tap", (1.02, 1.78, 4.53), 0.026, 0.28, dark, rotation=(math.pi / 2, 0, 0), vertices=24, parent=bathroom_group)
-    add_box("Shower glass", (2.02, 1.18, 4.58), (0.035, 1.42, 1.92), glass, bevel=0.012, parent=bathroom_group)
-    add_cylinder("Shower rail", (1.96, 2.38, 4.83), 0.022, 1.26, dark, vertices=24, parent=bathroom_group)
-    add_cylinder("Shower head", (1.96, 2.38, 5.50), 0.12, 0.025, dark, vertices=32, parent=bathroom_group)
-    add_box("Shower drain", (1.76, 0.60, 3.59), (0.42, 0.035, 0.018), dark, bevel=0.005, parent=bathroom_group)
+        add_box("Bathroom mirror horizontal glow", (vanity_x, 3.252, z), (0.96, 0.014, 0.032), warm_light, bevel=0.010, parent=bathroom_group)
+    add_box("Bathroom mirror face", (vanity_x, 3.239, 5.04), (0.84, 0.018, 0.78), mirror, bevel=0.016, parent=bathroom_group)
+    add_cylinder("Bathroom tap", (vanity_x, 2.70, 4.53), 0.026, 0.28, dark, rotation=(math.pi / 2, 0, 0), vertices=24, parent=bathroom_group)
+
+    # Walk-in shower occupies the rear-right bay and stays clear of the side
+    # entrance. The glass line also makes the room zoning legible in plan.
+    add_box("Shower glass partition", (2.18, 2.68, 4.58), (0.035, 1.05, 1.82), glass, bevel=0.012, parent=bathroom_group)
+    add_cylinder("Shower rail", (2.68, 3.25, 4.83), 0.022, 1.26, dark, vertices=24, parent=bathroom_group)
+    add_cylinder("Shower head", (2.68, 3.22, 5.50), 0.12, 0.025, dark, vertices=32, parent=bathroom_group)
+    add_box("Shower drain", (2.63, 2.22, 3.59), (0.36, 0.035, 0.018), dark, bevel=0.005, parent=bathroom_group)
+
+    # A compact tub uses the front bay that was previously dead gallery space.
+    # Its clear edge remains well away from the side door and WC circulation.
+    add_box("Bathroom tub shell", (1.92, -0.82, 3.84), (1.42, 0.72, 0.46), ceramic, bevel=0.16, parent=bathroom_group)
+    add_box("Bathroom tub recess", (1.92, -0.82, 4.00), (1.14, 0.46, 0.16), dark, bevel=0.13, parent=bathroom_group)
+    add_curve("Bathroom tub filler", [(2.60, -0.82, 4.02), (2.68, -0.82, 4.30), (2.52, -0.82, 4.30)], dark, bevel_depth=0.022, parent=bathroom_group)
+
+    # WC is in the front-left bay and does not conflict with the side door.
+    add_box("Bathroom WC cistern", (0.96, 0.76, 4.10), (0.22, 0.58, 0.60), ceramic, bevel=0.055, parent=bathroom_group)
+    wc_bowl = add_uv_sphere("Bathroom WC bowl", (1.30, 0.76, 3.82), (0.38, 0.29, 0.22), ceramic)
+    wc_bowl.parent = bathroom_group
+    add_box("Bathroom WC seat", (1.32, 0.76, 4.00), (0.50, 0.42, 0.10), ceramic, bevel=0.095, parent=bathroom_group)
+    add_box("Bathroom WC flush plate", (0.855, 0.76, 4.55), (0.025, 0.28, 0.16), dark, bevel=0.018, parent=bathroom_group)
+
     for rail in range(7):
-        add_cylinder("Towel radiator rail", (0.35, 2.24, 4.25 + rail * 0.18), 0.018, 0.58, ceramic, rotation=(0, math.pi / 2, 0), vertices=16, parent=bathroom_group)
-    for x in (0.09, 0.61):
-        add_cylinder("Towel radiator upright", (x, 2.24, 4.79), 0.018, 1.32, ceramic, vertices=16, parent=bathroom_group)
+        add_cylinder("Towel radiator rail", (2.84, 1.18, 4.25 + rail * 0.18), 0.018, 0.68, ceramic, rotation=(math.pi / 2, 0, 0), vertices=16, parent=bathroom_group)
+    for y in (0.86, 1.50):
+        add_cylinder("Towel radiator upright", (2.84, y, 4.79), 0.018, 1.32, ceramic, vertices=16, parent=bathroom_group)
+
+    # The mockup shows a narrow gallery at the right facade, not a second full
+    # office. A slim console preserves circulation and keeps the side windows
+    # usable without colliding with the bathroom partition.
+    add_box("Gallery console", (3.78, 0.20, 3.96), (0.48, 1.10, 0.09), wood, bevel=0.045)
+    for y in (-0.22, 0.62):
+        add_cylinder("Gallery console leg", (3.90, y, 3.74), 0.028, 0.48, dark, vertices=18)
+    add_box("Gallery wall light", (4.04, 0.20, 4.76), (0.08, 0.42, 0.34), warm_light, bevel=0.035)
+    add_plant("Gallery plant", (3.68, -2.30, 3.56), ceramic, leaf, earth, scale=0.48)
+
     for index in range(7):
         add_box("Kitchen handle", (1.28 + index * 0.46, 2.19, 0.98), (0.28, 0.025, 0.025), dark, bevel=0.01)
     add_box("Kitchen backsplash", (2.65, 2.20, 1.78), (3.55, 0.035, 0.62), ceramic, bevel=0.01)
@@ -1741,17 +1969,34 @@ def build_scene() -> None:
     add_plant("Dining plant", (dining_x, dining_y, 1.02), ceramic, leaf, earth, scale=0.42)
 
     # Doors, art and pendant fixtures give every visible room a finished focal point.
-    door_locations = [(-0.65, 2.61, 1.68), (-1.35, 2.62, 4.70)]
-    if INCLUDE_GALLERY_DOOR:
-        door_locations.append((3.78, 2.75, 4.70))
-    for index, (x, y, z) in enumerate(door_locations):
-        add_box(f"Oak interior door {index}", (x, y, z), (1.00, 0.10, 2.36), wood, bevel=0.035)
-        add_box(f"Door leaf reveal {index}", (x, y - 0.062, z), (0.82, 0.018, 2.14), dark, bevel=0.008)
-        add_box(f"Door leaf face {index}", (x, y - 0.076, z), (0.76, 0.014, 2.08), wood, bevel=0.012)
-        add_box(f"Door frame left {index}", (x - 0.55, y - 0.025, z), (0.075, 0.14, 2.48), wood, bevel=0.012)
-        add_box(f"Door frame right {index}", (x + 0.55, y - 0.025, z), (0.075, 0.14, 2.48), wood, bevel=0.012)
-        add_box(f"Door frame top {index}", (x, y - 0.025, z + 1.22), (1.18, 0.14, 0.075), wood, bevel=0.012)
-        add_cylinder(f"Door handle {index}", (x + 0.34, y - 0.08, z), 0.025, 0.18, dark, rotation=(math.pi / 2, 0, 0), vertices=16)
+    front_facing_doors = (
+        ("Ground hall", -0.65, 2.61, 1.68),
+    )
+    for name, x, y, z in front_facing_doors:
+        add_box(f"Oak interior door {name}", (x, y, z), (0.90, 0.10, 2.36), wood, bevel=0.035)
+        add_box(f"Door leaf reveal {name}", (x, y - 0.062, z), (0.74, 0.018, 2.14), dark, bevel=0.008)
+        add_box(f"Door leaf face {name}", (x, y - 0.076, z), (0.68, 0.014, 2.08), wood, bevel=0.012)
+        add_box(f"Door frame left {name}", (x - 0.50, y - 0.025, z), (0.075, 0.14, 2.48), wood, bevel=0.012)
+        add_box(f"Door frame right {name}", (x + 0.50, y - 0.025, z), (0.075, 0.14, 2.48), wood, bevel=0.012)
+        add_box(f"Door frame top {name}", (x, y - 0.025, z + 1.22), (1.08, 0.14, 0.075), wood, bevel=0.012)
+        add_cylinder(f"Door handle {name}", (x + 0.31, y - 0.08, z), 0.025, 0.18, dark, rotation=(math.pi / 2, 0, 0), vertices=16)
+
+    # The bathroom is entered from the central landing. The open leaf lies
+    # inside the room and therefore cannot block the gallery or stair route.
+    add_box("Oak interior door Bathroom", (BATHROOM_LEFT_X + 0.42, BATHROOM_DOOR_Y - 0.43, 4.70), (0.84, 0.10, 2.36), wood, bevel=0.035, parent=bathroom_group)
+    add_box("Door leaf reveal Bathroom", (BATHROOM_LEFT_X + 0.42, BATHROOM_DOOR_Y - 0.368, 4.70), (0.70, 0.018, 2.14), dark, bevel=0.008, parent=bathroom_group)
+    add_box("Door frame front Bathroom", (BATHROOM_LEFT_X + 0.025, BATHROOM_DOOR_Y - 0.51, 4.70), (0.14, 0.075, 2.48), wood, bevel=0.012, parent=bathroom_group)
+    add_box("Door frame rear Bathroom", (BATHROOM_LEFT_X + 0.025, BATHROOM_DOOR_Y + 0.51, 4.70), (0.14, 0.075, 2.48), wood, bevel=0.012, parent=bathroom_group)
+    add_box("Door frame top Bathroom", (BATHROOM_LEFT_X + 0.025, BATHROOM_DOOR_Y, 5.92), (0.14, 1.08, 0.075), wood, bevel=0.012, parent=bathroom_group)
+    add_cylinder("Door handle Bathroom", (BATHROOM_LEFT_X + 0.70, BATHROOM_DOOR_Y - 0.48, 4.70), 0.025, 0.18, dark, rotation=(math.pi / 2, 0, 0), vertices=16, parent=bathroom_group)
+
+    bedroom_door_y = 2.48
+    add_box("Oak interior door Bedroom", (BEDROOM_PARTITION_X, bedroom_door_y, 4.70), (0.10, 0.88, 2.36), wood, bevel=0.035)
+    add_box("Door leaf reveal Bedroom", (BEDROOM_PARTITION_X + 0.062, bedroom_door_y, 4.70), (0.018, 0.72, 2.14), dark, bevel=0.008)
+    add_box("Door frame front Bedroom", (BEDROOM_PARTITION_X + 0.025, bedroom_door_y - 0.49, 4.70), (0.14, 0.075, 2.48), wood, bevel=0.012)
+    add_box("Door frame rear Bedroom", (BEDROOM_PARTITION_X + 0.025, bedroom_door_y + 0.49, 4.70), (0.14, 0.075, 2.48), wood, bevel=0.012)
+    add_box("Door frame top Bedroom", (BEDROOM_PARTITION_X + 0.025, bedroom_door_y, 5.92), (0.14, 1.06, 0.075), wood, bevel=0.012)
+    add_cylinder("Door handle Bedroom", (BEDROOM_PARTITION_X + 0.08, bedroom_door_y - 0.30, 4.70), 0.025, 0.18, dark, rotation=(0, math.pi / 2, 0), vertices=16)
     for index, x in enumerate((2.38, 3.18, 3.98)):
         add_cylinder(f"Pendant cable {index}", (x, dining_y, 2.66), 0.016, 0.78, dark, vertices=12)
         add_cone(f"Pendant shade {index}", (x, dining_y, 2.20), 0.075, 0.23, 0.28, dark, vertices=24)
@@ -1773,16 +2018,16 @@ def build_scene() -> None:
                 glass_x = x + (0.15 if row_index == 0 else -0.15)
                 add_cylinder("Dining glass", (glass_x, y + 0.02, 1.135), 0.035, 0.17, glass, vertices=24)
 
-        add_box("Living coffee table book", (-2.76, -2.87, 0.695), (0.42, 0.28, 0.045), warm_greige, rotation=(0, 0, math.radians(7)), bevel=0.018)
-        add_box("Living coffee table magazine", (-2.46, -2.83, 0.720), (0.38, 0.25, 0.025), ceramic, rotation=(0, 0, math.radians(-5)), bevel=0.012)
-        add_cylinder("Living floor lamp base", (-4.05, -1.02, 0.40), 0.20, 0.055, dark, vertices=32)
-        add_cylinder("Living floor lamp stem", (-4.05, -1.02, 1.16), 0.020, 1.50, dark, vertices=20)
-        add_cone("Living floor lamp shade", (-4.05, -1.02, 1.88), 0.12, 0.28, 0.34, linen, vertices=32)
-        add_cylinder("Living floor lamp glow", (-4.05, -1.02, 1.72), 0.08, 0.04, warm_light, vertices=24)
+        add_box("Living coffee table book", (-2.92, 1.34, 0.695), (0.36, 0.26, 0.045), warm_greige, rotation=(0, 0, math.radians(7)), bevel=0.018)
+        add_box("Living coffee table magazine", (-2.64, 1.48, 0.720), (0.34, 0.23, 0.025), ceramic, rotation=(0, 0, math.radians(-5)), bevel=0.012)
+        add_cylinder("Living floor lamp base", (-4.28, -0.18, 0.40), 0.20, 0.055, dark, vertices=32)
+        add_cylinder("Living floor lamp stem", (-4.28, -0.18, 1.16), 0.020, 1.50, dark, vertices=20)
+        add_cone("Living floor lamp shade", (-4.28, -0.18, 1.88), 0.12, 0.28, 0.34, linen, vertices=32)
+        add_cylinder("Living floor lamp glow", (-4.28, -0.18, 1.72), 0.08, 0.04, warm_light, vertices=24)
 
-        add_box("Bedroom throw", (-3.55, -1.18, 4.08), (1.72, 0.48, 0.07), linen, bevel=0.060)
-        add_box("Bathroom folded towel", (1.02, 1.78, 4.43), (0.46, 0.22, 0.07), linen, bevel=0.045, parent=bathroom_group)
-        add_box("Bathroom hand towel", (0.35, 2.16, 4.87), (0.40, 0.035, 0.58), linen, bevel=0.035, parent=bathroom_group)
+        add_box("Bedroom throw", (-2.72, -0.42, 4.08), (0.46, 1.56, 0.07), linen, bevel=0.060)
+        add_box("Bathroom folded towel", (1.52, 2.78, 4.43), (0.42, 0.20, 0.07), linen, bevel=0.045, parent=bathroom_group)
+        add_box("Bathroom hand towel", (2.81, 1.18, 4.87), (0.035, 0.42, 0.58), linen, bevel=0.035, parent=bathroom_group)
 
         add_box("Kitchen induction cooktop", (3.20, 2.14, 1.415), (0.76, 0.46, 0.025), dark, bevel=0.035)
         for x, y, radius in ((3.00, 2.02, 0.105), (3.38, 2.02, 0.085), (3.00, 2.28, 0.085), (3.38, 2.28, 0.105)):
@@ -1798,43 +2043,80 @@ def build_scene() -> None:
     add_box("Service core right reveal", (SERVICE_X + 0.52, -3.07, 1.72), (0.20, 0.32, 2.84), concrete, bevel=0.018)
     add_box("Service core head", (SERVICE_X, -3.07, 2.98), (SERVICE_CORE_WIDTH, 0.32, 0.28), concrete, bevel=0.018)
     add_box("Service core sill", (SERVICE_X, -3.07, 0.47), (SERVICE_CORE_WIDTH, 0.32, 0.22), concrete, bevel=0.018)
-    add_box("Distribution cabinet", (SERVICE_X, -3.08, 1.70), (0.90, 0.25, 2.10), interior_white, bevel=0.022)
-    add_box("Distribution recess", (SERVICE_X, -3.23, 1.70), (0.74, 0.075, 1.82), dark, bevel=0.012)
-    for row in range(7):
-        rail_z = 1.02 + row * 0.225
-        add_box("DIN rail", (SERVICE_X, -3.285, rail_z), (0.72, 0.035, 0.025), ceramic, bevel=0.006)
-        for module in range(6):
-            module_mat = red if (row, module) in ((1, 4), (4, 1)) else interior_white
+    cabinet_z = 1.66
+    add_box("Distribution cabinet shell", (SERVICE_X, -3.10, cabinet_z), (1.04, 0.22, 2.08), cabinet_white, bevel=0.032)
+    add_box("Distribution recess", (SERVICE_X, -3.235, cabinet_z), (0.86, 0.075, 1.88), dark, bevel=0.012)
+    # Explicit powder-coated frame bars keep the enclosure legible against the
+    # white service wall instead of reading as one tall black rectangle.
+    for x in (SERVICE_X - 0.47, SERVICE_X + 0.47):
+        add_box("Distribution frame side", (x, -3.35, cabinet_z), (0.075, 0.060, 1.98), cabinet_white, bevel=0.012)
+    for z in (0.69, 2.63):
+        add_box("Distribution frame horizontal", (SERVICE_X, -3.35, z), (1.00, 0.060, 0.075), cabinet_white, bevel=0.012)
+    for x in (SERVICE_X - 0.36, SERVICE_X + 0.36):
+        add_box("Distribution cable duct", (x, -3.30, cabinet_z), (0.09, 0.055, 1.62), equipment, bevel=0.010)
+
+    for row in range(6):
+        rail_z = 0.94 + row * 0.28
+        add_box("DIN rail", (SERVICE_X, -3.305, rail_z), (0.64, 0.040, 0.028), equipment, bevel=0.006)
+        for module in range(5):
+            module_x = SERVICE_X - 0.25 + module * 0.125
+            module_mat = cabinet_white if (row + module) % 4 else ceramic
             add_box(
                 "DIN module",
-                (SERVICE_X - 0.27 + module * 0.108, -3.32, rail_z + 0.018),
-                (0.085, 0.075, 0.135),
+                (module_x, -3.345, rail_z + 0.018),
+                (0.102, 0.082, 0.155),
                 module_mat,
-                bevel=0.010,
+                bevel=0.012,
             )
             add_box(
                 "DIN toggle",
-                (SERVICE_X - 0.27 + module * 0.108, -3.365, rail_z + 0.035),
-                (0.035, 0.018, 0.045),
+                (module_x, -3.397, rail_z + 0.035),
+                (0.040, 0.018, 0.050),
                 dark,
                 bevel=0.006,
             )
-    # A few controlled wire loops make the open board read as installed
-    # equipment.  They stay behind the DIN modules and avoid schematic clutter.
-    for index, x in enumerate(tuple(SERVICE_X - 0.25 + index * 0.13 for index in range(5))):
+            if (row, module) in ((1, 4), (4, 1)):
+                add_box(
+                    "Distribution label red",
+                    (module_x, -3.410, rail_z - 0.035),
+                    (0.050, 0.010, 0.018),
+                    red,
+                    bevel=0.004,
+                )
+
+    # Terminal blocks and one larger main breaker give the rows a believable
+    # hierarchy without the previous noisy red/white checkerboard.
+    for index, x in enumerate((SERVICE_X - 0.22, SERVICE_X - 0.08, SERVICE_X + 0.08, SERVICE_X + 0.22)):
+        add_box(
+            "Distribution terminal",
+            (x, -3.395, 2.48),
+            (0.095, 0.060, 0.090),
+            cable_green if index in (0, 3) else cable_blue,
+            bevel=0.010,
+        )
+    add_box("Distribution main breaker", (SERVICE_X, -3.39, 0.79), (0.30, 0.075, 0.20), equipment, bevel=0.018)
+    add_box("Distribution main breaker toggle", (SERVICE_X, -3.44, 0.80), (0.10, 0.018, 0.075), red, bevel=0.008)
+
+    # A few controlled wire loops stay behind the devices and feed the terminal
+    # row, matching the restrained wiring visible in the reference.
+    for index, x in enumerate(tuple(SERVICE_X - 0.24 + index * 0.12 for index in range(5))):
         cable_mat = cable_green if index in (0, 4) else cable_blue
         add_curve(
             f"Distribution cable {index}",
             [
-                (x, -3.34, 2.58),
-                (x + 0.08 * (-1 if index % 2 else 1), -3.36, 2.40),
-                (x - 0.05, -3.36, 2.18),
+                (x, -3.34, 2.60),
+                (x + 0.06 * (-1 if index % 2 else 1), -3.36, 2.51),
+                (x - 0.035, -3.36, 2.40),
             ],
             cable_mat,
-            bevel_depth=0.012,
+            bevel_depth=0.010,
             smooth=True,
         )
-    add_box("Cabinet open door", (SERVICE_X + 0.52, -3.02, 1.70), (0.055, 0.72, 2.04), glass, rotation=(0, 0, math.radians(-6)), bevel=0.018)
+
+    # The white steel door is opened roughly 90 degrees on the right hinge.
+    add_box("Cabinet open door shell", (SERVICE_X + 0.64, -3.00, cabinet_z), (0.070, 0.94, 2.04), cabinet_white, rotation=(0, 0, math.radians(-3)), bevel=0.024)
+    add_box("Cabinet open door inner", (SERVICE_X + 0.682, -3.00, cabinet_z), (0.018, 0.78, 1.84), equipment, rotation=(0, 0, math.radians(-3)), bevel=0.018)
+    add_box("Cabinet open door handle", (SERVICE_X + 0.705, -3.31, cabinet_z), (0.025, 0.10, 0.34), dark, bevel=0.014)
     for device_index, device_x in enumerate((SERVICE_X - 0.48, SERVICE_X + 0.48)):
         add_box(
             f"Service automation enclosure {device_index}",
@@ -1855,28 +2137,76 @@ def build_scene() -> None:
         if obj.name.startswith(DISTRIBUTION_PREFIXES):
             obj.parent = distribution_group
 
-    # Hollow inspection pit: separate concrete shell parts create readable depth
-    # instead of a solid block with a black rectangle pasted onto its face.
-    add_box("Network pit floor", (SERVICE_X, SERVICE_PIT_Y, -1.06), (1.72, 1.36, 0.12), concrete, bevel=0.014, parent=network_pit_group)
-    add_box("Network pit left wall", (SERVICE_X - 0.80, SERVICE_PIT_Y, -0.51), (0.12, 1.36, 1.18), concrete, bevel=0.014, parent=network_pit_group)
-    add_box("Network pit right wall", (SERVICE_X + 0.80, SERVICE_PIT_Y, -0.51), (0.12, 1.36, 1.18), concrete, bevel=0.014, parent=network_pit_group)
-    add_box("Network pit back wall", (SERVICE_X, SERVICE_PIT_Y + 0.62, -0.51), (1.72, 0.12, 1.18), concrete, bevel=0.014, parent=network_pit_group)
-    add_box("Network pit inner back", (SERVICE_X, SERVICE_PIT_Y + 0.54, -0.48), (1.42, 0.035, 0.90), interior_white, bevel=0.010, parent=network_pit_group)
-    add_box("Network cabinet", (SERVICE_X, SERVICE_PIT_Y + 0.48, -0.44), (0.82, 0.16, 0.82), dark, bevel=0.025, parent=network_pit_group)
-    for x in (SERVICE_X - 0.39, SERVICE_X + 0.39):
-        add_box("Network rack upright", (x, SERVICE_PIT_Y + 0.39, -0.44), (0.035, 0.035, 0.74), ceramic, bevel=0.005, parent=network_pit_group)
-    for row in range(7):
-        add_box("Network patch row", (SERVICE_X, SERVICE_PIT_Y + 0.36, -0.72 + row * 0.095), (0.68, 0.028, 0.042), red if row in (2, 5) else interior_white, bevel=0.006, parent=network_pit_group)
+    # The mockup contains a dedicated server/network room below the central
+    # installation spine. It is modelled as a usable room rather than the old
+    # shallow inspection box: rack left, UPS/security right, access at rear.
+    server_x_min = SERVER_ROOM_CENTER_X - SERVER_ROOM_WIDTH / 2
+    server_x_max = SERVER_ROOM_CENTER_X + SERVER_ROOM_WIDTH / 2
+    server_y_min = SERVER_ROOM_CENTER_Y - SERVER_ROOM_DEPTH / 2
+    server_y_max = SERVER_ROOM_CENTER_Y + SERVER_ROOM_DEPTH / 2
+    server_floor_top = SERVER_ROOM_FLOOR_Z + 0.07
+    server_wall_height = SERVER_ROOM_WALL_TOP_Z - server_floor_top
+    server_wall_z = server_floor_top + server_wall_height / 2
+    server_door_x = server_x_max - 0.46
+
+    add_box("Server room floor", (SERVER_ROOM_CENTER_X, SERVER_ROOM_CENTER_Y, SERVER_ROOM_FLOOR_Z), (SERVER_ROOM_WIDTH, SERVER_ROOM_DEPTH, 0.14), concrete, bevel=0.018, parent=server_room_group)
+    add_box("Server room raised floor", (SERVER_ROOM_CENTER_X, SERVER_ROOM_CENTER_Y, server_floor_top + 0.025), (SERVER_ROOM_WIDTH - 0.22, SERVER_ROOM_DEPTH - 0.20, 0.05), equipment, bevel=0.010, parent=server_room_group)
+    add_box("Server room left wall", (server_x_min + 0.07, SERVER_ROOM_CENTER_Y, server_wall_z), (0.14, SERVER_ROOM_DEPTH, server_wall_height), concrete, bevel=0.018, parent=server_room_group)
+    add_box("Server room right wall", (server_x_max - 0.07, SERVER_ROOM_CENTER_Y, server_wall_z), (0.14, SERVER_ROOM_DEPTH, server_wall_height), concrete, bevel=0.018, parent=server_room_group)
+
+    # Rear wall is split around a proper maintenance door to the technical
+    # circulation behind the cutaway cell.
+    rear_left_width = server_door_x - 0.43 - server_x_min
+    add_box("Server room rear wall left", (server_x_min + rear_left_width / 2, server_y_max - 0.07, server_wall_z), (rear_left_width, 0.14, server_wall_height), concrete, bevel=0.018, parent=server_room_group)
+    rear_right_width = server_x_max - (server_door_x + 0.43)
+    add_box("Server room rear wall right", (server_door_x + 0.43 + rear_right_width / 2, server_y_max - 0.07, server_wall_z), (rear_right_width, 0.14, server_wall_height), concrete, bevel=0.018, parent=server_room_group)
+    add_box("Server room door lintel", (server_door_x, server_y_max - 0.07, -0.02), (0.86, 0.14, 0.36), concrete, bevel=0.014, parent=server_room_group)
+    add_box("Server room open door", (server_door_x - 0.40, server_y_max - 0.47, -0.74), (0.10, 0.80, 1.48), cabinet_white, bevel=0.025, parent=server_room_group)
+    add_box("Server room door handle", (server_door_x - 0.46, server_y_max - 0.73, -0.74), (0.025, 0.10, 0.22), dark, bevel=0.010, parent=server_room_group)
+
+    # Open-front cutaway returns keep the room volume readable while exposing
+    # all equipment to the installation camera.
+    add_box("Server room front curb", (SERVER_ROOM_CENTER_X, server_y_min + 0.06, server_floor_top + 0.09), (SERVER_ROOM_WIDTH, 0.12, 0.18), concrete, bevel=0.012, parent=server_room_group)
+    add_box("Server room inner back", (SERVER_ROOM_CENTER_X - 0.48, server_y_max - 0.15, -0.76), (1.82, 0.025, 1.48), interior_white, bevel=0.010, parent=server_room_group)
+
+    rack_x = server_x_min + 0.62
+    rack_y = server_y_max - 0.43
+    rack_z = -0.91
+    add_box("Server rack shell", (rack_x, rack_y, rack_z), (0.78, 0.62, 1.46), dark, bevel=0.035, parent=server_room_group)
+    add_box("Server rack glass door", (rack_x, rack_y - 0.326, rack_z), (0.68, 0.025, 1.34), glass, bevel=0.012, parent=server_room_group)
+    for x in (rack_x - 0.34, rack_x + 0.34):
+        add_box("Server rack upright", (x, rack_y - 0.35, rack_z), (0.035, 0.035, 1.34), cabinet_white, bevel=0.005, parent=server_room_group)
+    for row in range(9):
+        row_z = -1.48 + row * 0.13
+        add_box("Server patch row", (rack_x, rack_y - 0.37, row_z), (0.58, 0.032, 0.062), red if row in (2, 6) else cabinet_white, bevel=0.006, parent=server_room_group)
         for port in range(8):
-            add_box("Network port", (SERVICE_X - 0.28 + port * 0.08, SERVICE_PIT_Y + 0.33, -0.72 + row * 0.095), (0.035, 0.012, 0.018), dark, bevel=0.003, parent=network_pit_group)
-    add_box("Network gateway", (SERVICE_X + 0.40, SERVICE_PIT_Y + 0.34, -0.24), (0.17, 0.035, 0.22), ceramic, bevel=0.025, parent=network_pit_group)
+            add_box("Server network port", (rack_x - 0.245 + port * 0.07, rack_y - 0.393, row_z), (0.028, 0.012, 0.021), dark, bevel=0.003, parent=server_room_group)
+
+    # Separate power/security hardware keeps the server room technically
+    # believable and mirrors the white gateway shown beside the black rack.
+    equipment_x = SERVER_ROOM_CENTER_X + 0.52
+    add_box("Server UPS cabinet", (equipment_x, server_y_max - 0.35, -1.12), (0.58, 0.48, 0.92), equipment, bevel=0.035, parent=server_room_group)
+    add_box("Server UPS display", (equipment_x, server_y_max - 0.602, -0.96), (0.24, 0.025, 0.12), warm_light, bevel=0.012, parent=server_room_group)
+    add_box("Server security panel", (equipment_x, server_y_max - 0.16, -0.37), (0.62, 0.08, 0.40), cabinet_white, bevel=0.035, parent=server_room_group)
+    add_box("Server security indicator", (equipment_x + 0.18, server_y_max - 0.205, -0.37), (0.06, 0.014, 0.03), red, bevel=0.006, parent=server_room_group)
+    add_box("Server network gateway", (equipment_x - 0.18, server_y_max - 0.215, -0.37), (0.15, 0.035, 0.22), ceramic, bevel=0.025, parent=server_room_group)
+
+    # A cable tray aligns the rack with the ground-floor distribution cabinet
+    # above. Cooling and ceiling light complete the dedicated room.
+    add_box("Server cable tray horizontal", (SERVICE_X - 0.20, server_y_max - 0.22, -0.13), (1.70, 0.16, 0.08), equipment, bevel=0.010, parent=server_room_group)
+    add_box("Server cable tray riser", (SERVICE_X, server_y_max - 0.22, -0.66), (0.16, 0.16, 0.98), equipment, bevel=0.010, parent=server_room_group)
+    add_box("Server cooling unit", (server_x_max - 0.16, SERVER_ROOM_CENTER_Y - 0.18, -0.50), (0.10, 0.78, 0.42), cabinet_white, bevel=0.035, parent=server_room_group)
+    for offset in (-0.22, 0.0, 0.22):
+        add_box("Server cooling grille", (server_x_max - 0.215, SERVER_ROOM_CENTER_Y - 0.18 + offset, -0.50), (0.014, 0.11, 0.24), dark, bevel=0.004, parent=server_room_group)
+    add_box("Server room ceiling light", (SERVER_ROOM_CENTER_X, SERVER_ROOM_CENTER_Y, 0.10), (1.10, 0.32, 0.035), warm_light, bevel=0.018, parent=server_room_group)
+
     add_box(
-        "Network pit closed cover",
-        (SERVICE_X, SERVICE_PIT_Y, -0.34),
-        (1.84, 1.48, 0.10),
+        "Server room closed cover",
+        (SERVER_ROOM_CENTER_X, SERVER_ROOM_CENTER_Y, SERVER_ROOM_WALL_TOP_Z + 0.05),
+        (SERVER_ROOM_WIDTH + 0.16, SERVER_ROOM_DEPTH + 0.16, 0.10),
         concrete,
-        bevel=0.012,
-        parent=network_cover_group,
+        bevel=0.014,
+        parent=server_cover_group,
     )
     for x, y, z in ((-3.6, -3.73, 1.45), (0.8, -3.73, 1.45), (3.8, -3.73, 4.65), (4.7, -1.2, 4.6)):
         add_box("KNX control", (x, y, z), (0.16, 0.08, 0.24) if abs(y) > 3 else (0.08, 0.16, 0.24), dark, bevel=0.025)
@@ -1886,8 +2216,8 @@ def build_scene() -> None:
             (3.30, -7.82, -1.66),
             (4.15, -7.05, -1.42),
             (4.00, -6.25, -1.05),
-            (SERVICE_X + 0.80, -5.55, -0.62),
-            (SERVICE_X, SERVICE_PIT_Y - 0.60, -0.42),
+            (rack_x + 0.42, server_y_min - 0.10, -1.28),
+            (rack_x, rack_y - 0.42, -1.05),
         ],
         red,
         bevel_depth=0.027,
@@ -1896,11 +2226,13 @@ def build_scene() -> None:
     add_curve(
         "Hubmann installation path",
         [
-            (SERVICE_X, SERVICE_PIT_Y - 0.60, -0.42),
-            (SERVICE_X, SERVICE_PIT_Y - 0.18, -0.48),
+            (rack_x, rack_y - 0.42, -1.05),
+            (rack_x, server_y_max - 0.22, -0.18),
+            (SERVICE_X, server_y_max - 0.22, -0.18),
             (SERVICE_X, -3.42, 0.32),
-            (SERVICE_X, -3.42, 3.42),
-            (SERVICE_X, -3.42, 6.04),
+            (SERVICE_X + 0.58, -3.42, 0.55),
+            (SERVICE_X + 0.58, -3.42, 3.42),
+            (SERVICE_X + 0.58, -3.42, 6.04),
             (4.10, -3.42, 6.04),
             (4.10, 2.80, 6.04),
         ],
@@ -1924,14 +2256,14 @@ def build_scene() -> None:
     )
     add_curve(
         "Bedroom branch upper",
-        [(SERVICE_X, -3.42, 5.96), (-2.75, -3.42, 5.96), (-2.75, 1.52, 5.96), (-2.75, 1.52, 5.35)],
+        [(SERVICE_X, -3.42, 5.96), (-3.10, -3.42, 5.96), (-3.10, -0.42, 5.96), (-3.10, -0.42, 5.35)],
         red,
         bevel_depth=0.011,
         smooth=False,
     )
     add_curve(
         "Bathroom branch upper",
-        [(SERVICE_X, -3.42, 5.94), (SERVICE_X, 2.36, 5.94), (1.98, 2.36, 5.94)],
+        [(SERVICE_X, -3.42, 5.94), (SERVICE_X, 2.70, 5.94), (2.58, 2.70, 5.94)],
         red,
         bevel_depth=0.011,
         smooth=False,
@@ -1942,15 +2274,19 @@ def build_scene() -> None:
     downlight_locations = (
         (-3.45, -1.45, 3.08), (-1.75, -1.45, 3.08), (-3.45, 1.30, 3.08),
         (-0.10, 0.85, 3.08), (2.10, 1.25, 3.08), (3.75, 1.25, 3.08),
-        (-3.55, -1.25, 6.05), (-1.75, -1.25, 6.05), (-3.55, 1.25, 6.05),
-        (0.65, 1.10, 6.05), (1.65, 1.10, 6.05), (3.95, 0.80, 6.05),
+        (-3.30, -1.20, 6.05), (-3.30, 1.15, 6.05), (-2.10, 2.70, 6.05),
+        (0.72, 1.35, 6.05), (2.80, -1.45, 6.05), (2.35, 2.30, 6.05), (3.55, 2.30, 6.05),
     )
     for index, location in enumerate(downlight_locations):
         add_recessed_light(f"Downlight {index}", location, dark, warm_light)
         light_data = bpy.data.lights.new(f"Warm downlight {index}", type="POINT")
         light_data.color = (1.0, 0.66, 0.39)
-        light_data.energy = 95
+        # The practical lights are the service-state payoff.  Keeping all
+        # twelve point lights active through planning and installation washed
+        # the white interior flat and consumed Eevee's shadow pool.
+        light_data.energy = 0
         light_data.shadow_soft_size = 0.72
+        light_data.use_shadow = False
         light = bpy.data.objects.new(f"Warm downlight {index}", light_data)
         light.location = (location[0], location[1], location[2] - 0.25)
         bpy.context.collection.objects.link(light)
@@ -2012,14 +2348,15 @@ def build_scene() -> None:
             module_index += 1
 
     # Inverter and battery are separated for the energy reveal.
-    add_box("PV inverter", (5.20, -1.02, 2.31), (0.36, 0.94, 1.08), equipment, bevel=0.07, parent=technical_group)
-    add_box("Inverter shadow gap", (5.39, -1.02, 1.77), (0.025, 0.82, 0.035), dark, bevel=0.006, parent=technical_group)
-    add_box("Inverter display", (5.40, -1.02, 2.31), (0.035, 0.24, 0.14), dark, bevel=0.018, parent=technical_group)
-    add_box("Inverter status", (5.42, -1.02, 2.31), (0.012, 0.07, 0.035), red, bevel=0.006, parent=technical_group)
-    add_box("Battery storage", (5.22, -1.02, 0.88), (0.42, 1.04, 1.28), equipment, bevel=0.09, parent=technical_group)
-    add_box("Battery top seam", (5.44, -1.02, 1.39), (0.025, 0.90, 0.035), dark, bevel=0.006, parent=technical_group)
-    add_box("Battery status", (5.45, -1.02, 0.96), (0.012, 0.08, 0.045), red, bevel=0.006, parent=technical_group)
-    add_curve("PV DC cable", [(5.25, -0.85, 6.18), (5.25, -0.85, 3.0), (5.25, -0.85, 1.1), (5.0, -3.8, 0.0)], red, bevel_depth=0.03, parent=technical_group)
+    equipment_y = -0.16
+    add_box("PV inverter", (5.20, equipment_y, 2.31), (0.36, 0.94, 1.08), equipment, bevel=0.07, parent=technical_group)
+    add_box("Inverter shadow gap", (5.39, equipment_y, 1.77), (0.025, 0.82, 0.035), dark, bevel=0.006, parent=technical_group)
+    add_box("Inverter display", (5.40, equipment_y, 2.31), (0.035, 0.24, 0.14), dark, bevel=0.018, parent=technical_group)
+    add_box("Inverter status", (5.42, equipment_y, 2.31), (0.012, 0.07, 0.035), red, bevel=0.006, parent=technical_group)
+    add_box("Battery storage", (5.22, equipment_y, 0.88), (0.42, 1.04, 1.28), equipment, bevel=0.09, parent=technical_group)
+    add_box("Battery top seam", (5.44, equipment_y, 1.39), (0.025, 0.90, 0.035), dark, bevel=0.006, parent=technical_group)
+    add_box("Battery status", (5.45, equipment_y, 0.96), (0.012, 0.08, 0.045), red, bevel=0.006, parent=technical_group)
+    add_curve("PV DC cable", [(5.25, equipment_y, 6.18), (5.25, equipment_y, 3.0), (5.25, equipment_y, 1.1), (5.0, -3.8, 0.0)], red, bevel_depth=0.03, parent=technical_group)
 
     # Warm planes sit behind selected glazing and create the occupied-house depth
     # visible in the approved energy mockup.
@@ -2056,17 +2393,37 @@ def build_scene() -> None:
     constraint.up_axis = "UP_Y"
     bpy.context.scene.camera = camera
 
+    # The scroll story needs four visibly different viewpoints.  The previous
+    # premium-model pass kept every camera key within roughly half a Blender
+    # unit, which made the rendered sequence read like a static product shot.
+    # These beats move closer for the cutaway, rise to follow the PV system and
+    # then pull back into a calm finished-house hero view.
     keyframe_transform(camera, 1, location=(29.8, -33.4, 11.1))
-    keyframe_transform(camera, 28, location=(29.5, -33.0, 10.9))
-    keyframe_transform(camera, 52, location=(29.5, -33.0, 10.8))
-    keyframe_transform(camera, 70, location=(29.7, -33.2, 11.0))
-    keyframe_transform(camera, 92, location=(29.9, -33.5, 11.0))
-    keyframe_transform(camera, 120, location=(29.8, -33.4, 11.1))
+    keyframe_transform(camera, 28, location=(27.2, -31.3, 10.2))
+    keyframe_transform(camera, 52, location=(22.8, -28.8, 9.2))
+    keyframe_transform(camera, 70, location=(22.5, -27.5, 11.5))
+    keyframe_transform(camera, 92, location=(20.8, -26.5, 16.6))
+    keyframe_transform(camera, 104, location=(25.2, -30.4, 14.2))
+    keyframe_transform(camera, 120, location=(30.5, -34.5, 11.8))
     keyframe_transform(target, 1, location=(0, -0.35, 3.70))
-    keyframe_transform(target, 52, location=(0.0, -0.35, 3.75))
-    keyframe_transform(target, 72, location=(0.2, -0.20, 3.90))
-    keyframe_transform(target, 92, location=(0.25, -0.25, 4.05))
+    keyframe_transform(target, 28, location=(-0.10, -0.45, 3.65))
+    keyframe_transform(target, 52, location=(-0.15, -0.78, 2.92))
+    keyframe_transform(target, 70, location=(0.20, -0.20, 4.20))
+    keyframe_transform(target, 92, location=(1.00, -0.10, 6.20))
+    keyframe_transform(target, 104, location=(0.40, -0.30, 4.70))
     keyframe_transform(target, 120, location=(0, -0.35, 3.75))
+
+    for frame, lens in (
+        (1, 70.0),
+        (28, 66.0),
+        (52, 58.0),
+        (70, 63.0),
+        (92, 68.0),
+        (104, 70.0),
+        (120, 72.0),
+    ):
+        camera.data.lens = lens
+        camera.data.keyframe_insert(data_path="lens", frame=frame)
 
     for proof in PROOF_VIEWS:
         add_proof_camera(
@@ -2080,38 +2437,38 @@ def build_scene() -> None:
     # Facade and roof reveal choreography.
     keyframe_transform(facade_front, 1, location=(0, 0, 0), rotation=(0, 0, 0), scale=(1, 1, 1))
     keyframe_transform(facade_front, 27, location=(0, 0, 0), rotation=(0, 0, 0), scale=(1, 1, 1))
-    keyframe_transform(facade_front, 49, scale=(0.001, 0.001, 0.001))
-    keyframe_transform(facade_front, 72, scale=(0.001, 0.001, 0.001))
-    keyframe_transform(facade_front, 82, scale=(1, 1, 1))
+    keyframe_transform(facade_front, 49, location=(-15.5, -1.2, 0.45), rotation=(0, 0, math.radians(-6)), scale=(1, 1, 1))
+    keyframe_transform(facade_front, 68, location=(-15.5, -1.2, 0.45), rotation=(0, 0, math.radians(-6)), scale=(1, 1, 1))
+    keyframe_transform(facade_front, 82, location=(0, 0, 0), rotation=(0, 0, 0), scale=(1, 1, 1))
     keyframe_transform(facade_front, 113, location=(0, 0, 0), rotation=(0, 0, 0), scale=(1, 1, 1))
     keyframe_transform(facade_side, 1, location=(0, 0, 0), rotation=(0, 0, 0), scale=(1, 1, 1))
     keyframe_transform(facade_side, 27, location=(0, 0, 0), rotation=(0, 0, 0), scale=(1, 1, 1))
-    keyframe_transform(facade_side, 49, scale=(0.001, 0.001, 0.001))
-    keyframe_transform(facade_side, 72, scale=(0.001, 0.001, 0.001))
-    keyframe_transform(facade_side, 82, scale=(1, 1, 1))
+    keyframe_transform(facade_side, 49, location=(14.5, 1.0, 0.55), rotation=(0, 0, math.radians(6)), scale=(1, 1, 1))
+    keyframe_transform(facade_side, 68, location=(14.5, 1.0, 0.55), rotation=(0, 0, math.radians(6)), scale=(1, 1, 1))
+    keyframe_transform(facade_side, 82, location=(0, 0, 0), rotation=(0, 0, 0), scale=(1, 1, 1))
     keyframe_transform(facade_side, 113, location=(0, 0, 0), rotation=(0, 0, 0), scale=(1, 1, 1))
     keyframe_transform(roof_group, 1, location=(0, 0, 0), rotation=(0, 0, 0))
     keyframe_transform(roof_group, 27, location=(0, 0, 0), rotation=(0, 0, 0))
-    keyframe_transform(roof_group, 49, location=(0.08, 0.02, 0.62), rotation=(math.radians(-0.15), 0, math.radians(0.2)))
-    keyframe_transform(roof_group, 68, location=(0.08, 0.02, 0.62), rotation=(math.radians(-0.15), 0, math.radians(0.2)))
+    keyframe_transform(roof_group, 49, location=(3.2, 0.4, 5.2), rotation=(math.radians(-3.0), 0, math.radians(4.0)))
+    keyframe_transform(roof_group, 68, location=(3.2, 0.4, 5.2), rotation=(math.radians(-3.0), 0, math.radians(4.0)))
     keyframe_transform(roof_group, 82, location=(0, 0, 0), rotation=(0, 0, 0))
     keyframe_transform(exploded_panels, 1, scale=(0.001, 0.001, 0.001))
     keyframe_transform(exploded_panels, 40, scale=(0.001, 0.001, 0.001))
     keyframe_transform(exploded_panels, 49, scale=(1, 1, 1))
     keyframe_transform(exploded_panels, 68, scale=(1, 1, 1))
     keyframe_transform(exploded_panels, 82, scale=(0.001, 0.001, 0.001))
-    keyframe_transform(network_pit_group, 1, scale=(0.001, 0.001, 0.001))
-    keyframe_transform(network_pit_group, 40, scale=(0.001, 0.001, 0.001))
-    keyframe_transform(network_pit_group, 49, scale=(1, 1, 1))
-    keyframe_transform(network_pit_group, 68, scale=(1, 1, 1))
-    keyframe_transform(network_pit_group, 82, scale=(0.001, 0.001, 0.001))
-    keyframe_transform(network_pit_group, 120, scale=(0.001, 0.001, 0.001))
-    keyframe_transform(network_cover_group, 1, scale=(1, 1, 1))
-    keyframe_transform(network_cover_group, 40, scale=(1, 1, 1))
-    keyframe_transform(network_cover_group, 49, scale=(0.001, 0.001, 0.001))
-    keyframe_transform(network_cover_group, 68, scale=(0.001, 0.001, 0.001))
-    keyframe_transform(network_cover_group, 82, scale=(1, 1, 1))
-    keyframe_transform(network_cover_group, 120, scale=(1, 1, 1))
+    keyframe_transform(server_room_group, 1, scale=(0.001, 0.001, 0.001))
+    keyframe_transform(server_room_group, 40, scale=(0.001, 0.001, 0.001))
+    keyframe_transform(server_room_group, 49, scale=(1, 1, 1))
+    keyframe_transform(server_room_group, 68, scale=(1, 1, 1))
+    keyframe_transform(server_room_group, 82, scale=(0.001, 0.001, 0.001))
+    keyframe_transform(server_room_group, 120, scale=(0.001, 0.001, 0.001))
+    keyframe_transform(server_cover_group, 1, scale=(1, 1, 1))
+    keyframe_transform(server_cover_group, 40, scale=(1, 1, 1))
+    keyframe_transform(server_cover_group, 49, scale=(0.001, 0.001, 0.001))
+    keyframe_transform(server_cover_group, 68, scale=(0.001, 0.001, 0.001))
+    keyframe_transform(server_cover_group, 82, scale=(1, 1, 1))
+    keyframe_transform(server_cover_group, 120, scale=(1, 1, 1))
     keyframe_transform(distribution_group, 1, scale=(0.001, 0.001, 0.001))
     keyframe_transform(distribution_group, 40, scale=(0.001, 0.001, 0.001))
     keyframe_transform(distribution_group, 49, scale=(1, 1, 1))
@@ -2134,6 +2491,8 @@ def build_scene() -> None:
     keyframe_transform(technical_group, 112, location=(7.0, 0, 0), scale=(0.01, 0.01, 0.01))
 
     for light in light_objects:
+        light.data.energy = 0
+        light.data.keyframe_insert(data_path="energy", frame=1)
         light.data.keyframe_insert(data_path="energy", frame=103)
         light.data.energy = 125
         light.data.keyframe_insert(data_path="energy", frame=118)
@@ -2142,17 +2501,27 @@ def build_scene() -> None:
     roof_bounce_data.color = (1.0, 0.88, 0.74)
     roof_bounce_data.energy = 230
     roof_bounce_data.shadow_soft_size = 3.2
+    roof_bounce_data.use_shadow = False
     roof_bounce = bpy.data.objects.new("Roof cavity bounce", roof_bounce_data)
     roof_bounce.location = (0.0, -0.6, 7.15)
     bpy.context.collection.objects.link(roof_bounce)
 
     # Large soft studio lighting.
-    def area_light(name: str, location: tuple[float, float, float], energy: float, size: float, color: tuple[float, float, float]) -> None:
+    def area_light(
+        name: str,
+        location: tuple[float, float, float],
+        energy: float,
+        size: float,
+        color: tuple[float, float, float],
+        *,
+        use_shadow: bool,
+    ) -> None:
         data = bpy.data.lights.new(name, type="AREA")
         data.energy = energy
         data.shape = "DISK"
         data.size = size
         data.color = color
+        data.use_shadow = use_shadow
         obj = bpy.data.objects.new(name, data)
         obj.location = location
         bpy.context.collection.objects.link(obj)
@@ -2161,9 +2530,30 @@ def build_scene() -> None:
         track.track_axis = "TRACK_NEGATIVE_Z"
         track.up_axis = "UP_Y"
 
-    area_light("Key softbox", (-8, -11, 18), 1180, 8.0, (1.0, 0.93, 0.84))
-    area_light("Fill softbox", (13, -3, 10), 310, 9.0, (0.82, 0.90, 1.0))
-    area_light("Rear softbox", (-5, 11, 14), 390, 7.0, (1.0, 0.88, 0.74))
+    area_light(
+        "Key softbox",
+        (-8, -11, 18),
+        1180,
+        8.0,
+        (1.0, 0.93, 0.84),
+        use_shadow=True,
+    )
+    area_light(
+        "Fill softbox",
+        (13, -3, 10),
+        220,
+        9.0,
+        (0.82, 0.90, 1.0),
+        use_shadow=False,
+    )
+    area_light(
+        "Rear softbox",
+        (-5, 11, 14),
+        320,
+        7.0,
+        (1.0, 0.88, 0.74),
+        use_shadow=False,
+    )
 
     apply_detail_visibility()
 
@@ -2184,7 +2574,9 @@ def build_scene() -> None:
     output_format = os.environ.get("HUBMANN_RENDER_FORMAT", "JPEG").upper()
     scene.render.image_settings.file_format = output_format
     scene.render.image_settings.color_mode = "RGBA" if output_format == "PNG" else "RGB"
-    scene.render.image_settings.quality = 96
+    # The sequence is fetched while the user scrolls; quality 90 keeps fine
+    # roof and wiring detail while avoiding an unnecessarily heavy payload.
+    scene.render.image_settings.quality = 90
     scene.render.fps = 30
     scene.render.film_transparent = scene.render.engine == "CYCLES"
     scene.render.use_file_extension = True
@@ -2193,7 +2585,7 @@ def build_scene() -> None:
     if scene.world.use_nodes:
         background = scene.world.node_tree.nodes.get("Background")
         background.inputs["Color"].default_value = (1.0, 1.0, 1.0, 1.0)
-        background.inputs["Strength"].default_value = 0.90
+        background.inputs["Strength"].default_value = 0.68
     scene.view_settings.view_transform = "AgX"
     scene.view_settings.exposure = 0.66 if scene.render.engine == "CYCLES" else 0.24
     try:
@@ -2292,6 +2684,290 @@ def render_proofs() -> None:
     bpy.ops.wm.save_as_mainfile(filepath=str(BLEND_PATH))
 
 
+def render_story_proofs() -> None:
+    """Render sparse animated-camera frames for fast choreography approval."""
+    scene = bpy.context.scene
+    requested_frames = os.environ.get(
+        "HUBMANN_STORY_PROOF_FRAMES",
+        "1,28,40,52,70,82,92,104,120",
+    )
+    frames = sorted(
+        {
+            max(FRAME_START, min(FRAME_END, int(value.strip())))
+            for value in requested_frames.split(",")
+            if value.strip()
+        }
+    )
+    if not frames:
+        raise RuntimeError("No story proof frames requested")
+
+    output_dir = Path(
+        os.environ.get("HUBMANN_STORY_PROOF_DIR", str(STORY_PROOF_DIR))
+    )
+    output_dir.mkdir(parents=True, exist_ok=True)
+    scene.render.resolution_x = int(
+        os.environ.get("HUBMANN_STORY_PROOF_WIDTH", "1200")
+    )
+    scene.render.resolution_y = int(
+        os.environ.get("HUBMANN_STORY_PROOF_HEIGHT", "675")
+    )
+    scene.render.resolution_percentage = 100
+    scene.render.image_settings.file_format = "PNG"
+    scene.render.image_settings.color_mode = "RGB"
+    scene.render.image_settings.color_depth = "8"
+    scene.render.image_settings.compression = 20
+    scene.render.film_transparent = False
+    scene.camera = bpy.data.objects["Hero camera"]
+
+    for frame in frames:
+        scene.frame_set(frame)
+        scene.render.filepath = str(output_dir / f"story-frame-{frame:03d}.png")
+        bpy.ops.render.render(write_still=True)
+
+    scene.frame_set(FRAME_START)
+    scene.camera = bpy.data.objects["Hero camera"]
+
+
+def _object_world_z_bounds(obj: bpy.types.Object) -> tuple[float, float] | None:
+    """Return evaluated world-space Z bounds for renderable scene objects."""
+    if obj.type not in {"MESH", "CURVE", "FONT", "SURFACE", "META"}:
+        return None
+    try:
+        z_values = [(obj.matrix_world @ Vector(corner)).z for corner in obj.bound_box]
+    except (AttributeError, TypeError):
+        return None
+    return min(z_values), max(z_values)
+
+
+def _set_floorplan_level_visibility(level: str) -> None:
+    """Slice the full model into one readable storey without duplicating it."""
+    clutter_tokens = (
+        "roof",
+        "rafter",
+        "soffit",
+        "fascia",
+        "photovoltaic",
+        "pv ",
+        "gutter",
+        "downpipe",
+        "gable",
+        "exploded",
+        "cable",
+        "branch",
+        "riser",
+        "circuit",
+        "network pit",
+        "network cover",
+        "server room cover",
+        "din ",
+        "distribution",
+        "automation indicator",
+        "hubmann installation",
+        "hubmann exterior feed",
+        "pendant",
+        "downlight",
+        "softbox",
+        "sun",
+    )
+    for obj in bpy.context.scene.objects:
+        if obj.name.startswith("PLAN "):
+            obj.hide_render = False
+            continue
+        bounds = _object_world_z_bounds(obj)
+        if bounds is None:
+            continue
+        lower_z, upper_z = bounds
+        name = obj.name.lower()
+        is_clutter = any(token in name for token in clutter_tokens)
+        is_server_room = name.startswith("server ") or "server room" in name
+        if level == "basement":
+            # The basement plan is intentionally focused on the dedicated
+            # server cell; the house above would otherwise obscure it.
+            outside_slice = not is_server_room
+        elif level == "ground":
+            outside_slice = lower_z >= 3.12 or upper_z <= -0.12 or is_server_room
+        elif level == "upper":
+            outside_slice = upper_z <= 3.20 or lower_z >= 6.08 or is_server_room
+        else:
+            raise ValueError(f"Unknown floorplan level: {level}")
+        obj.hide_render = is_clutter or outside_slice
+
+
+def render_floorplans() -> None:
+    """Render labelled server, ground and upper-floor plans for review."""
+    scene = bpy.context.scene
+    scene.frame_set(FRAME_START)
+    bpy.context.view_layer.update()
+
+    original_camera = scene.camera
+    original_engine = scene.render.engine
+    original_resolution = (
+        scene.render.resolution_x,
+        scene.render.resolution_y,
+        scene.render.resolution_percentage,
+    )
+    original_filepath = scene.render.filepath
+    original_format = scene.render.image_settings.file_format
+    original_color_mode = scene.render.image_settings.color_mode
+    original_transparency = scene.render.film_transparent
+    original_visibility = {obj.name: obj.hide_render for obj in scene.objects}
+
+    camera_data = bpy.data.cameras.new("PLAN Orthographic camera data")
+    camera_data.type = "ORTHO"
+    camera_data.ortho_scale = 12.4
+    camera = bpy.data.objects.new("PLAN Orthographic camera", camera_data)
+    bpy.context.collection.objects.link(camera)
+    camera.location = (0.0, -0.30, 15.0)
+    camera.rotation_euler = (0.0, 0.0, 0.0)
+    scene.camera = camera
+
+    text_material = material(
+        "PLAN Ink",
+        (0.035, 0.032, 0.030, 1.0),
+        roughness=0.50,
+        emission=(0.035, 0.032, 0.030, 1.0),
+        emission_strength=0.10,
+    )
+    badge_material = material(
+        "PLAN Room badge",
+        (0.94, 0.91, 0.85, 1.0),
+        roughness=0.88,
+    )
+    neutral_badge_material = material(
+        "PLAN Neutral badge",
+        (0.81, 0.84, 0.84, 1.0),
+        roughness=0.88,
+    )
+    attention_badge_material = material(
+        "PLAN Attention badge",
+        (0.95, 0.63, 0.56, 1.0),
+        roughness=0.88,
+    )
+
+    scene.render.engine = "BLENDER_EEVEE"
+    scene.render.resolution_x = int(os.environ.get("HUBMANN_FLOORPLAN_WIDTH", "1400"))
+    scene.render.resolution_y = int(os.environ.get("HUBMANN_FLOORPLAN_HEIGHT", "1200"))
+    scene.render.resolution_percentage = 100
+    scene.render.image_settings.file_format = "PNG"
+    scene.render.image_settings.color_mode = "RGB"
+    scene.render.image_settings.color_depth = "8"
+    scene.render.image_settings.compression = 15
+    scene.render.film_transparent = False
+    scene.render.use_file_extension = True
+    scene.view_settings.view_transform = "AgX"
+    scene.view_settings.exposure = float(os.environ.get("HUBMANN_FLOORPLAN_EXPOSURE", "0.38"))
+    try:
+        scene.view_settings.look = "AgX - Medium High Contrast"
+    except TypeError:
+        pass
+    if scene.world.use_nodes:
+        background = scene.world.node_tree.nodes.get("Background")
+        background.inputs["Color"].default_value = (0.96, 0.96, 0.95, 1.0)
+        background.inputs["Strength"].default_value = 0.80
+
+    floorplans = (
+        {
+            "level": "basement",
+            "filename": "00-untergeschoss-serverraum.png",
+            "z": 0.42,
+            "camera_location": (SERVER_ROOM_CENTER_X, SERVER_ROOM_CENTER_Y, 8.0),
+            "ortho_scale": 5.0,
+            "labels": (
+                ("rack", "SERVER-RACK", (0.98, -5.30), badge_material, 0.13),
+                ("power-security", "USV / SICHERHEIT", (2.42, -5.30), badge_material, 0.11),
+                ("access", "ZUGANG", (3.00, -3.30), attention_badge_material, 0.12),
+                ("title-basement", "UNTERGESCHOSS · SERVER / TECHNIK", (1.90, -2.72), neutral_badge_material, 0.20),
+                ("front-basement", "VORNE / SCHNITT", (1.90, -6.60), neutral_badge_material, 0.17),
+            ),
+        },
+        {
+            "level": "ground",
+            "filename": "01-erdgeschoss.png",
+            "z": 3.22,
+            "camera_location": (0.0, -0.30, 15.0),
+            "ortho_scale": 12.4,
+            "labels": (
+                ("living", "WOHNEN", (-3.15, -1.35), badge_material, 0.31),
+                ("dining", "ESSEN", (3.18, -0.68), badge_material, 0.31),
+                ("kitchen", "KÜCHE", (3.10, 1.78), badge_material, 0.31),
+                ("circulation", "TREPPE / FLUR", (-0.55, 0.75), neutral_badge_material, 0.26),
+                ("entry", "EINGANG", (0.72, -2.62), neutral_badge_material, 0.22),
+                ("tech", "TECHNIK / VERTEILER", (2.38, -2.62), attention_badge_material, 0.19),
+                ("title-ground", "ERDGESCHOSS · MODELLSTAND", (0.0, 4.58), neutral_badge_material, 0.28),
+                ("front-ground", "VORNE / EINGANG", (0.0, -5.02), neutral_badge_material, 0.23),
+            ),
+        },
+        {
+            "level": "upper",
+            "filename": "02-obergeschoss.png",
+            "z": 6.24,
+            "camera_location": (0.0, -0.30, 15.0),
+            "ortho_scale": 12.4,
+            "labels": (
+                ("bedroom", "SCHLAFEN", (-3.20, 1.90), badge_material, 0.30),
+                ("upper-circulation", "TREPPE / FLUR", (-0.52, 0.82), neutral_badge_material, 0.25),
+                ("bathroom", "BAD", (1.82, 1.22), badge_material, 0.31),
+                ("gallery", "GALERIE", (3.55, -1.20), badge_material, 0.23),
+                ("balcony", "BALKON", (0.0, -3.67), neutral_badge_material, 0.25),
+                ("title-upper", "OBERGESCHOSS · MODELLSTAND", (0.0, 4.58), neutral_badge_material, 0.28),
+                ("front-upper", "VORNE / BALKON", (0.0, -5.02), neutral_badge_material, 0.23),
+            ),
+        },
+    )
+
+    requested_level = os.environ.get("HUBMANN_FLOORPLAN_ONLY")
+    selected_floorplans = [
+        floorplan
+        for floorplan in floorplans
+        if requested_level is None or floorplan["level"] == requested_level
+    ]
+    if not selected_floorplans:
+        raise RuntimeError(f"Unknown floorplan level: {requested_level}")
+
+    output_dir = Path(os.environ.get("HUBMANN_FLOORPLAN_DIR", str(FLOORPLAN_DIR)))
+    output_dir.mkdir(parents=True, exist_ok=True)
+    for floorplan in selected_floorplans:
+        # Reset the animated architecture for each plan. The server room is
+        # normally hidden at frame 1, so its plan explicitly opens the cell.
+        scene.frame_set(49 if floorplan["level"] == "basement" else FRAME_START)
+        camera.location = floorplan["camera_location"]
+        camera.data.ortho_scale = floorplan["ortho_scale"]
+        for obj in scene.objects:
+            if obj.name in original_visibility:
+                obj.hide_render = original_visibility[obj.name]
+        label_objects: list[bpy.types.Object] = []
+        for label_name, label_text, (x, y), badge, size in floorplan["labels"]:
+            label_objects.extend(
+                add_floorplan_label(
+                    f"{floorplan['level']} {label_name}",
+                    label_text,
+                    (x, y, floorplan["z"]),
+                    text_material,
+                    badge,
+                    size=size,
+                )
+            )
+        bpy.context.view_layer.update()
+        _set_floorplan_level_visibility(floorplan["level"])
+        scene.render.filepath = str(output_dir / floorplan["filename"])
+        bpy.ops.render.render(write_still=True)
+        for obj in label_objects:
+            bpy.data.objects.remove(obj, do_unlink=True)
+
+    for obj in scene.objects:
+        if obj.name in original_visibility:
+            obj.hide_render = original_visibility[obj.name]
+    scene.camera = original_camera
+    scene.frame_set(FRAME_START)
+    scene.render.engine = original_engine
+    scene.render.resolution_x, scene.render.resolution_y, scene.render.resolution_percentage = original_resolution
+    scene.render.filepath = original_filepath
+    scene.render.image_settings.file_format = original_format
+    scene.render.image_settings.color_mode = original_color_mode
+    scene.render.film_transparent = original_transparency
+    bpy.data.objects.remove(camera, do_unlink=True)
+
+
 def parse_args() -> set[str]:
     if "--" not in sys.argv:
         return set()
@@ -2300,10 +2976,20 @@ def parse_args() -> set[str]:
 
 def main() -> None:
     args = parse_args()
+    if "--render-floorplans-existing" in args:
+        render_floorplans()
+        return
+    if "--render-proofs-existing" in args:
+        render_proofs()
+        return
     build_scene()
     scene = bpy.context.scene
     if "--render-proofs" in args:
         render_proofs()
+    elif "--render-floorplans" in args:
+        render_floorplans()
+    elif "--render-story-proofs" in args:
+        render_story_proofs()
     elif "--render-animation" in args:
         scene.frame_start = int(os.environ.get("HUBMANN_FRAME_START", str(FRAME_START)))
         scene.frame_end = int(os.environ.get("HUBMANN_FRAME_END", str(FRAME_END)))
