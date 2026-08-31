@@ -23,6 +23,7 @@ from mathutils import Vector
 ROOT = Path(__file__).resolve().parents[1]
 BLEND_PATH = ROOT / "assets" / "3d" / "elektro-hubmann-house-v2.blend"
 QA_DIR = ROOT / "docs" / "version-g-qa" / "blender-v2"
+SEQUENCE_DIR = ROOT / "public" / "images" / "version-g" / "sequence"
 REFERENCE_PATH = (
     ROOT
     / "docs"
@@ -127,9 +128,21 @@ def create_material(
 
 
 def create_glass_material() -> bpy.types.Material:
-    return create_material(
-        "V2 Glass", (0.055, 0.085, 0.095, 1.0), roughness=0.18
+    material = create_material(
+        "V2 Glass", (0.075, 0.115, 0.135, 1.0), roughness=0.10, metallic=0.06
     )
+    principled = material.node_tree.nodes.get("Principled BSDF")
+    if principled is not None:
+        transmission = principled.inputs.get("Transmission Weight")
+        coat = principled.inputs.get("Coat Weight")
+        ior = principled.inputs.get("IOR")
+        if transmission is not None:
+            transmission.default_value = 0.18
+        if coat is not None:
+            coat.default_value = 0.32
+        if ior is not None:
+            ior.default_value = 1.45
+    return material
 
 
 def create_emission_material(
@@ -147,6 +160,24 @@ def create_emission_material(
         emission_color.default_value = color
     if emission_strength is not None:
         emission_strength.default_value = strength
+    return material
+
+
+def create_contact_shadow_material() -> bpy.types.Material:
+    """Create a feathered fake shadow for the otherwise seamless white studio."""
+    material = bpy.data.materials.new("V2 soft contact shadow")
+    material.use_nodes = True
+    nodes = material.node_tree.nodes
+    links = material.node_tree.links
+    nodes.clear()
+
+    output = nodes.new("ShaderNodeOutputMaterial")
+    emission = nodes.new("ShaderNodeEmission")
+    emission.inputs["Strength"].default_value = 3.0
+    vertex_color = nodes.new("ShaderNodeAttribute")
+    vertex_color.attribute_name = "V2 Shadow Alpha"
+    links.new(vertex_color.outputs["Color"], emission.inputs["Color"])
+    links.new(emission.outputs["Emission"], output.inputs["Surface"])
     return material
 
 
@@ -201,7 +232,10 @@ def create_v2_materials() -> dict[str, bpy.types.Material]:
             "V2 Service red", (0.88, 0.025, 0.018, 1.0), roughness=0.38
         ),
         "qa_floor": create_material(
-            "V2 QA floor", (0.86, 0.87, 0.86, 1.0), roughness=0.92
+            # The web canvas sits on pure white.  A white matte receiver keeps
+            # the soft contact shadow without baking a grey rectangle into the
+            # JPG sequence.
+            "V2 QA floor", (1.0, 1.0, 1.0, 1.0), roughness=1.0
         ),
         "floor_oak": create_material(
             "V2 Floor oak", (0.48, 0.28, 0.11, 1.0), roughness=0.72
@@ -275,6 +309,108 @@ def add_box(
         modifier = obj.modifiers.new("V2 edge finish", "BEVEL")
         modifier.width = bevel
         modifier.segments = 2
+    return obj
+
+
+def add_triangular_prism(
+    name: str,
+    *,
+    center_x: float,
+    y: float,
+    base_z: float,
+    width: float,
+    height: float,
+    thickness: float,
+    material: bpy.types.Material,
+    collection: str,
+) -> bpy.types.Object:
+    """Add a clean gable infill as a shallow triangular wall prism."""
+    half_width = width / 2
+    half_thickness = thickness / 2
+    vertices = (
+        (center_x - half_width, y - half_thickness, base_z),
+        (center_x + half_width, y - half_thickness, base_z),
+        (center_x, y - half_thickness, base_z + height),
+        (center_x - half_width, y + half_thickness, base_z),
+        (center_x + half_width, y + half_thickness, base_z),
+        (center_x, y + half_thickness, base_z + height),
+    )
+    faces = (
+        (0, 2, 1),
+        (3, 4, 5),
+        (0, 1, 4, 3),
+        (1, 2, 5, 4),
+        (2, 0, 3, 5),
+    )
+    mesh = bpy.data.meshes.new(f"{name} mesh")
+    mesh.from_pydata(vertices, (), faces)
+    mesh.update()
+    obj = bpy.data.objects.new(name, mesh)
+    bpy.data.collections[collection].objects.link(obj)
+    obj.data.materials.append(material)
+    bevel = obj.modifiers.new("V2 gable edge finish", "BEVEL")
+    bevel.width = 0.012
+    bevel.segments = 2
+    return obj
+
+
+def add_soft_contact_shadow(
+    name: str,
+    *,
+    location: tuple[float, float, float],
+    radius_x: float,
+    radius_y: float,
+    collection: str,
+) -> bpy.types.Object:
+    """Add a transparent feathered ellipse instead of a visible studio floor."""
+    segments = 64
+    rings = (
+        (0.00, 0.16),
+        (0.28, 0.13),
+        (0.55, 0.075),
+        (0.78, 0.025),
+        (1.00, 0.00),
+    )
+    vertices: list[tuple[float, float, float]] = [(0.0, 0.0, 0.0)]
+    alphas: list[float] = [rings[0][1]]
+    for radius, alpha in rings[1:]:
+        for index in range(segments):
+            angle = 2 * math.pi * index / segments
+            vertices.append(
+                (radius_x * radius * math.cos(angle), radius_y * radius * math.sin(angle), 0.0)
+            )
+            alphas.append(alpha)
+
+    faces: list[tuple[int, ...]] = []
+    first_ring = 1
+    for index in range(segments):
+        faces.append((0, first_ring + index, first_ring + (index + 1) % segments))
+    for ring_index in range(1, len(rings) - 1):
+        inner = 1 + (ring_index - 1) * segments
+        outer = 1 + ring_index * segments
+        for index in range(segments):
+            next_index = (index + 1) % segments
+            faces.append(
+                (inner + index, outer + index, outer + next_index, inner + next_index)
+            )
+
+    mesh = bpy.data.meshes.new(f"{name} mesh")
+    mesh.from_pydata(vertices, (), faces)
+    mesh.update()
+    colors = mesh.color_attributes.new(
+        name="V2 Shadow Alpha", type="FLOAT_COLOR", domain="CORNER"
+    )
+    for entry, loop in zip(colors.data, mesh.loops, strict=True):
+        # Fully opaque colour interpolation is more reliable than alpha
+        # blending in Eevee and fades exactly into the white world background.
+        alpha = alphas[loop.vertex_index]
+        shade = 1.0 - 6.0 * alpha
+        entry.color = (shade, shade, shade, 1.0)
+
+    obj = bpy.data.objects.new(name, mesh)
+    obj.location = location
+    bpy.data.collections[collection].objects.link(obj)
+    obj.data.materials.append(create_contact_shadow_material())
     return obj
 
 
@@ -555,6 +691,15 @@ def add_window_x(
             collection=collection,
             bevel=0.008,
         )
+    if width >= 1.55:
+        add_box(
+            f"{name} frame mullion",
+            (center_x, y - 0.012, center_z),
+            (0.055, 0.145, height - 0.06),
+            frame,
+            collection=collection,
+            bevel=0.008,
+        )
 
 
 def add_window_y(
@@ -592,6 +737,15 @@ def add_window_y(
             f"{name} frame {suffix}",
             (x, center_y, z),
             (0.13, width, 0.075),
+            frame,
+            collection=collection,
+            bevel=0.008,
+        )
+    if width >= 1.55:
+        add_box(
+            f"{name} frame mullion",
+            (x - 0.012, center_y, center_z),
+            (0.145, 0.055, height - 0.06),
             frame,
             collection=collection,
             bevel=0.008,
@@ -635,6 +789,14 @@ def add_door_x(
         collection=collection,
         bevel=0.008,
     )
+    add_box(
+        f"{name} handle",
+        (center_x + width * 0.30, y - 0.075, bottom + 1.02),
+        (0.12, 0.055, 0.045),
+        frame,
+        collection=collection,
+        bevel=0.012,
+    )
 
 
 def add_door_y(
@@ -673,6 +835,14 @@ def add_door_y(
         frame,
         collection=collection,
         bevel=0.008,
+    )
+    add_box(
+        f"{name} handle",
+        (x - 0.075, center_y + width * 0.30, bottom + 1.02),
+        (0.055, 0.12, 0.045),
+        frame,
+        collection=collection,
+        bevel=0.012,
     )
 
 
@@ -777,7 +947,7 @@ def configure_scene() -> None:
     light_path = nodes.new("ShaderNodeLightPath")
     ambient = nodes.new("ShaderNodeBackground")
     ambient.inputs["Color"].default_value = (0.94, 0.95, 0.96, 1.0)
-    ambient.inputs["Strength"].default_value = 0.52
+    ambient.inputs["Strength"].default_value = 0.36
     camera_background = nodes.new("ShaderNodeBackground")
     camera_background.inputs["Color"].default_value = (1.0, 1.0, 1.0, 1.0)
     camera_background.inputs["Strength"].default_value = 3.0
@@ -1060,15 +1230,15 @@ def build_phase1a(materials: dict[str, bpy.types.Material]) -> None:
         bevel=0.026,
     )
 
-    # Neutral studio ground and lighting exist only for QA readability, not as
-    # architectural detail or future house lighting.
-    add_box(
-        "V2 QA studio floor",
-        (0.0, 0.0, DIMS.server_floor_z - 0.14),
-        (34.0, 34.0, 0.10),
-        qa_floor,
+    # A conventional white floor still renders grey wherever it receives the
+    # studio lights.  The feathered ellipse supplies only the desired grounding
+    # shadow, while the actual background remains uniformly white.
+    add_soft_contact_shadow(
+        "V2 QA contact shadow",
+        location=(0.45, -3.20, 0.02),
+        radius_x=7.20,
+        radius_y=2.60,
         collection="V2 QA",
-        bevel=0.0,
     )
     light_target = (0.0, -0.2, 3.25)
     add_area_light(
@@ -1148,6 +1318,17 @@ def build_phase1b(materials: dict[str, bpy.types.Material]) -> None:
             (1.75, 1.15, 4.10, 1.35),
             (3.55, 0.82, 4.00, 1.60),
         ),
+        material=plaster,
+        collection="V2 FACADE",
+    )
+    add_triangular_prism(
+        "V2 Facade front gable",
+        center_x=0.0,
+        y=DIMS.ground_front_y + 0.08,
+        base_z=upper_ceiling - 0.02,
+        width=DIMS.width - 0.20,
+        height=DIMS.roof_ridge_z - upper_ceiling - 0.18,
+        thickness=0.18,
         material=plaster,
         collection="V2 FACADE",
     )
@@ -3484,7 +3665,7 @@ def build_final_detailed_furniture() -> None:
         blockout.hide_viewport = True
     parent_unparented_to_rebuild_root(furniture_detail.COLLECTION_NAME)
     detailed["hubmann_final_furniture"] = True
-    bpy.context.scene["hubmann_v2_furniture"] = "furniture-detail-v03"
+    bpy.context.scene["hubmann_v2_furniture"] = "furniture-detail-v04"
 
 
 def build_phase3a(materials: dict[str, bpy.types.Material]) -> None:
@@ -3973,9 +4154,277 @@ def build_phase3b(materials: dict[str, bpy.types.Material]) -> None:
     bpy.context.scene["hubmann_v2_phase3b"] = "complete"
 
 
+def build_premium_architecture(materials: dict[str, bpy.types.Material]) -> None:
+    """Add the architectural depth that the web hero needs at normal size.
+
+    Earlier phases deliberately concentrated on plan correctness.  This pass
+    keeps that plan intact and fixes the parts that make the house read as a
+    blockout: broken slab edges, unsupported eaves, flat glazing and missing
+    front-facing interior doors.
+    """
+    concrete = materials["concrete"]
+    plaster = materials["plaster"]
+    oak = materials["oak"]
+    charcoal = materials["charcoal"]
+
+    house_center_y = (DIMS.ground_front_y + DIMS.ground_rear_y) / 2
+    roof_half_span = DIMS.width / 2 + DIMS.roof_overhang_x
+    roof_depth = DIMS.depth + 2 * DIMS.roof_overhang_y
+    roof_rise = DIMS.roof_ridge_z - DIMS.roof_eave_z
+    roof_at_wall = DIMS.roof_ridge_z - roof_rise * (
+        (DIMS.width / 2) / roof_half_span
+    )
+    upper_ceiling = DIMS.upper_ceiling_z - 0.14
+
+    # The previous gable used the building width with the overhang pitch, so
+    # its sloping edge could never meet the roof. Replace it with a rectangular
+    # wall extension plus a correctly pitched triangle at both ends.
+    remove_objects_with_prefix("V2 Facade front gable")
+    for face, y, collection, prefix in (
+        (
+            "front",
+            DIMS.ground_front_y + 0.08,
+            "V2 FACADE",
+            "V2 Facade premium",
+        ),
+        (
+            "rear",
+            DIMS.ground_rear_y - 0.08,
+            "V2 EXTERIOR",
+            "V2 Exterior rear premium",
+        ),
+    ):
+        band_height = roof_at_wall - upper_ceiling
+        add_box(
+            f"{prefix} {face} gable bearing band",
+            (0.0, y, upper_ceiling + band_height / 2),
+            (DIMS.width - 0.20, 0.18, band_height),
+            plaster,
+            collection=collection,
+            bevel=0.010,
+        )
+        add_triangular_prism(
+            f"{prefix} {face} gable triangle",
+            center_x=0.0,
+            y=y,
+            base_z=roof_at_wall - 0.015,
+            width=DIMS.width - 0.20,
+            height=DIMS.roof_ridge_z - roof_at_wall - 0.055,
+            thickness=0.18,
+            material=plaster,
+            collection=collection,
+        )
+
+    # Continue the upper side walls to the real roof bearing height. This
+    # removes the daylight slot previously visible below both eaves.
+    side_extension_height = roof_at_wall - upper_ceiling
+    for side, x, collection, name_prefix in (
+        ("left", -DIMS.width / 2 + 0.10, "V2 EXTERIOR", "V2 Exterior left"),
+        ("right", DIMS.width / 2 - 0.10, "V2 EXTERIOR", "V2 Exterior right"),
+    ):
+        add_box(
+            f"{name_prefix} premium roof bearing wall",
+            (x, house_center_y, upper_ceiling + side_extension_height / 2),
+            (0.20, DIMS.depth - 0.38, side_extension_height),
+            plaster,
+            collection=collection,
+            bevel=0.010,
+        )
+
+    # Continuous structural edge bands hide the seams of the stair-opening
+    # slab pieces and create the crisp, monolithic concrete trays in the mockup.
+    for name, y, z, width, depth, height in (
+        ("foundation", DIMS.ground_front_y - 0.34, 0.02, 10.24, 0.18, 0.36),
+        (
+            "upper floor",
+            DIMS.ground_front_y - 0.30,
+            DIMS.upper_finish_z - 0.19,
+            10.12,
+            0.18,
+            0.40,
+        ),
+        (
+            "upper ceiling",
+            DIMS.ground_front_y - 0.22,
+            DIMS.upper_ceiling_z - 0.13,
+            9.78,
+            0.16,
+            0.30,
+        ),
+    ):
+        add_box(
+            f"V2 Premium {name} front fascia",
+            (0.0, y, z),
+            (width, depth, height),
+            concrete,
+            collection="V2 STRUCTURE",
+            bevel=0.018,
+        )
+
+    # The roof now visibly bears on two timber wall plates instead of hovering
+    # above the upper storey. Fascia boards and gable bargeboards complete the
+    # junction and move with the roof during the installation reveal.
+    for side, x in (("left", -DIMS.width / 2 + 0.12), ("right", DIMS.width / 2 - 0.12)):
+        add_box(
+            f"V2 Premium eave bearing {side}",
+            (x, house_center_y, roof_at_wall - 0.14),
+            (0.24, DIMS.depth - 0.10, 0.24),
+            oak,
+            collection="V2 STRUCTURE",
+            bevel=0.018,
+        )
+        add_box(
+            f"V2 Roof premium fascia {side}",
+            (
+                -roof_half_span if side == "left" else roof_half_span,
+                house_center_y,
+                DIMS.roof_eave_z - 0.03,
+            ),
+            (0.16, roof_depth + 0.12, 0.26),
+            oak,
+            collection="V2 STRUCTURE",
+            bevel=0.025,
+        )
+
+    front_roof_y = DIMS.ground_front_y - DIMS.roof_overhang_y - 0.03
+    rear_roof_y = DIMS.ground_rear_y + DIMS.roof_overhang_y + 0.03
+    for face, y in (("front", front_roof_y), ("rear", rear_roof_y)):
+        for side, eave_x in (("left", -roof_half_span), ("right", roof_half_span)):
+            add_beam_between(
+                f"V2 Roof premium {face} bargeboard {side}",
+                (0.0, y, DIMS.roof_ridge_z + 0.02),
+                (eave_x, y, DIMS.roof_eave_z + 0.01),
+                thickness=0.17,
+                material=oak,
+                collection="V2 STRUCTURE",
+            )
+
+    # Window sills and shallow shadow joints give the otherwise flat white
+    # elevations scale, reveals and a believable construction depth.
+    for name, x, bottom, width in (
+        ("ground living", -3.05, 0.48, 1.95),
+        ("ground dining", 2.85, 0.48, 2.15),
+        ("upper bedroom", -3.05, 3.95, 1.80),
+        ("upper bathroom", 1.75, 4.10, 1.15),
+        ("upper gallery", 3.55, 4.00, 0.82),
+    ):
+        add_box(
+            f"V2 Facade premium sill {name}",
+            (x, DIMS.ground_front_y - 0.095, bottom - 0.055),
+            (width + 0.22, 0.22, 0.085),
+            concrete,
+            collection="V2 FACADE",
+            bevel=0.014,
+        )
+    add_box(
+        "V2 Facade premium floor shadow joint",
+        (0.0, DIMS.ground_front_y - 0.115, DIMS.upper_finish_z - 0.42),
+        (DIMS.width - 0.20, 0.035, 0.045),
+        charcoal,
+        collection="V2 FACADE",
+        bevel=0.006,
+    )
+    add_box(
+        "V2 Exterior right premium floor shadow joint",
+        (DIMS.width / 2 + 0.115, house_center_y, DIMS.upper_finish_z - 0.42),
+        (0.035, DIMS.depth - 0.18, 0.045),
+        charcoal,
+        collection="V2 EXTERIOR",
+        bevel=0.006,
+    )
+
+    # Two restrained timber fields break up the blank render facade and repeat
+    # the vertical rhythm already used on the right elevation.
+    for level, z, height, x_start in (
+        ("ground", 1.66, 2.46, 0.58),
+        ("upper", 4.78, 2.30, 2.62),
+    ):
+        for index in range(5):
+            add_box(
+                f"V2 Facade premium {level} timber slat {index + 1}",
+                (x_start + index * 0.13, DIMS.ground_front_y - 0.085, z),
+                (0.065, 0.10, height),
+                oak,
+                collection="V2 FACADE",
+                bevel=0.009,
+            )
+
+    # Close the service room structurally against the foundation. It stays
+    # open only on the camera side, exactly like the technical mockup.
+    add_box(
+        "V2 Server premium ceiling",
+        (DIMS.service_x, DIMS.server_center_y, 0.02),
+        (DIMS.server_width, DIMS.server_depth, 0.16),
+        concrete,
+        collection="V2 STRUCTURE",
+        bevel=0.018,
+    )
+
+    # These front-facing leaves are the doors that the cutaway camera actually
+    # sees. The plan-correct side doors remain in place as functional openings.
+    def add_visible_interior_door(name: str, x: float, bottom: float, width: float = 0.88) -> None:
+        y = DIMS.ground_rear_y - 0.205
+        height = 2.12
+        add_box(
+            f"V2 Premium {name} leaf",
+            (x, y, bottom + height / 2),
+            (width, 0.075, height),
+            oak,
+            collection="V2 INTERIOR",
+            bevel=0.028,
+        )
+        for suffix, frame_x in (("left", x - width / 2 - 0.055), ("right", x + width / 2 + 0.055)):
+            add_box(
+                f"V2 Premium {name} frame {suffix}",
+                (frame_x, y - 0.012, bottom + height / 2),
+                (0.075, 0.11, height + 0.14),
+                plaster,
+                collection="V2 INTERIOR",
+                bevel=0.008,
+            )
+        add_box(
+            f"V2 Premium {name} frame top",
+            (x, y - 0.012, bottom + height + 0.05),
+            (width + 0.18, 0.11, 0.075),
+            plaster,
+            collection="V2 INTERIOR",
+            bevel=0.008,
+        )
+        add_box(
+            f"V2 Premium {name} handle",
+            (x + width * 0.31, y - 0.075, bottom + 1.03),
+            (0.12, 0.055, 0.045),
+            charcoal,
+            collection="V2 INTERIOR",
+            bevel=0.012,
+        )
+
+    add_visible_interior_door("ground hall door", -0.36, DIMS.ground_finish_z)
+    add_visible_interior_door("upper bedroom door", -0.32, DIMS.upper_finish_z)
+    add_visible_interior_door(
+        "upper bathroom door", 3.54, DIMS.upper_finish_z, width=0.80
+    )
+
+    # Quiet oak skirtings prevent the rooms from reading as white boxes pasted
+    # onto the floor and also visually connect the new door leaves.
+    for level, z in (("ground", DIMS.ground_finish_z + 0.055), ("upper", DIMS.upper_finish_z + 0.055)):
+        add_box(
+            f"V2 Premium {level} rear skirting",
+            (0.0, DIMS.ground_rear_y - 0.235, z),
+            (DIMS.width - 0.42, 0.055, 0.11),
+            oak,
+            collection="V2 INTERIOR",
+            bevel=0.006,
+        )
+
+    parent_unparented_to_rebuild_root(
+        "V2 STRUCTURE", "V2 FACADE", "V2 EXTERIOR", "V2 INTERIOR"
+    )
+    bpy.context.scene["hubmann_v2_premium_architecture"] = "complete"
+
+
 def build_phase4(materials: dict[str, bpy.types.Material]) -> None:
     """Create stable explosion groups and deliberate scroll-camera keyframes."""
-    del materials
     root = bpy.data.objects.get("V2 Rebuild width match")
     if root is None:
         raise RuntimeError("Phase 4 requires the V2 rebuild root")
@@ -3989,41 +4438,108 @@ def build_phase4(materials: dict[str, bpy.types.Material]) -> None:
     roof_group = animation_group("V2 Animation roof group")
     front_group = animation_group("V2 Animation front facade group")
     right_group = animation_group("V2 Animation right facade group")
+    pv_group = animation_group("V2 Animation PV group")
+    server_group = animation_group("V2 Animation server group")
+    pv_group.parent = roof_group
 
     roof_prefixes = (
         "V2 Roof",
-        "V2 PV",
-        "V2 R4 PV",
-        "V2 R5 PV",
         "V2 P3A front",
         "V2 P3A rear",
         "V2 P3B roof service path",
     )
+    pv_prefixes = ("V2 PV", "V2 R4 PV", "V2 R5 PV")
+    server_prefixes = ("V2 Server", "V2 Plan Server", "V2 P3B server")
     for obj in list(bpy.data.objects):
-        if obj in {root, roof_group, front_group, right_group}:
+        if obj in {
+            root,
+            roof_group,
+            front_group,
+            right_group,
+            pv_group,
+            server_group,
+        }:
             continue
-        if obj.name.startswith(roof_prefixes):
+        if obj.name.startswith(server_prefixes):
+            obj.parent = server_group
+        elif obj.name.startswith(pv_prefixes):
+            obj.parent = pv_group
+        elif obj.name.startswith(roof_prefixes):
             obj.parent = roof_group
         elif obj.name.startswith("V2 Facade"):
             obj.parent = front_group
         elif obj.name.startswith(("V2 Exterior right", "V2 P3A right")):
             obj.parent = right_group
 
+    # Fade the two camera-facing skins as coherent architectural layers.  The
+    # previous seven-metre translations exposed every wall segment and window
+    # as separate flying objects, which made the building look broken.  A short
+    # outward ease plus material dissolve reveals the section without ever
+    # sacrificing the interior partitions.
+    fade_inputs: list[bpy.types.NodeSocket] = []
+    fade_materials: dict[bpy.types.Material, bpy.types.Material] = {}
+    dissolve_objects = tuple(
+        obj
+        for obj in bpy.data.objects
+        if obj.parent in {front_group, right_group} and hasattr(obj.data, "materials")
+    )
+    for obj in dissolve_objects:
+        for slot in obj.material_slots:
+            source = slot.material
+            if source is None:
+                continue
+            faded = fade_materials.get(source)
+            if faded is None:
+                faded = source.copy()
+                faded.name = f"{source.name} facade dissolve"
+                faded.use_nodes = True
+                nodes = faded.node_tree.nodes
+                links = faded.node_tree.links
+                output = nodes.get("Material Output")
+                if output is None:
+                    output = next(
+                        (node for node in nodes if node.type == "OUTPUT_MATERIAL"),
+                        None,
+                    )
+                if output is None or not output.inputs["Surface"].links:
+                    continue
+                surface_link = output.inputs["Surface"].links[0]
+                opaque_socket = surface_link.from_socket
+                links.remove(surface_link)
+                transparent = nodes.new("ShaderNodeBsdfTransparent")
+                transparent.inputs["Color"].default_value = (1.0, 1.0, 1.0, 1.0)
+                mix = nodes.new("ShaderNodeMixShader")
+                mix.name = "V2 facade dissolve control"
+                links.new(opaque_socket, mix.inputs[1])
+                links.new(transparent.outputs["BSDF"], mix.inputs[2])
+                links.new(mix.outputs["Shader"], output.inputs["Surface"])
+                mix.inputs[0].default_value = 0.0
+                try:
+                    faded.surface_render_method = "DITHERED"
+                except Exception:
+                    pass
+                fade_materials[source] = faded
+                fade_inputs.append(mix.inputs[0])
+            slot.material = faded
+
     panel_keyframes = (
-        (1, 0.0, (0.0, 0.0, 0.0), (0.0, 0.0, 0.0)),
-        (28, 0.35, (-0.30, -0.55, 0.0), (0.45, 0.0, 0.0)),
-        (40, 1.35, (-6.60, -1.20, 0.0), (4.80, 0.0, 0.0)),
-        (52, 1.85, (-7.20, -1.45, 0.0), (5.45, 0.0, 0.0)),
-        (70, 1.85, (-7.20, -1.45, 0.0), (5.45, 0.0, 0.0)),
-        (82, 1.65, (-7.00, -1.35, 0.0), (5.55, 0.0, 0.0)),
-        (92, 2.20, (-7.20, -1.45, 0.0), (5.65, 0.0, 0.0)),
-        (104, 2.00, (-7.20, -1.45, 0.0), (5.65, 0.0, 0.0)),
-        (120, 0.0, (0.0, 0.0, 0.0), (0.0, 0.0, 0.0)),
+        (1, 0.0, (0.0, 0.0, 0.0), (0.0, 0.0, 0.0), 0.0),
+        (26, 0.0, (0.0, 0.0, 0.0), (0.0, 0.0, 0.0), 0.0),
+        (32, 0.16, (0.0, -0.10, 0.0), (0.10, 0.0, 0.0), 0.42),
+        (38, 0.66, (0.0, -0.22, 0.0), (0.22, 0.0, 0.0), 1.0),
+        (52, 0.66, (0.0, -0.22, 0.0), (0.22, 0.0, 0.0), 1.0),
+        (70, 0.66, (0.0, -0.22, 0.0), (0.22, 0.0, 0.0), 1.0),
+        (82, 0.66, (0.0, -0.22, 0.0), (0.22, 0.0, 0.0), 1.0),
+        (96, 0.66, (0.0, -0.22, 0.0), (0.22, 0.0, 0.0), 1.0),
+        (102, 0.46, (0.0, -0.14, 0.0), (0.14, 0.0, 0.0), 0.68),
+        (108, 0.18, (0.0, -0.04, 0.0), (0.04, 0.0, 0.0), 0.16),
+        (112, 0.0, (0.0, 0.0, 0.0), (0.0, 0.0, 0.0), 0.0),
+        (120, 0.0, (0.0, 0.0, 0.0), (0.0, 0.0, 0.0), 0.0),
     )
     flexible = bpy.data.objects.get("V2 P3B flexible roof riser")
     flexible_base_location = flexible.location.copy() if flexible is not None else None
     flexible_length = 1.22
-    for frame, roof_lift, front_location, right_location in panel_keyframes:
+    for frame, roof_lift, front_location, right_location, fade in panel_keyframes:
         roof_group.location = (0.0, 0.0, roof_lift)
         front_group.location = front_location
         right_group.location = right_location
@@ -4034,18 +4550,67 @@ def build_phase4(materials: dict[str, bpy.types.Material]) -> None:
             flexible.scale = (1.0, 1.0, 1.0 + roof_lift / flexible_length)
             flexible.keyframe_insert(data_path="location", frame=frame)
             flexible.keyframe_insert(data_path="scale", frame=frame)
+        for fade_input in fade_inputs:
+            fade_input.default_value = fade
+            fade_input.keyframe_insert(data_path="default_value", frame=frame)
+
+    # The planning state starts without modules.  They descend only during the
+    # energy chapter and remain installed for the finished-house state.
+    for frame, lift in (
+        (1, 6.0),
+        (28, 6.0),
+        (40, 6.0),
+        (52, 6.0),
+        (70, 6.0),
+        (82, 3.0),
+        (92, 0.85),
+        (104, 0.0),
+        (120, 0.0),
+    ):
+        pv_group.location = (0.0, 0.0, lift)
+        pv_group.keyframe_insert(data_path="location", frame=frame)
+
+    # The underground service cell belongs to the installation chapter.  It
+    # rises into the cutaway and clears the clean exterior hero states again.
+    for frame, drop in (
+        (1, -4.0),
+        (28, -4.0),
+        (40, 0.0),
+        (52, 0.0),
+        (70, 0.0),
+        (82, 0.0),
+        (92, -4.0),
+        (104, -4.0),
+        (120, -4.0),
+    ):
+        server_group.location = (0.0, 0.0, drop)
+        server_group.keyframe_insert(data_path="location", frame=frame)
+
+    contact_shadow = bpy.data.objects.get("V2 QA contact shadow")
+    if contact_shadow is not None:
+        for frame, y, z in (
+            (1, -3.20, 0.02),
+            (28, -3.20, 0.02),
+            (40, DIMS.server_center_y, DIMS.server_floor_z - 0.10),
+            (82, DIMS.server_center_y, DIMS.server_floor_z - 0.10),
+            (92, -3.20, 0.02),
+            (120, -3.20, 0.02),
+        ):
+            contact_shadow.location = (0.45, y, z)
+            contact_shadow.keyframe_insert(data_path="location", frame=frame)
 
     camera = bpy.data.objects["V2 Camera Mockup"]
     camera_keyframes = (
-        (1, (15.2, -33.0, 9.1), (0.0, -0.10, 3.25), 62.0),
-        (28, (14.2, -30.5, 8.2), (0.0, 0.05, 3.30), 68.0),
-        (40, (11.8, -25.5, 4.9), (-0.25, 0.20, 1.55), 72.0),
-        (52, (10.4, -22.3, 3.25), (1.55, 0.55, 1.48), 78.0),
-        (70, (8.7, -20.2, 1.25), (1.70, -4.15, -0.72), 76.0),
-        (82, (1.8, -14.0, 5.95), (1.80, 1.45, 4.48), 82.0),
-        (92, (13.0, -27.0, 11.1), (2.35, 0.10, 7.78), 70.0),
-        (104, (15.5, -32.8, 8.9), (0.15, -0.10, 3.45), 64.0),
-        (120, (14.5, -31.5, 8.2), (0.0, -0.20, 2.95), 66.0),
+        (1, (10.2, -34.8, 8.7), (0.0, -0.08, 3.30), 62.0),
+        (26, (10.1, -34.4, 8.5), (0.0, -0.02, 3.28), 62.5),
+        (38, (10.0, -33.8, 8.0), (0.10, 0.12, 3.18), 63.0),
+        (52, (9.9, -33.5, 7.8), (0.18, 0.18, 3.08), 63.0),
+        (70, (9.8, -33.2, 7.7), (0.28, 0.22, 3.04), 63.5),
+        (82, (9.9, -33.5, 8.4), (0.40, 0.18, 3.72), 63.5),
+        (96, (10.0, -33.9, 9.3), (0.58, 0.10, 4.62), 63.5),
+        (102, (10.1, -34.3, 9.0), (0.36, 0.02, 3.88), 63.0),
+        (112, (10.2, -34.8, 8.7), (0.12, -0.06, 3.38), 62.0),
+        (120, (10.2, -34.8, 8.7), (0.0, -0.08, 3.30), 62.0),
     )
     for frame, location, target, lens in camera_keyframes:
         camera.location = location
@@ -4058,7 +4623,7 @@ def build_phase4(materials: dict[str, bpy.types.Material]) -> None:
     bpy.context.scene.frame_set(1)
     bpy.context.scene["hubmann_v2_phase4"] = "complete"
     bpy.context.scene["hubmann_v2_animation_keyframes"] = (
-        "1,28,40,52,70,82,92,104,120"
+        "1,26,32,38,52,70,82,96,102,108,112,120"
     )
 
 
@@ -4130,6 +4695,20 @@ def render_still(
                     obj.hide_render = True
         if mode not in {"plan_ground", "plan_upper", "plan_server"}:
             bpy.data.collections["V2 PLAN"].hide_render = True
+        if mode == "animation" and (
+            scene.frame_current <= 28 or scene.frame_current >= 112
+        ):
+            # Closed exterior states do not need hundreds of occluded furniture
+            # and lighting objects.  Hiding them keeps the 120-frame web render
+            # practical without changing a visible pixel.
+            for collection_name in (
+                "V2 INTERIOR",
+                "V2 LIGHTING",
+                "V2 DETAILED FURNITURE",
+            ):
+                collection = bpy.data.collections.get(collection_name)
+                if collection is not None:
+                    collection.hide_render = True
 
         if mode == "plan_ground":
             hidden_prefixes = (
@@ -4370,10 +4949,10 @@ def render_phase3b_proofs() -> None:
 
 
 def render_phase4_keyframes() -> None:
-    proof_dir = QA_DIR / "phase-04-animation-keyframes-v01"
+    proof_dir = QA_DIR / "phase-04-animation-keyframes-v02"
     proof_dir.mkdir(parents=True, exist_ok=True)
     scene = bpy.context.scene
-    default_frames = (1, 28, 40, 52, 70, 82, 92, 104, 120)
+    default_frames = (1, 38, 52, 70, 96, 120)
     frame_filter = os.environ.get("HUBMANN_V2_FRAMES", "").strip()
     frames = (
         tuple(int(value.strip()) for value in frame_filter.split(",") if value.strip())
@@ -4393,8 +4972,50 @@ def render_phase4_keyframes() -> None:
     scene.frame_set(1)
 
 
+def render_web_sequence() -> None:
+    """Render V2 directly into the frame contract consumed by HouseStory."""
+    scene = bpy.context.scene
+    start = int(os.environ.get("HUBMANN_V2_FRAME_START", str(FRAME_START)))
+    end = int(os.environ.get("HUBMANN_V2_FRAME_END", str(FRAME_END)))
+    if start < FRAME_START or end > FRAME_END or start > end:
+        raise ValueError(
+            f"Invalid V2 web frame range {start}..{end}; expected "
+            f"{FRAME_START}..{FRAME_END}"
+        )
+
+    sequence_dir = Path(
+        os.environ.get("HUBMANN_V2_SEQUENCE_DIR", str(SEQUENCE_DIR))
+    )
+    sequence_dir.mkdir(parents=True, exist_ok=True)
+    scene.render.resolution_x = int(os.environ.get("HUBMANN_V2_WEB_WIDTH", "1600"))
+    scene.render.resolution_y = int(os.environ.get("HUBMANN_V2_WEB_HEIGHT", "900"))
+    scene.render.resolution_percentage = 100
+    scene.render.image_settings.file_format = "JPEG"
+    scene.render.image_settings.color_mode = "RGB"
+    scene.render.image_settings.quality = int(
+        os.environ.get("HUBMANN_V2_WEB_QUALITY", "92")
+    )
+    scene.render.film_transparent = False
+    if scene.render.engine == "BLENDER_EEVEE":
+        scene.eevee.taa_render_samples = int(
+            os.environ.get("HUBMANN_V2_WEB_SAMPLES", "12")
+        )
+        scene.eevee.use_fast_gi = False
+        scene.eevee.volumetric_samples = 16
+    bpy.data.objects["V2 Camera Mockup"].data.sensor_fit = "AUTO"
+
+    for frame in range(start, end + 1):
+        scene.frame_set(frame)
+        render_still(
+            "V2 Camera Mockup",
+            sequence_dir / f"house-{frame:04d}.jpg",
+            mode="animation",
+        )
+    scene.frame_set(1)
+
+
 def render_final_model_proofs() -> None:
-    proof_dir = QA_DIR / "final-model-v02"
+    proof_dir = QA_DIR / os.environ.get("HUBMANN_V2_FINAL_DIR", "final-model-v03")
     proof_dir.mkdir(parents=True, exist_ok=True)
     scene = bpy.context.scene
     scene.frame_set(120)
@@ -4428,12 +5049,15 @@ def render_final_model_proofs() -> None:
 
 
 def main() -> None:
+    args = script_args()
+    if "--render-web-sequence-existing" in args:
+        render_web_sequence()
+        return
     if BUILD_STAGE not in VALID_STAGES:
         raise ValueError(
             f"Unknown HUBMANN_V2_STAGE={BUILD_STAGE!r}; expected one of {VALID_STAGES}"
         )
     implemented_stages = VALID_STAGES
-    args = script_args()
     materials = build_phase0()
     stage_index = implemented_stages.index(BUILD_STAGE)
     if stage_index >= implemented_stages.index("phase1a"):
@@ -4455,6 +5079,7 @@ def main() -> None:
     if stage_index >= implemented_stages.index("phase3b"):
         build_phase3b(materials)
     if stage_index >= implemented_stages.index("phase4"):
+        build_premium_architecture(materials)
         build_phase4(materials)
     save_scene()
     if "--render-phase1a-proofs" in args:
@@ -4505,6 +5130,10 @@ def main() -> None:
         if BUILD_STAGE != "phase4":
             raise ValueError("Phase 4 proofs require HUBMANN_V2_STAGE=phase4")
         render_phase4_keyframes()
+    if "--render-web-sequence" in args:
+        if BUILD_STAGE != "phase4":
+            raise ValueError("The V2 web sequence requires HUBMANN_V2_STAGE=phase4")
+        render_web_sequence()
     if "--render-final-model-proofs" in args:
         if BUILD_STAGE != "phase4":
             raise ValueError("Final proofs require HUBMANN_V2_STAGE=phase4")

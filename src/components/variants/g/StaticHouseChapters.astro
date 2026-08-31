@@ -1,6 +1,6 @@
 ---
 import {
-  VERSION_G_STORY_ASSETS,
+  VERSION_G_STORY_CHAPTERS,
   versionGStoryAssetUrl,
 } from '../../../config/version-g-story-assets';
 
@@ -8,52 +8,7 @@ interface Props {
   baseUrl: string;
 }
 const { baseUrl } = Astro.props;
-const chapters = [
-  {
-    id: 'planning',
-    number: '01',
-    label: 'Planung',
-    asset: VERSION_G_STORY_ASSETS.planning,
-    title: ['Ein gutes Haus', 'beginnt mit', 'einem klaren Plan.'],
-    description:
-      'Wir planen Elektrotechnik für Neubau, Sanierung und Gewerbe – durchdacht, präzise und zukunftssicher.',
-    cta: 'Projekt besprechen',
-    href: 'kontakt/#projektanfrage',
-  },
-  {
-    id: 'installation',
-    number: '02',
-    label: 'Installation',
-    asset: VERSION_G_STORY_ASSETS.installation,
-    title: ['Saubere Installation.', 'Präzise umgesetzt.'],
-    description:
-      'Von Elektroinstallationen über Netzwerktechnik bis zu Beleuchtung setzen wir Technik sauber, sicher und zuverlässig um.',
-    cta: 'Leistungen ansehen',
-    href: 'leistungen/elektroinstallation-sanierung/',
-  },
-  {
-    id: 'photovoltaic',
-    number: '03',
-    label: 'Photovoltaik',
-    asset: VERSION_G_STORY_ASSETS.photovoltaic,
-    title: ['Energie smart', 'nutzen.', 'Zukunft sicher', 'denken.'],
-    description:
-      'Mit Photovoltaik, Speicher und intelligenten Lösungen schaffen wir nachhaltige Energiekonzepte.',
-    cta: 'Energie entdecken',
-    href: 'leistungen/photovoltaik-energie/',
-  },
-  {
-    id: 'service',
-    number: '04',
-    label: 'Service',
-    asset: VERSION_G_STORY_ASSETS.service,
-    title: ['Auch nach dem', 'Projekt verlässlich', 'an Ihrer Seite.'],
-    description:
-      'Kundendienst, Wartung und Erweiterungen begleiten Ihre Anlage langfristig und unkompliziert.',
-    cta: 'Service anfragen',
-    href: 'kontakt/#projektanfrage',
-  },
-] as const;
+const chapters = VERSION_G_STORY_CHAPTERS;
 ---
 
 <section

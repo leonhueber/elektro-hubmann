@@ -1,25 +1,12 @@
 import type { CSSProperties } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import {
-  VERSION_G_STORY_ASSETS,
+  VERSION_G_STORY_CHAPTERS,
   versionGStoryAssetUrl,
-  type VersionGStoryAsset,
   type VersionGStoryState,
 } from '../../../config/version-g-story-assets';
 
 export type HouseStoryState = VersionGStoryState;
-
-type StoryChapter = {
-  id: HouseStoryState;
-  number: string;
-  label: string;
-  title: string[];
-  description: string;
-  cta: string;
-  href: string;
-  hint: string;
-  asset: VersionGStoryAsset;
-};
 
 type SceneMotion = {
   opacity: number;
@@ -28,56 +15,7 @@ type SceneMotion = {
   scale: number;
 };
 
-const chapters: StoryChapter[] = [
-  {
-    id: 'planning',
-    number: '01',
-    label: 'Planung',
-    title: ['Ein gutes Haus', 'beginnt mit', 'einem klaren Plan.'],
-    description:
-      'Wir planen Elektrotechnik für Neubau, Sanierung und Gewerbe – durchdacht, präzise und zukunftssicher.',
-    cta: 'Projekt besprechen',
-    href: 'kontakt/#projektanfrage',
-    hint: 'Scrollen, um die Planung weiterzuführen',
-    asset: VERSION_G_STORY_ASSETS.planning,
-  },
-  {
-    id: 'installation',
-    number: '02',
-    label: 'Installation',
-    title: ['Saubere Installation.', 'Präzise umgesetzt.'],
-    description:
-      'Von Elektroinstallationen über Netzwerktechnik bis zu Beleuchtung setzen wir Technik sauber, sicher und zuverlässig um.',
-    cta: 'Leistungen ansehen',
-    href: 'leistungen/elektroinstallation-sanierung/',
-    hint: 'Weiter zur Photovoltaik',
-    asset: VERSION_G_STORY_ASSETS.installation,
-  },
-  {
-    id: 'photovoltaic',
-    number: '03',
-    label: 'Photovoltaik',
-    title: ['Energie smart', 'nutzen.', 'Zukunft sicher', 'denken.'],
-    description:
-      'Mit Photovoltaik, Speicher und intelligenten Lösungen schaffen wir nachhaltige Energiekonzepte.',
-    cta: 'Energie entdecken',
-    href: 'leistungen/photovoltaik-energie/',
-    hint: 'Weiter zu Service und Wartung',
-    asset: VERSION_G_STORY_ASSETS.photovoltaic,
-  },
-  {
-    id: 'service',
-    number: '04',
-    label: 'Service',
-    title: ['Auch nach dem', 'Projekt verlässlich', 'an Ihrer Seite.'],
-    description:
-      'Kundendienst, Wartung und Erweiterungen begleiten Ihre Anlage langfristig und unkompliziert.',
-    cta: 'Service anfragen',
-    href: 'kontakt/#projektanfrage',
-    hint: 'Weiter zu unseren Referenzprojekten',
-    asset: VERSION_G_STORY_ASSETS.service,
-  },
-];
+const chapters = VERSION_G_STORY_CHAPTERS;
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 const smoothstep = (value: number) => {
@@ -87,10 +25,11 @@ const smoothstep = (value: number) => {
 
 export function getStoryState(progress: number): HouseStoryState {
   const value = clamp(progress);
-  if (value < 0.25) return 'planning';
-  if (value < 0.5) return 'installation';
-  if (value < 0.75) return 'photovoltaic';
-  return 'service';
+  const index = Math.min(
+    chapters.length - 1,
+    Math.floor(value * chapters.length),
+  );
+  return chapters[index]!.id;
 }
 
 export function getSceneMotion(
@@ -100,7 +39,7 @@ export function getSceneMotion(
   const value = clamp(progress);
   const start = sceneIndex / chapters.length;
   const end = (sceneIndex + 1) / chapters.length;
-  const fadeDistance = 0.045;
+  const fadeDistance = 0.18 / chapters.length;
   let opacity = 1;
 
   if (sceneIndex > 0 && value < start + fadeDistance) {
@@ -117,7 +56,10 @@ export function getSceneMotion(
   }
 
   const center = (start + end) / 2;
-  const signedDistance = Math.max(-1, Math.min(1, (value - center) * 5));
+  const signedDistance = Math.max(
+    -1,
+    Math.min(1, (value - center) * chapters.length * 1.25),
+  );
   const inactiveOffset = (1 - opacity) * (value < center ? 1 : -1);
 
   return {
@@ -138,7 +80,7 @@ function ChapterContent({
   activeIndex,
   baseUrl,
 }: {
-  chapter: StoryChapter;
+  chapter: (typeof chapters)[number];
   index: number;
   activeIndex: number;
   baseUrl: string;
@@ -221,7 +163,12 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
       gsap.registerPlugin(ScrollTrigger);
       trigger = ScrollTrigger.create({
         trigger: root,
-        start: 'top top',
+        start: () => {
+          const headerHeight =
+            document.querySelector<HTMLElement>('.g-header-shell')
+              ?.offsetHeight ?? 0;
+          return `top ${headerHeight}px`;
+        },
         end: 'bottom bottom',
         scrub: 0.2,
         invalidateOnRefresh: true,
@@ -244,7 +191,12 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
       className="g-story"
       aria-label="Leistungen von der Planung bis zum Service"
       data-state={chapters[activeIndex]?.id}
-      style={{ '--g-story-progress': '0%' } as CSSProperties}
+      style={
+        {
+          '--g-story-progress': '0%',
+          '--g-story-height': `${100 + chapters.length * 85}svh`,
+        } as CSSProperties
+      }
     >
       <div className="g-story-stage">
         <div className="g-story-visual" aria-hidden="true">
@@ -289,7 +241,8 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
           aria-label="Fortschritt der Leistungs-Story"
         >
           <strong>
-            <span>{chapters[activeIndex]?.number}</span> / 04
+            <span>{chapters[activeIndex]?.number}</span> /{' '}
+            {String(chapters.length).padStart(2, '0')}
           </strong>
           <ol>
             {chapters.map((chapter, index) => (

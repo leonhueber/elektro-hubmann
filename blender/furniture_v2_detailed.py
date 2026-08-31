@@ -25,7 +25,7 @@ from mathutils import Vector
 
 ROOT = Path(__file__).resolve().parents[1]
 LIBRARY_PATH = ROOT / "assets" / "3d" / "elektro-hubmann-furniture-v2.blend"
-QA_DIR = ROOT / "docs" / "version-g-qa" / "blender-v2" / "furniture-detail-v03"
+QA_DIR = ROOT / "docs" / "version-g-qa" / "blender-v2" / "furniture-detail-v04"
 COLLECTION_NAME = "V2 DETAILED FURNITURE"
 PREVIEW_COLLECTION = "F2 PREVIEW"
 HOUSE_SCALE_X = 1.16
@@ -401,29 +401,31 @@ def add_quilt(
 
 
 def build_sofa_and_living(m: dict[str, bpy.types.Material]) -> None:
-    add_box("F2 sofa shadow plinth", (-3.42, 2.32, 0.40), (2.58, 0.92, 0.11), m["charcoal"], bevel=0.025)
-    for x in (-4.42, -2.42):
-        for y in (2.02, 2.60):
+    # Reference layout: sofa along the left exterior wall, facing the TV on
+    # the central partition.  Its long axis therefore runs front-to-rear.
+    add_box("F2 sofa shadow plinth", (-4.12, 1.55, 0.40), (0.92, 2.50, 0.11), m["charcoal"], bevel=0.025)
+    for x in (-4.42, -3.82):
+        for y in (0.55, 2.55):
             add_box(f"F2 sofa leg {x:.2f} {y:.2f}", (x, y, 0.43), (0.055, 0.055, 0.22), m["charcoal"], bevel=0.010)
-    add_box("F2 sofa body", (-3.42, 2.33, 0.58), (2.58, 0.92, 0.30), m["fabric"], bevel=0.11, segments=5)
-    for index, x in enumerate((-3.99, -2.85), 1):
-        add_box(f"F2 sofa seat cushion {index}", (x, 2.14, 0.79), (1.06, 0.72, 0.23), m["fabric_light"], bevel=0.105, segments=5)
+    add_box("F2 sofa body", (-4.10, 1.55, 0.58), (0.92, 2.50, 0.30), m["fabric"], bevel=0.11, segments=5)
+    for index, y in enumerate((1.00, 2.10), 1):
+        add_box(f"F2 sofa seat cushion {index}", (-3.92, y, 0.79), (0.72, 1.02, 0.23), m["fabric_light"], bevel=0.105, segments=5)
         add_box(
             f"F2 sofa back cushion {index}",
-            (x, 2.51, 1.15),
-            (1.04, 0.24, 0.67),
+            (-4.37, y, 1.15),
+            (0.24, 1.00, 0.67),
             m["fabric"],
-            rotation=(math.radians(-7.0), 0.0, 0.0),
+            rotation=(0.0, math.radians(7.0), 0.0),
             bevel=0.11,
             segments=5,
         )
-    add_box("F2 sofa rear support", (-3.42, 2.66, 1.02), (2.58, 0.17, 0.93), m["fabric"], bevel=0.075, segments=4)
-    for side, x in (("left", -4.64), ("right", -2.20)):
-        add_box(f"F2 sofa arm {side}", (x, 2.29, 0.82), (0.18, 0.86, 0.67), m["fabric"], bevel=0.075, segments=4)
-    add_box("F2 sofa accent pillow", (-4.15, 2.05, 1.13), (0.46, 0.18, 0.48), m["fabric_accent"], rotation=(math.radians(-5.0), math.radians(7.0), math.radians(-7.0)), bevel=0.12, segments=5)
-    add_box("F2 sofa ivory pillow", (-2.57, 2.05, 1.12), (0.42, 0.18, 0.44), m["fabric_light"], rotation=(math.radians(-4.0), math.radians(-5.0), math.radians(6.0)), bevel=0.11, segments=5)
+    add_box("F2 sofa rear support", (-4.52, 1.55, 1.02), (0.17, 2.50, 0.93), m["fabric"], bevel=0.075, segments=4)
+    for side, y in (("front", 0.28), ("rear", 2.82)):
+        add_box(f"F2 sofa arm {side}", (-4.10, y, 0.82), (0.86, 0.18, 0.67), m["fabric"], bevel=0.075, segments=4)
+    add_box("F2 sofa accent pillow", (-3.98, 0.85, 1.13), (0.18, 0.46, 0.48), m["fabric_accent"], rotation=(math.radians(-5.0), math.radians(7.0), math.radians(-7.0)), bevel=0.12, segments=5)
+    add_box("F2 sofa ivory pillow", (-3.98, 2.25, 1.12), (0.18, 0.42, 0.44), m["fabric_light"], rotation=(math.radians(-4.0), math.radians(-5.0), math.radians(6.0)), bevel=0.11, segments=5)
 
-    chair = add_group("F2 lounge chair", (-1.78, -0.18, 0.0), math.radians(-16.0))
+    chair = add_group("F2 lounge chair", (-2.40, 0.15, 0.0), math.radians(-120.0))
     for x in (-0.29, 0.29):
         for y in (-0.25, 0.24):
             add_cylinder(f"F2 lounge leg {x:+.2f} {y:+.2f}", (x, y, 0.49), 0.026, 0.34, m["charcoal"], vertices=18, parent=chair)
@@ -433,23 +435,24 @@ def build_sofa_and_living(m: dict[str, bpy.types.Material]) -> None:
     for x in (-0.43, 0.43):
         add_box(f"F2 lounge arm {x:+.2f}", (x, 0.02, 0.91), (0.12, 0.68, 0.40), m["fabric"], bevel=0.06, segments=4, parent=chair)
 
-    add_box("F2 coffee table oak top", (-3.05, 0.55, 0.68), (1.50, 0.78, 0.09), m["oak_light"], bevel=0.045, segments=4)
-    for x in (-3.62, -2.48):
-        add_pipe(f"F2 coffee sled {x:.2f}", [(x, 0.25, 0.35), (x, 0.25, 0.63), (x, 0.85, 0.63), (x, 0.85, 0.35)], 0.025, m["charcoal"])
-    add_box("F2 coffee table book", (-3.28, 0.52, 0.75), (0.42, 0.28, 0.05), m["fabric_accent"], rotation=(0.0, 0.0, math.radians(7.0)), bevel=0.012)
-    add_cylinder("F2 coffee cup", (-2.80, 0.52, 0.79), 0.08, 0.11, m["porcelain"], vertices=32)
+    add_box("F2 coffee table oak top", (-3.12, 1.50, 0.68), (0.78, 1.50, 0.09), m["oak_light"], bevel=0.045, segments=4)
+    for y in (0.93, 2.07):
+        add_pipe(f"F2 coffee sled {y:.2f}", [(-3.42, y, 0.35), (-3.42, y, 0.63), (-2.82, y, 0.63), (-2.82, y, 0.35)], 0.025, m["charcoal"])
+    add_box("F2 coffee table book", (-3.12, 1.28, 0.75), (0.28, 0.42, 0.05), m["fabric_accent"], rotation=(0.0, 0.0, math.radians(7.0)), bevel=0.012)
+    add_cylinder("F2 coffee cup", (-3.12, 1.78, 0.79), 0.08, 0.11, m["porcelain"], vertices=32)
 
-    add_box("F2 TV console body", (-1.52, 3.30, 0.64), (1.34, 0.42, 0.54), m["oak"], bevel=0.035, segments=3)
-    for x in (-1.96, -1.52, -1.08):
-        add_box(f"F2 TV console joint {x:.2f}", (x, 3.075, 0.64), (0.018, 0.025, 0.42), m["black"], bevel=0.002)
-    add_box("F2 TV screen", (-1.52, 3.51, 1.48), (1.32, 0.065, 0.78), m["screen"], bevel=0.028, segments=3)
-    add_box("F2 TV inner panel", (-1.52, 3.47, 1.48), (1.20, 0.018, 0.66), m["black"], bevel=0.015)
+    add_box("F2 TV console body", (-1.43, 1.45, 0.64), (0.42, 1.38, 0.54), m["oak"], bevel=0.035, segments=3)
+    for y in (1.01, 1.45, 1.89):
+        add_box(f"F2 TV console joint {y:.2f}", (-1.655, y, 0.64), (0.025, 0.018, 0.42), m["black"], bevel=0.002)
+    add_box("F2 TV screen", (-1.22, 1.45, 1.48), (0.065, 1.32, 0.78), m["screen"], bevel=0.028, segments=3)
+    add_box("F2 TV inner panel", (-1.255, 1.45, 1.48), (0.018, 1.20, 0.66), m["black"], bevel=0.015)
 
-    add_cylinder("F2 plant pot", (-4.30, 0.95, 0.55), 0.23, 0.48, m["ceramic"], vertices=40)
-    add_cylinder("F2 plant soil", (-4.30, 0.95, 0.80), 0.19, 0.035, m["soil"], vertices=32)
+    plant_x, plant_y = -2.55, 2.92
+    add_cylinder("F2 plant pot", (plant_x, plant_y, 0.55), 0.23, 0.48, m["ceramic"], vertices=40)
+    add_cylinder("F2 plant soil", (plant_x, plant_y, 0.80), 0.19, 0.035, m["soil"], vertices=32)
     for index, (dx, dy, height, bend) in enumerate(((-0.08, 0.0, 0.80, -0.20), (0.05, 0.0, 1.02, 0.18), (0.0, 0.04, 0.64, 0.08)), 1):
-        add_pipe(f"F2 plant stem {index}", [(-4.30, 0.95, 0.80), (-4.30 + dx, 0.95 + dy, 0.80 + height * 0.58), (-4.30 + dx + bend, 0.95 + dy, 0.80 + height)], 0.018, m["plant"])
-    for index, (x, y, z, rz) in enumerate(((-4.50, 0.95, 1.27, -0.45), (-4.18, 0.96, 1.48, 0.50), (-4.37, 0.96, 1.67, -0.18), (-4.12, 0.98, 1.30, 0.35), (-4.46, 0.97, 1.52, -0.42)), 1):
+        add_pipe(f"F2 plant stem {index}", [(plant_x, plant_y, 0.80), (plant_x + dx, plant_y + dy, 0.80 + height * 0.58), (plant_x + dx + bend, plant_y + dy, 0.80 + height)], 0.018, m["plant"])
+    for index, (x, y, z, rz) in enumerate(((-2.75, 2.92, 1.27, -0.45), (-2.43, 2.93, 1.48, 0.50), (-2.62, 2.93, 1.67, -0.18), (-2.37, 2.95, 1.30, 0.35), (-2.71, 2.94, 1.52, -0.42)), 1):
         add_ellipsoid(f"F2 plant leaf {index}", (x, y, z), (0.42, 0.10, 0.20), m["plant"], rotation=(0.0, rz, 0.0))
 
 
@@ -513,8 +516,8 @@ def build_dining_and_kitchen(m: dict[str, bpy.types.Material]) -> None:
 
 
 def build_bedroom(m: dict[str, bpy.types.Material]) -> None:
-    # Match the reference plan: headboard on the solid left exterior wall,
-    # with the bed extending horizontally toward the central circulation zone.
+    # Approved layout: headboard on the left exterior wall, with the bed
+    # extending horizontally toward the central circulation zone.
     bed_x, bed_y = -3.38, -0.72
     add_box("F2 bedroom rug", (-3.31, bed_y, 3.57), (2.72, 2.48, 0.045), m["fabric"], bevel=0.035, segments=3)
     for x in (-4.24, -2.52):
@@ -565,11 +568,11 @@ def build_bathroom(m: dict[str, bpy.types.Material]) -> None:
     add_cylinder("F2 rain shower", (4.36, 1.90, 5.44), 0.14, 0.025, m["charcoal"], vertices=40)
     add_cylinder("F2 shower mixer", (4.36, 2.14, 4.62), 0.075, 0.045, m["charcoal"], vertices=28, rotation=(math.pi / 2, 0.0, 0.0))
 
-    add_box("F2 toilet wall unit", (3.30, 0.00, 4.14), (0.58, 0.22, 0.70), m["porcelain"], bevel=0.085, segments=5)
-    add_ellipsoid("F2 toilet bowl body", (3.30, -0.39, 3.91), (0.56, 0.68, 0.30), m["porcelain"])
-    add_torus("F2 toilet seat ring", (3.30, -0.43, 4.075), (0.50, 0.60, 0.075), m["porcelain"])
-    add_box("F2 toilet seat hinge", (3.30, -0.13, 4.07), (0.34, 0.10, 0.065), m["porcelain"], bevel=0.022)
-    add_box("F2 toilet flush plate", (3.30, -0.122, 4.45), (0.28, 0.025, 0.17), m["charcoal"], bevel=0.025)
+    add_box("F2 toilet wall unit", (4.02, 0.00, 4.14), (0.58, 0.22, 0.70), m["porcelain"], bevel=0.085, segments=5)
+    add_ellipsoid("F2 toilet bowl body", (4.02, -0.39, 3.91), (0.56, 0.68, 0.30), m["porcelain"])
+    add_torus("F2 toilet seat ring", (4.02, -0.43, 4.075), (0.50, 0.60, 0.075), m["porcelain"])
+    add_box("F2 toilet seat hinge", (4.02, -0.13, 4.07), (0.34, 0.10, 0.065), m["porcelain"], bevel=0.022)
+    add_box("F2 toilet flush plate", (4.02, -0.122, 4.45), (0.28, 0.025, 0.17), m["charcoal"], bevel=0.025)
 
 
 def build_furniture() -> bpy.types.Collection:
@@ -580,7 +583,7 @@ def build_furniture() -> bpy.types.Collection:
     build_bedroom(m)
     build_bathroom(m)
     collection = bpy.data.collections[COLLECTION_NAME]
-    collection["hubmann_asset_version"] = "furniture-detail-v03"
+    collection["hubmann_asset_version"] = "furniture-detail-v04"
     collection["hubmann_coordinate_space"] = "V2 pre-scale"
     collection["hubmann_parent_target"] = "V2 Rebuild width match"
     return collection

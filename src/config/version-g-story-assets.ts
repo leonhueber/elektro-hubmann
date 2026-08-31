@@ -1,5 +1,8 @@
-export type VersionGStoryState =
+export type VersionGPrimaryStoryState =
   'planning' | 'installation' | 'photovoltaic' | 'service';
+
+export type VersionGStoryState =
+  VersionGPrimaryStoryState | 'smarthome' | 'lighting' | 'security';
 
 export type VersionGStoryAsset = {
   src: string;
@@ -33,7 +36,7 @@ const objectAssets = {
     width: 1448,
     height: 1086,
   },
-} satisfies Record<VersionGStoryState, VersionGStoryAsset>;
+} satisfies Record<VersionGPrimaryStoryState, VersionGStoryAsset>;
 
 /**
  * Keep every visual direction as a named set. A set may reuse assets from
@@ -68,7 +71,10 @@ export const VERSION_G_STORY_ASSET_SETS = {
       height: 1086,
     },
   },
-} satisfies Record<string, Record<VersionGStoryState, VersionGStoryAsset>>;
+} satisfies Record<
+  string,
+  Record<VersionGPrimaryStoryState, VersionGStoryAsset>
+>;
 
 // Change only this value to switch the complete visual direction.
 export const ACTIVE_VERSION_G_STORY_ASSET_SET: keyof typeof VERSION_G_STORY_ASSET_SETS =
@@ -77,12 +83,7 @@ export const ACTIVE_VERSION_G_STORY_ASSET_SET: keyof typeof VERSION_G_STORY_ASSE
 export const VERSION_G_STORY_ASSETS =
   VERSION_G_STORY_ASSET_SETS[ACTIVE_VERSION_G_STORY_ASSET_SET];
 
-/**
- * Optional chapters that are not part of the active four-step story yet.
- * Keeping them in the same catalog makes a later five- or six-step direction
- * possible without rediscovering paths, dimensions, or accessible labels.
- */
-export const VERSION_G_OPTIONAL_STORY_ASSETS = {
+export const VERSION_G_EXTENDED_STORY_ASSETS = {
   smarthome: {
     src: 'optional/smarthome-controls-v1.png',
     alt: 'Ungebrandete SmartHome-Bediengeräte vor einem modernen Wohnbereich',
@@ -102,6 +103,109 @@ export const VERSION_G_OPTIONAL_STORY_ASSETS = {
     height: 1086,
   },
 } satisfies Record<string, VersionGStoryAsset>;
+
+export type VersionGStoryChapter = {
+  id: VersionGStoryState;
+  number: string;
+  label: string;
+  title: readonly string[];
+  description: string;
+  cta: string;
+  href: string;
+  hint: string;
+  asset: VersionGStoryAsset;
+};
+
+/**
+ * Shared by the animated desktop story and the static mobile fallback so every
+ * chapter remains visible and consistently numbered in both experiences.
+ */
+export const VERSION_G_STORY_CHAPTERS = [
+  {
+    id: 'planning',
+    number: '01',
+    label: 'Planung',
+    title: ['Ein gutes Haus', 'beginnt mit', 'einem klaren Plan.'],
+    description:
+      'Wir planen Elektrotechnik für Neubau, Sanierung und Gewerbe – durchdacht, präzise und zukunftssicher.',
+    cta: 'Projekt besprechen',
+    href: 'kontakt/#projektanfrage',
+    hint: 'Scrollen, um die Planung weiterzuführen',
+    asset: VERSION_G_STORY_ASSETS.planning,
+  },
+  {
+    id: 'installation',
+    number: '02',
+    label: 'Installation',
+    title: ['Saubere Installation.', 'Präzise umgesetzt.'],
+    description:
+      'Von Elektroinstallationen bis zur Netzwerktechnik setzen wir Technik sauber, sicher und zuverlässig um.',
+    cta: 'Leistungen ansehen',
+    href: 'leistungen/elektroinstallation-sanierung/',
+    hint: 'Weiter zu SmartHome und KNX',
+    asset: VERSION_G_STORY_ASSETS.installation,
+  },
+  {
+    id: 'smarthome',
+    number: '03',
+    label: 'SmartHome',
+    title: ['Smarte Technik.', 'Komfortabel gesteuert.'],
+    description:
+      'Mit SmartHome, KNX und intelligenter Steuerung vernetzen wir Licht, Beschattung, Heizung und Sicherheit.',
+    cta: 'SmartHome entdecken',
+    href: 'leistungen/knx-netzwerk-medien/',
+    hint: 'Weiter zur Beleuchtung',
+    asset: VERSION_G_EXTENDED_STORY_ASSETS.smarthome,
+  },
+  {
+    id: 'lighting',
+    number: '04',
+    label: 'Beleuchtung',
+    title: ['Licht, das Räume', 'und Sicherheit', 'schafft.'],
+    description:
+      'Von Wohnraumlicht bis zur Sicherheits- und Notbeleuchtung planen wir funktionale und ästhetische Lösungen.',
+    cta: 'Beleuchtung ansehen',
+    href: 'leistungen/elektroinstallation-sanierung/',
+    hint: 'Weiter zur Sicherheitstechnik',
+    asset: VERSION_G_EXTENDED_STORY_ASSETS.lighting,
+  },
+  {
+    id: 'security',
+    number: '05',
+    label: 'Sicherheit',
+    title: ['Sicherheit,', 'auf die Sie sich', 'verlassen können.'],
+    description:
+      'Mit Alarmanlagen, Blitzschutz und moderner Gebäudetechnik schützen wir Haus, Betrieb und Menschen.',
+    cta: 'Sicherheit entdecken',
+    href: 'leistungen/gebaeudetechnik-sicherheit/',
+    hint: 'Weiter zur Photovoltaik',
+    asset: VERSION_G_EXTENDED_STORY_ASSETS.security,
+  },
+  {
+    id: 'photovoltaic',
+    number: '06',
+    label: 'Photovoltaik',
+    title: ['Energie smart', 'nutzen.', 'Zukunft sicher', 'denken.'],
+    description:
+      'Mit Photovoltaik, Speicher und intelligenten Lösungen schaffen wir nachhaltige Energiekonzepte.',
+    cta: 'Energie entdecken',
+    href: 'leistungen/photovoltaik-energie/',
+    hint: 'Weiter zu Service und Wartung',
+    asset: VERSION_G_STORY_ASSETS.photovoltaic,
+  },
+  {
+    id: 'service',
+    number: '07',
+    label: 'Service',
+    title: ['Auch nach dem', 'Projekt verlässlich', 'an Ihrer Seite.'],
+    description:
+      'Kundendienst, Wartung und Erweiterungen begleiten Ihre Anlage langfristig und unkompliziert.',
+    cta: 'Service anfragen',
+    href: 'kontakt/#projektanfrage',
+    hint: 'Weiter zu unseren Referenzprojekten',
+    asset: VERSION_G_STORY_ASSETS.service,
+  },
+] as const satisfies readonly VersionGStoryChapter[];
 
 export function versionGStoryAssetUrl(
   baseUrl: string,
