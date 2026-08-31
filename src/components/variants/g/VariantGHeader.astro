@@ -3,16 +3,15 @@ import { company } from '../../../config/site';
 
 interface Props {
   baseUrl: string;
-  active?: string;
 }
 
-const { baseUrl, active = '' } = Astro.props;
+const { baseUrl } = Astro.props;
 const root = baseUrl.replace(/\/$/, '');
 const nav = [
-  ['Leistungen', `${root}/#leistungen`, 'leistungen'],
-  ['Projekte', `${root}/#projekte`, 'projekte'],
-  ['Unternehmen', `${root}/#unternehmen`, 'unternehmen'],
-  ['Kontakt', `${root}/#kontakt`, 'kontakt'],
+  ['Leistungen', `${root}/#leistungen`],
+  ['Projekte', `${root}/#projekte`],
+  ['Unternehmen', `${root}/#unternehmen`],
+  ['Kontakt', `${root}/#kontakt`],
 ] as const;
 ---
 
@@ -39,16 +38,10 @@ const nav = [
       />
     </a>
     <nav class="g-main-nav" aria-label="Hauptnavigation">
-      {
-        nav.map(([label, href, id]) => (
-          <a href={href} aria-current={active === id ? 'page' : undefined}>
-            {label}
-          </a>
-        ))
-      }
+      {nav.map(([label, href]) => <a href={href}>{label}</a>)}
     </nav>
-    <a class="g-header-cta" href={`${root}/#projektanfrage`}
-      >Projekt anfragen <span aria-hidden="true">→</span></a
+    <a class="g-header-cta" href={`${root}/#kontakt`}
+      >Kontakt aufnehmen <span aria-hidden="true">→</span></a
     >
     <details class="g-mobile-menu">
       <summary>
@@ -60,16 +53,10 @@ const nav = [
         <span class="sr-only">Hauptmenü</span>
       </summary>
       <nav aria-label="Mobile Navigation">
-        {
-          nav.map(([label, href, id]) => (
-            <a href={href} aria-current={active === id ? 'page' : undefined}>
-              {label}
-            </a>
-          ))
-        }
+        {nav.map(([label, href]) => <a href={href}>{label}</a>)}
         <a href={company.emergencyHref}>Störungsdienst: {company.emergency}</a>
         <a href={`${root}/#fachhandel`}>Fachgeschäft</a>
-        <a href={`${root}/#projektanfrage`}>Projekt anfragen →</a>
+        <a href={`${root}/#kontakt`}>Kontakt aufnehmen →</a>
       </nav>
     </details>
   </header>

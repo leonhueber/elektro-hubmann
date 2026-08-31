@@ -1,7 +1,8 @@
 # Technologie- und Architekturplan
 
 Stand: 29. August 2026  
-Status: empfohlener und für die Planung verbindlicher Zielentscheid
+Status: historischer Zielplan; für Seitenstruktur und Kontaktweg überholt durch
+`08-designentscheidung-version-g.md` vom 1. September 2026
 
 ## 1. Entscheidung in einem Satz
 

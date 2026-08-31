@@ -2,6 +2,10 @@
 
 Stand: 29. August 2026
 
+> **Hinweis:** Die ursprüngliche Mehrseiten- und Formularplanung wurde am
+> 1. September 2026 durch den One-Pager-Beschluss in
+> `08-designentscheidung-version-g.md` ersetzt.
+
 ## 1. Grundsatz
 
 Die alte Website bleibt erreichbar, bis die neue Website vollständig fertig,

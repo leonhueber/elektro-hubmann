@@ -129,7 +129,7 @@ export const VERSION_G_STORY_CHAPTERS = [
     description:
       'Wir planen Elektrotechnik für Neubau, Sanierung und Gewerbe – durchdacht, präzise und zukunftssicher.',
     cta: 'Projekt besprechen',
-    href: '#projektanfrage',
+    href: '#kontakt',
     hint: 'Scrollen, um die Planung weiterzuführen',
     asset: VERSION_G_STORY_ASSETS.planning,
   },
@@ -140,8 +140,8 @@ export const VERSION_G_STORY_CHAPTERS = [
     title: ['Saubere Installation.', 'Präzise umgesetzt.'],
     description:
       'Von Elektroinstallationen bis zur Netzwerktechnik setzen wir Technik sauber, sicher und zuverlässig um.',
-    cta: 'Leistungen ansehen',
-    href: 'leistungen/elektroinstallation-sanierung/',
+    cta: 'Installation anfragen',
+    href: '#kontakt',
     hint: 'Weiter zu SmartHome und KNX',
     asset: VERSION_G_STORY_ASSETS.installation,
   },
@@ -152,8 +152,8 @@ export const VERSION_G_STORY_CHAPTERS = [
     title: ['Smarte Technik.', 'Komfortabel gesteuert.'],
     description:
       'Mit SmartHome, KNX und intelligenter Steuerung vernetzen wir Licht, Beschattung, Heizung und Sicherheit.',
-    cta: 'SmartHome entdecken',
-    href: 'leistungen/knx-netzwerk-medien/',
+    cta: 'Beratung anfragen',
+    href: '#kontakt',
     hint: 'Weiter zur Beleuchtung',
     asset: VERSION_G_EXTENDED_STORY_ASSETS.smarthome,
   },
@@ -164,8 +164,8 @@ export const VERSION_G_STORY_CHAPTERS = [
     title: ['Licht, das Räume', 'und Sicherheit', 'schafft.'],
     description:
       'Von Wohnraumlicht bis zur Sicherheits- und Notbeleuchtung planen wir funktionale und ästhetische Lösungen.',
-    cta: 'Beleuchtung ansehen',
-    href: 'leistungen/elektroinstallation-sanierung/',
+    cta: 'Beleuchtung besprechen',
+    href: '#kontakt',
     hint: 'Weiter zur Sicherheitstechnik',
     asset: VERSION_G_EXTENDED_STORY_ASSETS.lighting,
   },
@@ -176,8 +176,8 @@ export const VERSION_G_STORY_CHAPTERS = [
     title: ['Sicherheit,', 'auf die Sie sich', 'verlassen können.'],
     description:
       'Mit Alarmanlagen, Blitzschutz und moderner Gebäudetechnik schützen wir Haus, Betrieb und Menschen.',
-    cta: 'Sicherheit entdecken',
-    href: 'leistungen/gebaeudetechnik-sicherheit/',
+    cta: 'Sicherheit besprechen',
+    href: '#kontakt',
     hint: 'Weiter zur Photovoltaik',
     asset: VERSION_G_EXTENDED_STORY_ASSETS.security,
   },
@@ -188,8 +188,8 @@ export const VERSION_G_STORY_CHAPTERS = [
     title: ['Energie smart', 'nutzen.', 'Zukunft sicher', 'denken.'],
     description:
       'Mit Photovoltaik, Speicher und intelligenten Lösungen schaffen wir nachhaltige Energiekonzepte.',
-    cta: 'Energie entdecken',
-    href: 'leistungen/photovoltaik-energie/',
+    cta: 'Energieprojekt besprechen',
+    href: '#kontakt',
     hint: 'Weiter zu Service und Wartung',
     asset: VERSION_G_STORY_ASSETS.photovoltaic,
   },
@@ -201,7 +201,7 @@ export const VERSION_G_STORY_CHAPTERS = [
     description:
       'Kundendienst, Wartung und Erweiterungen begleiten Ihre Anlage langfristig und unkompliziert.',
     cta: 'Service anfragen',
-    href: '#projektanfrage',
+    href: '#kontakt',
     hint: 'Weiter zu unseren Referenzprojekten',
     asset: VERSION_G_STORY_ASSETS.service,
   },

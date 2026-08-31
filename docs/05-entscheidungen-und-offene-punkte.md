@@ -43,7 +43,7 @@ Ausgangspunkt verwenden und bei Unsicherheit juristisch prüfen.
 - [ ] Adresse `Weißbriach 94, 9622 Weißbriach, Österreich` bestätigt.
 - [ ] Öffnungszeiten bestätigt, besonders Mittwoch- und Freitagnachmittag.
 - [ ] Antwortverantwortung und realistische Antwortzeit für Webanfragen definiert.
-- [ ] Kontaktformular ja/nein; benötigte Felder und Aufbewahrung festgelegt.
+- [x] Kein Kontaktformular; Kontakt erfolgt direkt per Telefon oder E-Mail.
 - [ ] Kartendienst oder nur datenschutzfreundlicher Routenlink entschieden.
 - [ ] Echte Social-Profile vorhanden oder Social-Symbole vollständig entfernen.
 
@@ -72,6 +72,7 @@ Ausgangspunkt verwenden und bei Unsicherheit juristisch prüfen.
 - [ ] Analytics nötig; wenn ja, welche Entscheidungen werden damit getroffen?
 - [x] Frühere Designvarianten bewertet und verworfen.
 - [x] Haus-Story als einzige Hauptversion bestimmt.
+- [x] Fachliche Website als One-Pager; nur Rechtliches bleibt auf Unterseiten.
 - [x] Alternativversionen aus Code, Navigation und öffentlichem Build entfernt.
 
 ## 6. Technische Architektur

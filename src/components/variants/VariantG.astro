@@ -9,7 +9,6 @@ import { company, projects } from '../../config/site';
 import '../../styles/variant-g.css';
 
 const baseUrl = import.meta.env.BASE_URL;
-const root = baseUrl.replace(/\/$/, '');
 ---
 
 <VariantGHeader baseUrl={baseUrl} />
@@ -39,19 +38,16 @@ const root = baseUrl.replace(/\/$/, '');
   <section class="g-projects" id="projekte" aria-labelledby="g-projects-title">
     <div class="g-section-heading">
       <p class="g-eyebrow">Aus der Praxis</p>
-      <h2 id="g-projects-title">Projekte, die Bestand haben.</h2>
+      <h2 id="g-projects-title">Was wir umsetzen.</h2>
       <p>
-        Einblicke in unsere Arbeit. Projektdetails werden vor der
-        Veröffentlichung mit verifizierten Angaben ergänzt.
+        Von Wohnbau und Sanierung bis zu Gewerbe, Photovoltaik und vernetzter
+        Gebäudetechnik: Lösungen, die zum Gebäude und seiner Nutzung passen.
       </p>
     </div>
     <div class="g-project-list">
       {
         projects.map((project, index) => (
-          <a
-            class="g-project-row"
-            href={`${root}/projekte/projekt-${index + 1}/`}
-          >
+          <article class="g-project-row">
             <div class="g-project-image">
               <img
                 src={`${baseUrl}${project.image.replace(/^\//, '')}`}
@@ -65,10 +61,9 @@ const root = baseUrl.replace(/\/$/, '');
             <div>
               <span>0{index + 1}</span>
               <h3>{project.type}</h3>
-              <p>Region und ausgeführte Leistungen werden ergänzt.</p>
-              <strong>Projekt ansehen →</strong>
+              <p>{project.description}</p>
             </div>
-          </a>
+          </article>
         ))
       }
     </div>
@@ -94,6 +89,20 @@ const root = baseUrl.replace(/\/$/, '');
       <a class="g-outline-button" href="#kontakt">
         Persönlich Kontakt aufnehmen →
       </a>
+    </div>
+    <div class="g-facts" aria-label="Unternehmensdaten">
+      <div>
+        <strong>1972</strong>
+        <span>Gründungsjahr</span>
+      </div>
+      <div>
+        <strong>50+</strong>
+        <span>Jahre Erfahrung</span>
+      </div>
+      <div>
+        <strong>Weißbriach</strong>
+        <span>Regionaler Standort</span>
+      </div>
     </div>
   </section>
 
@@ -128,102 +137,57 @@ const root = baseUrl.replace(/\/$/, '');
     id="kontakt"
     aria-labelledby="g-contact-title"
   >
-    <p class="g-eyebrow">Ihr nächster Schritt</p>
-    <h2 id="g-contact-title">Ihr Projekt beginnt mit einem Gespräch.</h2>
-    <div class="g-contact-links">
-      <a href={company.phoneHref}>{company.phone}</a>
-      <a href={company.emailHref}>{company.email}</a>
-      <a
-        href="https://www.google.com/maps/dir/?api=1&destination=Weißbriach+94%2C+9622+Weißbriach"
-        target="_blank"
-        rel="noreferrer"
-      >
-        Route planen ↗
-      </a>
-    </div>
-
-    <form class="g-form" id="projektanfrage">
-      <label>
-        Name *<input name="name" autocomplete="name" required />
-      </label>
-      <label>
-        Telefonnummer *
-        <input name="phone" type="tel" autocomplete="tel" required />
-      </label>
-      <label>
-        E-Mail *
-        <input name="email" type="email" autocomplete="email" required />
-      </label>
-      <label>
-        Baustellenort *
-        <input name="location" autocomplete="street-address" required />
-      </label>
-      <label>
-        Projektart *
-        <select name="projectType" required>
-          <option value="">Bitte wählen</option>
-          <option>Neubau</option>
-          <option>Sanierung</option>
-          <option>Gewerbe</option>
-        </select>
-      </label>
-      <label>
-        Gewünschter Zeitraum
-        <input name="timeframe" />
-      </label>
-      <label class="wide">
-        Beschreibung *<textarea name="description" required></textarea>
-      </label>
-      <label class="wide">
-        Plan oder Foto (optional)
-        <input
-          name="attachment"
-          type="file"
-          accept="image/jpeg,image/png,image/webp,application/pdf"
-          aria-describedby="home-file-note"
-        />
-        <small id="home-file-note">JPEG, PNG, WebP oder PDF; maximal 10 MB.</small>
-      </label>
-      <p class="g-form-note" id="home-form-status" role="status" tabindex="-1">
-        Der Online-Versand ist derzeit noch nicht aktiviert. Nach der Prüfung
-        können Sie Ihre Anfrage per Telefon oder E-Mail übermitteln.
+    <div class="g-contact-intro">
+      <p class="g-eyebrow">Kontakt</p>
+      <h2 id="g-contact-title">Ihr Projekt beginnt mit einem Gespräch.</h2>
+      <p>
+        Kein Formular und keine Warteschleife: Rufen Sie uns an oder schreiben
+        Sie uns direkt eine E-Mail. Für Störungen und Fragen zum Fachgeschäft
+        finden Sie hier den passenden Kontakt.
       </p>
-      <button class="g-solid-button" id="home-form-check" type="button">
-        Anfrage prüfen →
-      </button>
-    </form>
+    </div>
+    <div class="g-contact-grid">
+      <article class="g-contact-card">
+        <p class="g-contact-kicker">Projekt &amp; Allgemeines</p>
+        <h3>Direkt mit uns sprechen.</h3>
+        <p>
+          Für neue Projekte, bestehende Anlagen und allgemeine Fragen erreichen
+          Sie uns telefonisch oder per E-Mail.
+        </p>
+        <a class="g-contact-primary" href={company.phoneHref}>
+          {company.phone}
+          <span aria-hidden="true">→</span>
+        </a>
+        <a class="g-contact-secondary" href={company.emailHref}>
+          {company.email}
+        </a>
+      </article>
+      <article class="g-contact-card g-contact-card--emergency">
+        <p class="g-contact-kicker">Störungsdienst</p>
+        <h3>Wenn Technik ausfällt.</h3>
+        <p>
+          Für Störungen steht Ihnen unsere separate Servicenummer zur Verfügung.
+        </p>
+        <a class="g-contact-primary" href={company.emergencyHref}>
+          {company.emergency}
+          <span aria-hidden="true">→</span>
+        </a>
+      </article>
+      <article class="g-contact-card">
+        <p class="g-contact-kicker">Fachgeschäft</p>
+        <h3>Persönlich in Weißbriach.</h3>
+        <address>{company.address}</address>
+        <p>{company.shopHours}</p>
+        <a
+          class="g-contact-secondary"
+          href="https://www.google.com/maps/dir/?api=1&destination=Weißbriach+94%2C+9622+Weißbriach"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Route planen ↗
+        </a>
+      </article>
+    </div>
   </section>
 </main>
 <VariantGFooter baseUrl={baseUrl} />
-
-<script>
-  const form = document.querySelector<HTMLFormElement>('#projektanfrage');
-  const status = document.querySelector<HTMLElement>('#home-form-status');
-  const checkButton =
-    document.querySelector<HTMLButtonElement>('#home-form-check');
-
-  const checkForm = () => {
-    if (!form) return;
-    const file = form.elements.namedItem(
-      'attachment',
-    ) as HTMLInputElement | null;
-    if (file?.files?.[0] && file.files[0].size > 10 * 1024 * 1024) {
-      file.setCustomValidity('Die Datei darf maximal 10 MB groß sein.');
-    } else {
-      file?.setCustomValidity('');
-    }
-    if (!form.reportValidity()) return;
-    status?.focus();
-    status?.classList.add('is-ready');
-    if (status) {
-      status.textContent =
-        'Alle Pflichtfelder sind vollständig. Der Online-Versand ist noch nicht aktiviert – bitte senden Sie die Angaben per E-Mail oder rufen Sie uns an.';
-    }
-  };
-
-  form?.addEventListener('submit', (event) => {
-    event.preventDefault();
-    checkForm();
-  });
-  checkButton?.addEventListener('click', checkForm);
-</script>

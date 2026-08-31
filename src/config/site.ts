@@ -12,77 +12,11 @@ export const company = {
     'Mo–Fr 09:00–12:00 und 15:00–17:30 · Mi & Fr nachmittags geschlossen',
 } as const;
 
-export const services = [
-  {
-    slug: 'elektroinstallation-sanierung',
-    title: 'Elektroinstallation und Sanierung',
-    shortTitle: 'Neubau & Sanierung',
-    description:
-      'Elektroanlagen für Neubau, Umbau und die fachgerechte Modernisierung bestehender Gebäude.',
-    details: 'Planung · Installation · Erweiterung · Sanierung',
-    marker: '01',
-    image: '/images/legacy-placeholders/hubmann-slider-4.jpg',
-    imageAlt: 'Elektrotechniker bei Arbeiten an einem Verteiler',
-    imageWidth: 1920,
-    imageHeight: 1277,
-  },
-  {
-    slug: 'photovoltaik-energie',
-    title: 'Photovoltaik und Energie',
-    shortTitle: 'Photovoltaik & Energie',
-    description:
-      'Energielösungen, die auf Gebäude, Verbrauch und zukünftige Anforderungen abgestimmt sind.',
-    details: 'Photovoltaik · Elektroheizung · Energiemanagement',
-    marker: '02',
-    image: '/images/legacy-placeholders/hubmann-slider-1.jpg',
-    imageAlt: 'Detailaufnahme einer Elektroinstallation',
-    imageWidth: 1920,
-    imageHeight: 1277,
-  },
-  {
-    slug: 'gebaeudetechnik-sicherheit',
-    title: 'Gebäudetechnik und Sicherheit',
-    shortTitle: 'Gebäudetechnik & Sicherheit',
-    description:
-      'Technik für Komfort und Schutz – sorgfältig geplant und nachvollziehbar umgesetzt.',
-    details: 'Blitzschutz · Alarmanlagen · Gebäudetechnik',
-    marker: '03',
-    image: '/images/legacy-placeholders/wire.jpg',
-    imageAlt: 'Verdrahtung in einer technischen Anlage',
-    imageWidth: 1920,
-    imageHeight: 1080,
-  },
-  {
-    slug: 'knx-netzwerk-medien',
-    title: 'KNX, Netzwerk und Medien',
-    shortTitle: 'KNX, Netzwerk & Medien',
-    description:
-      'Vernetzte Infrastruktur für moderne Wohngebäude, Betriebe und touristische Objekte.',
-    details: 'KNX · PC-Netzwerke · SAT-Anlagen · Medien',
-    marker: '04',
-    image: '/images/legacy-placeholders/elektriker.jpg',
-    imageAlt: 'Elektroinstallateur bei der Arbeit',
-    imageWidth: 446,
-    imageHeight: 618,
-  },
-  {
-    slug: 'pruefung-service-stoerung',
-    title: 'Prüfung, Service und Störungsbehebung',
-    shortTitle: 'Service & Prüfung',
-    description:
-      'Persönlicher Service für bestehende Anlagen und rasche Hilfe, wenn Technik ausfällt.',
-    details: 'Prüfung · Wartung · Service · Störungsdienst',
-    marker: '05',
-    image: '/images/legacy-placeholders/hubmann-slider-1.jpg',
-    imageAlt: 'Arbeiten an einem elektrischen Verteiler',
-    imageWidth: 1920,
-    imageHeight: 1277,
-  },
-] as const;
-
 export const projects = [
   {
     type: 'Einfamilienhaus-Neubau',
+    description:
+      'Durchdachte Elektroinstallation für modernes und komfortables Wohnen.',
     image: '/images/legacy-placeholders/hubmann-slider-4.jpg',
     alt: 'Elektriker bei Arbeiten an einem Verteilerkasten',
     width: 1920,
@@ -90,6 +24,8 @@ export const projects = [
   },
   {
     type: 'Sanierung eines Bestandsgebäudes',
+    description:
+      'Bestehende Anlagen sicher modernisieren und zukunftsfähig erweitern.',
     image: '/images/legacy-placeholders/hubmann-slider-1.jpg',
     alt: 'Detailaufnahme eines elektrischen Verteilers',
     width: 1920,
@@ -97,6 +33,8 @@ export const projects = [
   },
   {
     type: 'Gewerbeobjekt',
+    description:
+      'Zuverlässige Elektrotechnik, abgestimmt auf betriebliche Anforderungen.',
     image: '/images/legacy-placeholders/wire.jpg',
     alt: 'Verdrahtete elektrische Anschlussklemmen',
     width: 1920,
@@ -104,6 +42,8 @@ export const projects = [
   },
   {
     type: 'Tourismusbetrieb',
+    description:
+      'Technik für Komfort, Betriebssicherheit und eine einfache Bedienung.',
     image: '/images/legacy-placeholders/elektriker.jpg',
     alt: 'Elektroinstallateur bei der Arbeit',
     width: 446,
@@ -111,6 +51,8 @@ export const projects = [
   },
   {
     type: 'Photovoltaikanlage',
+    description:
+      'Erzeugung, Speicherung und Verbrauch sinnvoll zusammendenken.',
     image: '/images/legacy-placeholders/hubmann-slider-1.jpg',
     alt: 'Detailaufnahme einer Elektroinstallation',
     width: 1920,
@@ -118,6 +60,8 @@ export const projects = [
   },
   {
     type: 'Gebäudetechnik oder KNX',
+    description:
+      'Licht, Beschattung und Gebäudefunktionen intelligent vernetzen.',
     image: '/images/legacy-placeholders/wire.jpg',
     alt: 'Verdrahtung in einer technischen Anlage',
     width: 1920,

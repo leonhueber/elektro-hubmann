@@ -2,6 +2,10 @@
 
 Stand: 29. August 2026
 
+> **Überholt:** Die hier vorgeschlagene Mehrseitenstruktur und das optionale
+> Kontaktformular wurden am 1. September 2026 verworfen. Verbindlich ist der
+> One-Pager-Beschluss in `08-designentscheidung-version-g.md`.
+
 ## 1. Leitidee
 
 **Elektro Hubmann wird als erfahrener, persönlich erreichbarer Fachbetrieb für
