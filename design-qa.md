@@ -1,58 +1,54 @@
-# Design QA – ausgewählte Blender-Haus-Story
+# Design QA – image-based Version G story
 
-## Visual reference
+## Visual truth
 
-- `C:/Users/hueberl/.codex/codex-remote-attachments/01a04a96-8142-7883-a181-7e8b120d4281/1090ECC8-E82C-4C9C-9468-9D1B9FE9BACD/1-Foto-1.jpg`
-- Reference size: 1280 × 910 px, desktop planning state.
+- `C:/Users/hueberl/AppData/Local/Temp/codex-clipboard-fc040fd0-d062-4ff7-afa1-9958ed4f1fa0.png` – planning
+- `C:/Users/hueberl/AppData/Local/Temp/codex-clipboard-6b33bccc-2d70-4be6-882f-9d0537336cfe.png` – installation
+- `C:/Users/hueberl/AppData/Local/Temp/codex-clipboard-30019ed9-674d-4e60-82a3-6fa4417e9bb5.png` – photovoltaic
+- `C:/Users/hueberl/AppData/Local/Temp/codex-clipboard-4c5cad6b-110d-4250-95ba-48343ec0462a.png` – service
 
-## Current implementation evidence
+All four references are 1448 × 1086 px. They define one desktop scroll story with four states. The implementation was captured at a CSS viewport of 1448 × 1086 px and DPR 1. The browser content screenshots are 1433 × 1075 px because the visible browser content excludes its chrome and scrollbar; paired comparisons normalize both sides to the 1448 × 1086 reference size.
 
-- `docs/version-g-qa/blender-scroll-planning-1440x1024.png`
-- `docs/version-g-qa/blender-scroll-installation-1440x1024.png`
-- `docs/version-g-qa/blender-scroll-energy-1440x1024.png`
-- `docs/version-g-qa/blender-scroll-service-1440x1024.png`
-- `docs/version-g-qa/blender-static-mobile-390x844.png`
-- Before/after animation audit in `docs/version-g-qa/animation-audit/`
-- Blender proof renders in `docs/version-g-qa/blender/`
-- Editable source scene: `assets/3d/elektro-hubmann-house.blend`
-- Reproducible scene generator: `blender/house_story.py`
-- Root route checked in the Codex in-app browser on 30 August 2026.
+## Implementation evidence
 
-The former design-version switcher and variants A–F have been removed. The
-house story now starts directly at the website root.
+- Planning: `.codex-audit/image-story/qa3-1448-planning.png`
+- Installation: `.codex-audit/image-story/qa2-1448-installation.png`
+- Photovoltaic: `.codex-audit/image-story/qa2-1448-photovoltaic.png`
+- Service: `.codex-audit/image-story/qa2-1448-service.png`
+- Full paired comparisons: `.codex-audit/image-story/compare3-planning.jpg`, `.codex-audit/image-story/compare2-installation.jpg`, `.codex-audit/image-story/compare2-photovoltaic.jpg`, `.codex-audit/image-story/compare2-service.jpg`
 
-## Result
+Focused comparison captures were not necessary: the native-resolution full-state composites make the header, typography, CTA proportions, product edges, progress rail, and background transitions legible.
 
-- The house is one coherent Blender scene instead of four unrelated image layers.
-- Desktop and tablet use 120 rendered frames controlled by GSAP ScrollTrigger and a canvas. Normal page scrolling remains intact; no wheel interception or scroll-jacking is used.
-- The front and right facade move sideways, the roof lifts away, the camera moves into the cutaway, photovoltaic modules fly into position, and the facade closes for the service state.
-- The cutaway contains floors, partitions, furniture, distribution and network cabinets, KNX controls, lighting and a visible Hubmann-red installation route.
-- The final state removes temporary technical equipment from the exterior while keeping the photovoltaic system.
-- The 120 Blender frames now use a deliberately non-linear scroll timeline: opening the facade receives the largest part of the scroll distance, followed by the roof/PV assembly and the closing service state.
-- The first frame, chapter transitions and important intermediate states are loaded first. Frames close to the current scroll target are requested immediately, so fast scrolling no longer leaves the canvas visibly frozen on an old image.
-- The canvas adds restrained scale and vertical camera movement. Installation and energy callouts enter separately to make the system changes easier to follow.
-- At widths below 621 px, a bandwidth-conscious sequence using every second Blender frame remains animated. Only `prefers-reduced-motion` replaces the animation with four complete vertical chapters, without information loss.
-- The 390 × 844 check reports identical client and scroll width and therefore no horizontal overflow.
-- The 1024 × 768 and 768 × 1024 tablet checks also report identical client and scroll width; the animated stage remains active.
-- Header, progress rail, copy, CTAs and the house remain readable at the tested desktop and mobile sizes.
-- Browser console check: no errors or warnings.
-- Header and story stage begin without the former 44 px switcher offset.
-- Navigation links resolve directly below `/elektro-hubmann/` on GitHub Pages.
+## Iteration log
+
+1. Replaced the Blender/canvas sequence and grey render surfaces with four purpose-made, unbranded image assets on a seamless white background.
+2. First pass findings: P2 – visual objects were too small; title wraps and CTA proportions diverged; the wallbox source exposed a rectangular background boundary.
+3. Corrected object scale, explicit title line breaks, CTA sizing and spacing; regenerated the wallbox image with a pure white edge-to-edge surface.
+4. Second pass finding: P2 – the planning house sat too close to the progress rail.
+5. Reduced planning scale from 1.18 to 1.12 and shifted it left. The third planning capture verifies clear separation and alignment.
+
+## Final surface review
+
+- Typography: Inter Tight and Inter, with deliberate desktop line breaks matching the references.
+- Layout: left editorial column, large central object stage, right progress rail; mobile switches to four complete vertical chapters.
+- Color: white, black/anthracite, and restrained Hubmann red only.
+- Imagery: high-resolution WebP assets, no embedded Hubmann or manufacturer branding, no captions, watermarks, or visible image bounds.
+- Motion: normal page scrolling with GSAP-controlled opacity, scale, and lateral transitions; no wheel interception.
+- Accessibility: semantic headings, descriptive alt text, inactive story links removed from tab order, `aria-current` on the active step, and complete static content for reduced motion and widths up to 860 px.
+- Responsive checks: 1440 × 1024, 1024 × 768, 768 × 1024, and 390 × 844; no horizontal overflow found.
+- Interaction check: navigation, CTAs, mobile disclosure menu, and chapter links inspected. Browser console had no errors or warnings.
+
+## Intentional differences
+
+- The live site retains the official two-line company logo and the required information bar instead of copying the mockup header verbatim.
+- Product visuals intentionally omit the mockups' fictional Hubmann/product branding.
+- Fine blueprint annotations are simplified so they remain decorative and do not introduce unreadable generated text.
 
 ## Technical checks
 
-- Astro check: passed with zero errors, warnings or hints.
+- Astro check: 0 errors, 0 warnings, 0 hints.
 - ESLint: passed.
-- Vitest: 10/10 assertions passed.
+- Vitest: 15/15 tests passed.
 - Production build: 20 static pages built successfully.
-
-## Known content follow-ups
-
-- The building is a fictional design model based on the approved mockup and must not be presented as a real Elektro Hubmann reference project.
-- The improved Blender source is committed separately from the stable web
-  sequence. Replacing all 120 public frames requires one uninterrupted final
-  render and visual approval.
-- Project imagery and metadata still need verified real references.
-- Legal pages still require Austrian legal and DSGVO review before production indexing.
 
 final result: passed

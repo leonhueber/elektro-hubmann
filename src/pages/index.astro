@@ -2,9 +2,17 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import VariantG from '../components/variants/VariantG.astro';
 import { company } from '../config/site';
+import {
+  VERSION_G_STORY_ASSETS,
+  versionGStoryAssetUrl,
+} from '../config/version-g-story-assets';
 import { withBase } from '../lib/url';
 
 const canonicalPath = withBase('/');
+const storyHeroImage = versionGStoryAssetUrl(
+  import.meta.env.BASE_URL,
+  VERSION_G_STORY_ASSETS.planning,
+);
 const schema = {
   '@context': 'https://schema.org',
   '@type': 'Electrician',
@@ -27,8 +35,8 @@ const schema = {
   description="Elektro Hubmann plant und realisiert Elektroinstallationen, Gebäudetechnik und Photovoltaik für Neubau, Sanierung und Gewerbe."
   bodyClass="variant variant-g"
   canonicalPath={canonicalPath}
-  ogImage={withBase('/images/version-g/sequence/house-0120.jpg')}
-  preloadImage={withBase('/images/version-g/sequence/house-0001.jpg')}
+  ogImage={storyHeroImage}
+  preloadImage={storyHeroImage}
   schema={schema}
 >
   <VariantG />
