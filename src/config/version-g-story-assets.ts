@@ -85,8 +85,8 @@ export const VERSION_G_STORY_ASSETS =
 
 export const VERSION_G_EXTENDED_STORY_ASSETS = {
   smarthome: {
-    src: 'optional/smarthome-controls-v1.png',
-    alt: 'Ungebrandete SmartHome-Bediengeräte vor einem modernen Wohnbereich',
+    src: 'optional/smarthome-controls-v2.png',
+    alt: 'Schwarzes SmartHome-Wanddisplay, Smartphone und weißes Steuergerät',
     width: 1448,
     height: 1086,
   },

@@ -41,4 +41,26 @@ describe('getSceneMotion', () => {
       1,
     );
   });
+
+  it('uses a restrained motion profile on compact screens', () => {
+    const progress = 0.5 / VERSION_G_STORY_CHAPTERS.length;
+    const standard = getSceneMotion(progress, 1, 'standard');
+    const compact = getSceneMotion(progress, 1, 'compact');
+
+    expect(Math.abs(compact.x)).toBeLessThan(Math.abs(standard.x));
+    expect(Math.abs(compact.y)).toBeLessThan(Math.abs(standard.y));
+    expect(Math.abs(1 - compact.scale)).toBeLessThan(
+      Math.abs(1 - standard.scale),
+    );
+  });
+
+  it('keeps compact crossfades balanced at chapter boundaries', () => {
+    const nextScene = 1;
+    const progress = nextScene / VERSION_G_STORY_CHAPTERS.length;
+    const previous = getSceneMotion(progress, nextScene - 1, 'compact');
+    const next = getSceneMotion(progress, nextScene, 'compact');
+
+    expect(previous.opacity).toBeCloseTo(0.5, 5);
+    expect(next.opacity).toBeCloseTo(0.5, 5);
+  });
 });

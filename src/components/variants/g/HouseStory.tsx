@@ -15,8 +15,31 @@ type SceneMotion = {
   scale: number;
 };
 
+export type SceneMotionProfile = 'standard' | 'compact';
+
 const chapters = VERSION_G_STORY_CHAPTERS;
-const scrollDistancePerChapter = 55;
+const desktopScrollDistancePerChapter = 55;
+const mobileScrollDistancePerChapter = 36;
+const sceneMotionProfiles = {
+  standard: {
+    fadeDistance: 0.18,
+    xTravel: 1.8,
+    inactiveX: 32,
+    yTravel: 0.7,
+    inactiveY: 1.6,
+    scaleTravel: 0.012,
+    inactiveScale: 0.12,
+  },
+  compact: {
+    fadeDistance: 0.12,
+    xTravel: 0.65,
+    inactiveX: 8,
+    yTravel: 0.25,
+    inactiveY: 0.5,
+    scaleTravel: 0.004,
+    inactiveScale: 0.035,
+  },
+} as const;
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 const smoothstep = (value: number) => {
@@ -36,11 +59,13 @@ export function getStoryState(progress: number): HouseStoryState {
 export function getSceneMotion(
   progress: number,
   sceneIndex: number,
+  profile: SceneMotionProfile = 'standard',
 ): SceneMotion {
+  const motionProfile = sceneMotionProfiles[profile];
   const value = clamp(progress);
   const start = sceneIndex / chapters.length;
   const end = (sceneIndex + 1) / chapters.length;
-  const fadeDistance = 0.18 / chapters.length;
+  const fadeDistance = motionProfile.fadeDistance / chapters.length;
   let opacity = 1;
 
   if (sceneIndex > 0 && value < start + fadeDistance) {
@@ -65,9 +90,16 @@ export function getSceneMotion(
 
   return {
     opacity,
-    x: signedDistance * -1.8 + inactiveOffset * 32,
-    y: Math.abs(signedDistance) * 0.7 + (1 - opacity) * 1.6,
-    scale: 1 + Math.abs(signedDistance) * 0.012 - (1 - opacity) * 0.12,
+    x:
+      signedDistance * -motionProfile.xTravel +
+      inactiveOffset * motionProfile.inactiveX,
+    y:
+      Math.abs(signedDistance) * motionProfile.yTravel +
+      (1 - opacity) * motionProfile.inactiveY,
+    scale:
+      1 +
+      Math.abs(signedDistance) * motionProfile.scaleTravel -
+      (1 - opacity) * motionProfile.inactiveScale,
   };
 }
 
@@ -80,14 +112,16 @@ function ChapterContent({
   index,
   activeIndex,
   baseUrl,
+  compactMotion,
 }: {
   chapter: (typeof chapters)[number];
   index: number;
   activeIndex: number;
   baseUrl: string;
+  compactMotion: boolean;
 }) {
   const active = index === activeIndex;
-  const offset = index < activeIndex ? -56 : 56;
+  const offset = (index < activeIndex ? -1 : 1) * (compactMotion ? 22 : 56);
   return (
     <article
       className={`g-story-copy ${active ? 'is-active' : ''}`}
@@ -128,11 +162,16 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
   const wrapper = useRef<HTMLElement>(null);
   const imageLayers = useRef<Array<HTMLElement | null>>([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [compactMotion, setCompactMotion] = useState(false);
   const activeIndexRef = useRef(0);
 
   useEffect(() => {
     const root = wrapper.current;
     if (!root) return;
+
+    const compactMotionQuery = window.matchMedia('(max-width: 860px)');
+    let useCompactMotion = compactMotionQuery.matches;
+    setCompactMotion(useCompactMotion);
 
     let disposed = false;
     let trigger: { kill: () => void; progress: number } | undefined;
@@ -143,8 +182,15 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
 
       imageLayers.current.forEach((layer, index) => {
         if (!layer) return;
-        const motion = getSceneMotion(nextProgress, index);
+        const motion = getSceneMotion(
+          nextProgress,
+          index,
+          useCompactMotion ? 'compact' : 'standard',
+        );
+        const visible = motion.opacity > 0.001;
         layer.style.opacity = `${motion.opacity}`;
+        layer.style.visibility = visible ? 'visible' : 'hidden';
+        layer.style.willChange = visible ? 'transform, opacity' : 'auto';
         layer.style.transform = `translate3d(${motion.x}vw, ${motion.y}vh, 0) scale(${motion.scale})`;
       });
 
@@ -154,6 +200,13 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
         setActiveIndex(nextIndex);
       }
     };
+
+    const handleMotionProfileChange = (event: MediaQueryListEvent) => {
+      useCompactMotion = event.matches;
+      setCompactMotion(event.matches);
+      updateVisuals(trigger?.progress ?? 0);
+    };
+    compactMotionQuery.addEventListener('change', handleMotionProfileChange);
 
     const setupScroll = async () => {
       const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
@@ -171,7 +224,7 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
           return `top ${headerHeight}px`;
         },
         end: 'bottom bottom',
-        scrub: 0.12,
+        scrub: useCompactMotion ? 0.06 : 0.12,
         invalidateOnRefresh: true,
         onUpdate: ({ progress }) => updateVisuals(progress),
       });
@@ -182,6 +235,10 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
 
     return () => {
       disposed = true;
+      compactMotionQuery.removeEventListener(
+        'change',
+        handleMotionProfileChange,
+      );
       trigger?.kill();
     };
   }, []);
@@ -195,7 +252,8 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
       style={
         {
           '--g-story-progress': '0%',
-          '--g-story-height': `${100 + chapters.length * scrollDistancePerChapter}svh`,
+          '--g-story-height': `${100 + chapters.length * desktopScrollDistancePerChapter}svh`,
+          '--g-story-height-mobile': `${100 + chapters.length * mobileScrollDistancePerChapter}svh`,
         } as CSSProperties
       }
     >
@@ -210,6 +268,8 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
               }}
               style={{
                 opacity: index === 0 ? 1 : 0,
+                visibility: index === 0 ? 'visible' : 'hidden',
+                willChange: index === 0 ? 'transform, opacity' : 'auto',
                 transform: `translate3d(${index === 0 ? 0 : 10}vw, 0, 0) scale(${index === 0 ? 1 : 0.945})`,
               }}
             >
@@ -233,6 +293,7 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
               index={index}
               activeIndex={activeIndex}
               baseUrl={baseUrl}
+              compactMotion={compactMotion}
             />
           ))}
         </div>

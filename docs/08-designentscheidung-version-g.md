@@ -48,6 +48,8 @@ weitergeführt. Die produktive Struktur beginnt direkt am Website-Root.
 - scrollgesteuerte Story von der Planung bis zum Service;
 - React nur für die interaktive Haus-Story;
 - GSAP ScrollTrigger für normales, nicht blockierendes Seitenscrolling;
+- kompaktes Mobile-Motionprofil mit kürzerer Scrollstrecke und reduzierten
+  Positions- und Skalensprüngen;
 - statische Hauskapitel bei `prefers-reduced-motion` und ohne JavaScript;
 - eine statische Astro-Startseite für alle fachlichen Inhalte;
 - statische Astro-Unterseiten ausschließlich für Rechtliches;
