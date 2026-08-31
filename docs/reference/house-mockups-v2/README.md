@@ -39,3 +39,22 @@ Axonometrie, technische Axonometrie vor Explosionsdarstellung.
 
 Die Bilder wurden mit dem integrierten ImageGen-Workflow erzeugt. Die finalen
 Prompt-Spezifikationen liegen in `PROMPTS.md`.
+
+## Umgesetztes V2-Modell
+
+Das abgeschlossene, editierbare Modell liegt unter
+`assets/3d/elektro-hubmann-house-v2.blend`. Seine prozedurale Quelle ist
+`blender/house_v2.py`; die Detailmoebel werden aus
+`blender/furniture_v2_detailed.py` aufgebaut.
+
+Verbindliche Abschluss-Proofs nach der Grundriss- und Moebelkorrektur:
+
+- `docs/version-g-qa/blender-v2/final-model-v02/`
+
+Weitere lokal generierbare Animations-QA:
+
+- `docs/version-g-qa/blender-v2/phase-04-animation-keyframes-v01/`
+
+Der Standard-Build speichert nur die Szene. Renderausgaben werden bewusst ueber
+explizite Proof-Argumente angefordert, damit kleine Modellkorrekturen niemals
+ungewollt die komplette 120-Frame-Sequenz neu berechnen.

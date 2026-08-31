@@ -132,6 +132,55 @@ def create_glass_material() -> bpy.types.Material:
     )
 
 
+def create_emission_material(
+    name: str,
+    color: tuple[float, float, float, float],
+    *,
+    strength: float,
+) -> bpy.types.Material:
+    """Create a compact emissive material that remains readable in Eevee."""
+    material = create_material(name, color, roughness=0.28)
+    principled = material.node_tree.nodes.get("Principled BSDF")
+    emission_color = principled.inputs.get("Emission Color")
+    emission_strength = principled.inputs.get("Emission Strength")
+    if emission_color is not None:
+        emission_color.default_value = color
+    if emission_strength is not None:
+        emission_strength.default_value = strength
+    return material
+
+
+def add_surface_bump(
+    material: bpy.types.Material,
+    *,
+    scale: float,
+    detail: float,
+    strength: float,
+    distance: float,
+) -> None:
+    """Add subtle procedural relief without changing the approved palette."""
+    if material.node_tree is None:
+        return
+    nodes = material.node_tree.nodes
+    if nodes.get(f"{material.name} finish") is not None:
+        return
+    links = material.node_tree.links
+    principled = nodes.get("Principled BSDF")
+    if principled is None:
+        return
+    noise = nodes.new("ShaderNodeTexNoise")
+    noise.name = f"{material.name} finish"
+    noise.inputs["Scale"].default_value = scale
+    noise.inputs["Detail"].default_value = detail
+    noise.inputs["Roughness"].default_value = 0.72
+    bump = nodes.new("ShaderNodeBump")
+    bump.name = f"{material.name} relief"
+    bump.inputs["Strength"].default_value = strength
+    bump.inputs["Distance"].default_value = distance
+    links.new(noise.outputs["Fac"], bump.inputs["Height"])
+    links.new(bump.outputs["Normal"], principled.inputs["Normal"])
+
+
 def create_v2_materials() -> dict[str, bpy.types.Material]:
     """Create only the stable palette needed by the planned build phases."""
     return {
@@ -645,6 +694,26 @@ def add_area_light(
     bpy.data.collections["V2 QA"].objects.link(light)
     light.location = location
     look_at(light, target)
+    return light
+
+
+def add_house_point_light(
+    name: str,
+    location: tuple[float, float, float],
+    *,
+    energy: float,
+    color: tuple[float, float, float],
+    radius: float = 0.28,
+) -> bpy.types.Object:
+    """Add one deliberately soft interior light to the final house scene."""
+    data = bpy.data.lights.new(f"{name} data", type="POINT")
+    data.energy = energy
+    data.color = color
+    data.shadow_soft_size = radius
+    data.use_shadow = False
+    light = bpy.data.objects.new(name, data)
+    bpy.data.collections["V2 LIGHTING"].objects.link(light)
+    light.location = location
     return light
 
 
@@ -1248,8 +1317,8 @@ def build_phase1b(materials: dict[str, bpy.types.Material]) -> None:
     add_plan_zone(
         "Upper bathroom",
         "BAD",
-        (1.92, 0.15),
-        (2.40, 6.65),
+        (3.58, 0.15),
+        (2.12, 6.65),
         plan_z_upper,
         materials["plan_bath"],
         plan_text,
@@ -1257,8 +1326,8 @@ def build_phase1b(materials: dict[str, bpy.types.Material]) -> None:
     add_plan_zone(
         "Upper gallery",
         "GALERIE",
-        (3.78, 0.15),
-        (1.08, 6.65),
+        (1.61, 0.15),
+        (1.50, 6.65),
         plan_z_upper,
         materials["plan_gallery"],
         plan_text,
@@ -1369,11 +1438,11 @@ def build_phase2a(materials: dict[str, bpy.types.Material]) -> None:
             thickness=0.14,
         )
 
-    # Upper rooms run left-to-right: bedroom, circulation, bathroom, gallery.
+    # Upper rooms run left-to-right: bedroom, circulation, gallery, bathroom.
     for name, x in (
         ("bedroom hall", -1.15),
-        ("hall bathroom", 0.76),
-        ("bathroom gallery", 3.14),
+        ("hall gallery", 0.76),
+        ("gallery bathroom", 2.45),
     ):
         add_wall_y_with_openings(
             f"V2 Upper partition {name}",
@@ -1563,8 +1632,8 @@ def build_phase2a(materials: dict[str, bpy.types.Material]) -> None:
         ("V2 Ground living door", -1.15, ground_floor),
         ("V2 Ground dining door", 1.02, ground_floor),
         ("V2 Upper bedroom door", -1.15, upper_floor),
-        ("V2 Upper bathroom door", 0.76, upper_floor),
-        ("V2 Upper gallery door", 3.14, upper_floor),
+        ("V2 Upper gallery door", 0.76, upper_floor),
+        ("V2 Upper bathroom door", 2.45, upper_floor),
     ):
         add_door_y(
             name,
@@ -1600,7 +1669,7 @@ def build_phase2a(materials: dict[str, bpy.types.Material]) -> None:
         ("V2 Plan Ground circulation label", "EINGANG", -0.22, -2.55, 0.15),
         ("V2 Plan Ground service label", "VERTEILER", 1.20, 2.45, 0.11),
         ("V2 Plan Upper bedroom label", "SCHLAFEN", -3.00, -2.45, 0.23),
-        ("V2 Plan Upper gallery label", "GALERIE", 3.78, -2.25, 0.17),
+        ("V2 Plan Upper gallery label", "GALERIE", 1.61, -2.25, 0.15),
         ("V2 Plan Server label", "SERVER", DIMS.service_x, -3.90, 0.20),
     )
     for name, text, x, y, size in label_adjustments:
@@ -1647,16 +1716,16 @@ def build_phase2b(materials: dict[str, bpy.types.Material]) -> None:
     )
     add_box(
         "V2 Upper bathroom tile finish",
-        (1.92, 0.15, upper_floor + 0.012),
-        (2.22, 6.65, 0.045),
+        (3.58, 0.15, upper_floor + 0.012),
+        (2.02, 6.65, 0.045),
         tile,
         collection="V2 INTERIOR",
         bevel=0.010,
     )
     add_box(
         "V2 Upper gallery oak finish",
-        (3.78, 0.15, upper_floor - 0.025),
-        (1.02, 6.65, 0.05),
+        (1.61, 0.15, upper_floor - 0.025),
+        (1.50, 6.65, 0.05),
         floor_oak,
         collection="V2 INTERIOR",
         bevel=0.010,
@@ -3084,8 +3153,8 @@ def build_rebuild_match_layout(materials: dict[str, bpy.types.Material]) -> None
         )
     for name, x in (
         ("bedroom hall", -1.15),
-        ("hall bathroom", 0.76),
-        ("bathroom gallery", 3.14),
+        ("hall gallery", 0.76),
+        ("gallery bathroom", 2.45),
     ):
         add_wall_y_with_openings(
             f"V2 R8 Upper partition {name}",
@@ -3111,8 +3180,8 @@ def build_rebuild_match_layout(materials: dict[str, bpy.types.Material]) -> None
         ("V2 R8 Ground living door", -1.15, ground_floor, 0.94, 2.18),
         ("V2 R8 Ground dining door", 1.02, ground_floor, 0.94, 2.18),
         ("V2 R8 Upper bedroom door", -1.15, upper_floor, 0.92, 2.10),
-        ("V2 R8 Upper bathroom door", 0.76, upper_floor, 0.92, 2.10),
-        ("V2 R8 Upper gallery door", 3.14, upper_floor, 0.92, 2.10),
+        ("V2 R8 Upper gallery door", 0.76, upper_floor, 0.92, 2.10),
+        ("V2 R8 Upper bathroom door", 2.45, upper_floor, 0.92, 2.10),
     ):
         add_door_y(
             name,
@@ -3383,6 +3452,616 @@ def build_rebuild_match_layout(materials: dict[str, bpy.types.Material]) -> None
                     obj.parent = root
 
 
+def parent_unparented_to_rebuild_root(*collection_names: str) -> None:
+    """Keep late-stage objects on the same approved width-correction root."""
+    root = bpy.data.objects.get("V2 Rebuild width match")
+    if root is None:
+        return
+    for collection_name in collection_names:
+        collection = bpy.data.collections.get(collection_name)
+        if collection is None:
+            continue
+        for obj in list(collection.objects):
+            if obj is not root and obj.parent is None:
+                obj.parent = root
+
+
+def build_final_detailed_furniture() -> None:
+    """Replace the old blockouts with the mockup-aligned furniture library."""
+    module_dir = str(ROOT / "blender")
+    if module_dir not in sys.path:
+        sys.path.insert(0, module_dir)
+    import furniture_v2_detailed as furniture_detail
+
+    detailed = furniture_detail.build_furniture()
+    dining_prefixes = ("F2 dining", "F2 chair", "F2 pendant")
+    for obj in detailed.objects:
+        if obj.parent is None and obj.name.startswith(dining_prefixes):
+            obj.location.x += 0.38
+    blockout = bpy.data.collections.get("V2 FURNITURE")
+    if blockout is not None:
+        blockout.hide_render = True
+        blockout.hide_viewport = True
+    parent_unparented_to_rebuild_root(furniture_detail.COLLECTION_NAME)
+    detailed["hubmann_final_furniture"] = True
+    bpy.context.scene["hubmann_v2_furniture"] = "furniture-detail-v03"
+
+
+def build_phase3a(materials: dict[str, bpy.types.Material]) -> None:
+    """Finish the architectural material hierarchy and construction edges."""
+    concrete = materials["concrete"]
+    plaster = materials["plaster"]
+    oak = materials["oak"]
+    charcoal = materials["charcoal"]
+    floor_oak = materials["floor_oak"]
+    tile = materials["tile"]
+
+    add_surface_bump(concrete, scale=4.2, detail=4.0, strength=0.22, distance=0.055)
+    add_surface_bump(plaster, scale=34.0, detail=2.2, strength=0.11, distance=0.018)
+    add_surface_bump(oak, scale=8.0, detail=3.0, strength=0.16, distance=0.025)
+    add_surface_bump(floor_oak, scale=12.0, detail=2.0, strength=0.10, distance=0.018)
+
+    trim_oak = create_material(
+        "V2 Finished oak trim", (0.48, 0.29, 0.12, 1.0), roughness=0.56
+    )
+    joint = create_material(
+        "V2 Architectural shadow joint", (0.055, 0.050, 0.044, 1.0), roughness=0.68
+    )
+    floor_joint = create_material(
+        "V2 Oak floor joint", (0.31, 0.22, 0.14, 1.0), roughness=0.76
+    )
+
+    # The former presentation wall sat in front of the final vanity. Replace
+    # it with one true rear wall so vanity, shower and WC share the same room.
+    remove_objects_with_prefix(
+        "V2 Rebuild bathroom tiled back wall",
+        "V2 Rebuild bathroom tile joint",
+        "V2 R5 bathroom horizontal joint",
+        "V2 R5 bathroom mirror frame",
+        "V2 R7 bathroom tiled side return",
+    )
+    add_box(
+        "V2 P3A bathroom tiled rear wall",
+        (3.58, DIMS.ground_rear_y - 0.24, 4.86),
+        (2.02, 0.11, 2.48),
+        tile,
+        collection="V2 INTERIOR",
+        bevel=0.018,
+    )
+    for index, x in enumerate((2.86, 3.22, 3.58, 3.94, 4.30), 1):
+        add_box(
+            f"V2 P3A bathroom rear vertical joint {index}",
+            (x, DIMS.ground_rear_y - 0.302, 4.86),
+            (0.012, 0.014, 2.36),
+            plaster,
+            collection="V2 INTERIOR",
+            bevel=0.002,
+        )
+    for index, z in enumerate((4.10, 4.48, 4.86, 5.24, 5.62), 1):
+        add_box(
+            f"V2 P3A bathroom rear horizontal joint {index}",
+            (3.58, DIMS.ground_rear_y - 0.302, z),
+            (1.92, 0.014, 0.012),
+            plaster,
+            collection="V2 INTERIOR",
+            bevel=0.002,
+        )
+
+    house_center_y = (DIMS.ground_front_y + DIMS.ground_rear_y) / 2
+    roof_half_span = DIMS.width / 2 + DIMS.roof_overhang_x
+    front_gable_y = DIMS.ground_front_y - DIMS.roof_overhang_y - 0.055
+    rear_gable_y = DIMS.ground_rear_y + DIMS.roof_overhang_y + 0.055
+    for end_name, y in (("front", front_gable_y), ("rear", rear_gable_y)):
+        for side_name, eave_x in (("left", -roof_half_span), ("right", roof_half_span)):
+            add_beam_between(
+                f"V2 P3A {end_name} {side_name} bargeboard",
+                (0.0, y, DIMS.roof_ridge_z + 0.02),
+                (eave_x, y, DIMS.roof_eave_z + 0.02),
+                thickness=0.105,
+                material=trim_oak,
+                collection="V2 EXTERIOR",
+            )
+
+    # Right facade sills sit below the real openings and therefore cannot
+    # collide with glazing or the adjacent timber-screen layer.
+    x_max = DIMS.width / 2 - 0.10
+    for level, center_y, width, bottom in (
+        ("ground", 1.90, 1.55, 0.88),
+        ("upper", 1.95, 1.35, 4.08),
+    ):
+        add_box(
+            f"V2 P3A right {level} window sill",
+            (x_max + 0.035, center_y, bottom - 0.035),
+            (0.30, width + 0.18, 0.075),
+            concrete,
+            collection="V2 EXTERIOR",
+            bevel=0.012,
+        )
+
+    # Explicit cut returns make every room boundary readable in the hero view
+    # without turning the cutaway back into a closed box.
+    for level_name, floor, ceiling, axes in (
+        (
+            "ground",
+            DIMS.ground_finish_z,
+            DIMS.upper_finish_z - 0.19,
+            (-1.15, 1.02),
+        ),
+        (
+            "upper",
+            DIMS.upper_finish_z,
+            DIMS.upper_ceiling_z - 0.14,
+            (-1.15, 0.76, 2.45),
+        ),
+    ):
+        for index, x in enumerate(axes, 1):
+            add_box(
+                f"V2 P3A {level_name} partition cut return {index}",
+                (x, DIMS.ground_front_y + 0.73, (floor + ceiling) / 2),
+                (0.24, 0.78, ceiling - floor),
+                plaster,
+                collection="V2 INTERIOR",
+                bevel=0.018,
+            )
+            add_box(
+                f"V2 P3A {level_name} partition shadow edge {index}",
+                (x + 0.126, DIMS.ground_front_y + 0.34, (floor + ceiling) / 2),
+                (0.014, 0.035, ceiling - floor - 0.08),
+                joint,
+                collection="V2 INTERIOR",
+                bevel=0.002,
+            )
+
+    # Floor-board rhythm, rear skirtings and slab joints provide scale at hero
+    # distance while staying intentionally simpler than a photoreal interior.
+    for level_name, floor in (
+        ("ground", DIMS.ground_finish_z),
+        ("upper", DIMS.upper_finish_z),
+    ):
+        for index in range(1, 16):
+            x = -4.55 + index * 0.58
+            if level_name == "upper" and -0.74 < x < 0.64:
+                continue
+            add_box(
+                f"V2 P3A {level_name} floor joint {index:02d}",
+                (x, house_center_y, floor + 0.016),
+                (0.009, 6.88, 0.008),
+                floor_joint,
+                collection="V2 INTERIOR",
+                bevel=0.002,
+            )
+        add_box(
+            f"V2 P3A {level_name} rear skirting",
+            (0.0, DIMS.ground_rear_y - 0.235, floor + 0.065),
+            (9.05, 0.055, 0.13),
+            trim_oak,
+            collection="V2 INTERIOR",
+            bevel=0.008,
+        )
+
+    for level_name, z in (
+        ("ground", 0.11),
+        ("upper", DIMS.upper_finish_z - 0.19),
+        ("ceiling", DIMS.upper_ceiling_z - 0.13),
+    ):
+        for index, x in enumerate((-2.65, 0.0, 2.65), 1):
+            add_box(
+                f"V2 P3A {level_name} slab joint {index}",
+                (x, DIMS.ground_front_y - 0.585, z),
+                (0.025, 0.035, 0.24),
+                joint,
+                collection="V2 STRUCTURE",
+                bevel=0.002,
+            )
+
+    add_beam_between(
+        "V2 P3A right rain downpipe",
+        (roof_half_span + 0.02, DIMS.ground_rear_y + 0.42, DIMS.roof_eave_z),
+        (roof_half_span + 0.02, DIMS.ground_rear_y + 0.42, 0.44),
+        thickness=0.075,
+        material=charcoal,
+        collection="V2 EXTERIOR",
+    )
+
+    create_camera(
+        "V2 Camera Material Detail",
+        (15.0, -8.0, 6.2),
+        (4.50, 1.85, 3.55),
+        lens=78.0,
+    )
+    parent_unparented_to_rebuild_root(
+        "V2 STRUCTURE", "V2 EXTERIOR", "V2 INTERIOR"
+    )
+    bpy.context.scene["hubmann_v2_phase3a"] = "complete"
+
+
+def build_phase3b(materials: dict[str, bpy.types.Material]) -> None:
+    """Finish the electrical story, server room and readable house lighting."""
+    plaster = materials["plaster"]
+    concrete = materials["concrete"]
+    charcoal = materials["charcoal"]
+    porcelain = materials["porcelain"]
+    service_red = materials["service_red"]
+    tech_blue = materials["tech_blue"]
+
+    service_red.node_tree.nodes["Principled BSDF"].inputs[
+        "Emission Color"
+    ].default_value = (1.0, 0.012, 0.006, 1.0)
+    emission_strength = service_red.node_tree.nodes["Principled BSDF"].inputs.get(
+        "Emission Strength"
+    )
+    if emission_strength is not None:
+        emission_strength.default_value = 0.42
+
+    warm_glow = create_emission_material(
+        "V2 Warm interior glow", (1.0, 0.54, 0.20, 1.0), strength=5.0
+    )
+    led_blue = create_emission_material(
+        "V2 Server status blue", (0.015, 0.42, 1.0, 1.0), strength=6.0
+    )
+    panel_grey = create_material(
+        "V2 Distribution enclosure", (0.43, 0.45, 0.45, 1.0), roughness=0.58
+    )
+
+    remove_objects_with_prefix(
+        "V2 Ground distribution",
+        "V2 R4 distribution",
+        "V2 R5 distribution",
+        "V2 Rebuild distribution spine",
+        "V2 Rebuild red conduit",
+        "V2 R4 upper ceiling conduit",
+        "V2 R5 server red outline",
+        "V2 Server rack",
+        "V2 Server UPS",
+        "V2 Server cooling",
+        "V2 Rebuild bathroom controller",
+    )
+
+    # Keep the distribution field on the stair-side service wall, as in the
+    # reference, instead of floating behind the dining area.
+    cabinet_x = 1.05
+    cabinet_y = 0.72
+    add_box(
+        "V2 P3B distribution recess",
+        (cabinet_x, cabinet_y + 0.10, 1.62),
+        (1.34, 0.28, 2.66),
+        plaster,
+        collection="V2 INTERIOR",
+        bevel=0.025,
+    )
+    add_box(
+        "V2 P3B distribution enclosure",
+        (cabinet_x, cabinet_y - 0.08, 1.62),
+        (1.08, 0.18, 2.46),
+        panel_grey,
+        collection="V2 TECHNICAL",
+        bevel=0.035,
+    )
+    add_box(
+        "V2 P3B distribution dark interior",
+        (cabinet_x, cabinet_y - 0.19, 1.62),
+        (0.91, 0.075, 2.24),
+        charcoal,
+        collection="V2 TECHNICAL",
+        bevel=0.018,
+    )
+    for row in range(5):
+        z = 0.78 + row * 0.36
+        add_box(
+            f"V2 P3B DIN rail {row + 1}",
+            (cabinet_x, cabinet_y - 0.245, z),
+            (0.78, 0.035, 0.16),
+            concrete,
+            collection="V2 TECHNICAL",
+            bevel=0.010,
+        )
+        for slot in range(6):
+            x = cabinet_x - 0.32 + slot * 0.128
+            add_box(
+                f"V2 P3B breaker {row + 1}-{slot + 1}",
+                (x, cabinet_y - 0.272, z),
+                (0.092, 0.035, 0.105),
+                porcelain,
+                collection="V2 TECHNICAL",
+                bevel=0.008,
+            )
+            add_box(
+                f"V2 P3B breaker toggle {row + 1}-{slot + 1}",
+                (x, cabinet_y - 0.295, z + 0.012),
+                (0.036, 0.018, 0.038),
+                service_red if slot in (0, 5) else charcoal,
+                collection="V2 TECHNICAL",
+                bevel=0.004,
+            )
+    for index, x in enumerate((cabinet_x - 0.31, cabinet_x + 0.31), 1):
+        add_box(
+            f"V2 P3B distribution gateway {index}",
+            (x, cabinet_y - 0.26, 2.69),
+            (0.45, 0.08, 0.36),
+            porcelain,
+            collection="V2 TECHNICAL",
+            bevel=0.065,
+        )
+        add_box(
+            f"V2 P3B distribution gateway light {index}",
+            (x, cabinet_y - 0.307, 2.64),
+            (0.055, 0.015, 0.025),
+            led_blue,
+            collection="V2 TECHNICAL",
+            bevel=0.004,
+        )
+    add_box(
+        "V2 P3B distribution open door",
+        (cabinet_x + 0.78, cabinet_y - 0.05, 1.62),
+        (0.055, 1.02, 2.44),
+        panel_grey,
+        collection="V2 TECHNICAL",
+        rotation=(0.0, 0.0, math.radians(-18.0)),
+        bevel=0.025,
+    )
+
+    rack_x = DIMS.service_x - 0.58
+    rack_y = DIMS.server_center_y - 0.03
+    add_box(
+        "V2 P3B server rack shell",
+        (rack_x, rack_y, -0.75),
+        (0.90, 0.92, 1.62),
+        charcoal,
+        collection="V2 TECHNICAL",
+        bevel=0.035,
+    )
+    add_box(
+        "V2 P3B server rack face",
+        (rack_x, rack_y - 0.475, -0.75),
+        (0.76, 0.035, 1.48),
+        panel_grey,
+        collection="V2 TECHNICAL",
+        bevel=0.015,
+    )
+    for row in range(8):
+        z = -1.35 + row * 0.17
+        add_box(
+            f"V2 P3B server unit {row + 1}",
+            (rack_x, rack_y - 0.50, z),
+            (0.66, 0.025, 0.105),
+            tech_blue if row in (1, 5) else charcoal,
+            collection="V2 TECHNICAL",
+            bevel=0.008,
+        )
+        for index in range(4):
+            add_box(
+                f"V2 P3B server LED {row + 1}-{index + 1}",
+                (rack_x - 0.24 + index * 0.10, rack_y - 0.52, z),
+                (0.028, 0.012, 0.028),
+                led_blue,
+                collection="V2 TECHNICAL",
+                bevel=0.004,
+            )
+    add_box(
+        "V2 P3B server UPS",
+        (DIMS.service_x + 0.60, DIMS.server_center_y - 0.22, -1.10),
+        (0.64, 0.56, 0.76),
+        charcoal,
+        collection="V2 TECHNICAL",
+        bevel=0.055,
+    )
+    add_box(
+        "V2 P3B server cooling unit",
+        (DIMS.service_x + 0.60, DIMS.server_center_y + 0.47, -0.66),
+        (0.70, 0.34, 1.46),
+        porcelain,
+        collection="V2 TECHNICAL",
+        bevel=0.055,
+    )
+    cooling_fan = add_cylinder(
+        "V2 P3B server cooling fan",
+        (DIMS.service_x + 0.60, DIMS.server_center_y + 0.285, -0.58),
+        radius=0.23,
+        depth=0.055,
+        material=charcoal,
+        collection="V2 TECHNICAL",
+        vertices=40,
+    )
+    cooling_fan.rotation_euler.x = math.pi / 2
+
+    conduit_x = DIMS.service_x + 0.63
+    service_wall_y = 0.55
+    conduit_segments = (
+        (
+            (DIMS.service_x + 0.58, DIMS.server_center_y - 0.40, -1.42),
+            (conduit_x, service_wall_y, -1.42),
+        ),
+        ((conduit_x, service_wall_y, -1.42), (conduit_x, service_wall_y, 6.24)),
+        (
+            (conduit_x, service_wall_y, 0.48),
+            (cabinet_x + 0.48, cabinet_y - 0.31, 0.48),
+        ),
+        (
+            (conduit_x, service_wall_y, 2.86),
+            (cabinet_x + 0.48, cabinet_y - 0.31, 2.86),
+        ),
+        (
+            (conduit_x, service_wall_y, 5.02),
+            (4.24, service_wall_y, 5.02),
+        ),
+        ((4.24, service_wall_y, 5.02), (4.24, 2.72, 5.02)),
+    )
+    for index, (start, end) in enumerate(conduit_segments, 1):
+        add_beam_between(
+            f"V2 P3B service path {index}",
+            start,
+            end,
+            thickness=0.032,
+            material=service_red,
+            collection="V2 TECHNICAL",
+        )
+    add_beam_between(
+        "V2 P3B flexible roof riser",
+        (conduit_x, service_wall_y, 6.24),
+        (conduit_x, service_wall_y, 7.46),
+        thickness=0.032,
+        material=service_red,
+        collection="V2 TECHNICAL",
+    )
+    add_beam_between(
+        "V2 P3B roof service path",
+        (conduit_x, service_wall_y, 7.46),
+        (2.72, -2.34, 7.95),
+        thickness=0.032,
+        material=service_red,
+        collection="V2 TECHNICAL",
+    )
+    add_box(
+        "V2 P3B bathroom controller",
+        (4.24, 2.72, 5.04),
+        (0.38, 0.10, 0.58),
+        porcelain,
+        collection="V2 TECHNICAL",
+        bevel=0.06,
+    )
+
+    downlights = (
+        ("living 1", -3.45, 0.05, 3.18),
+        ("living 2", -3.45, 2.50, 3.18),
+        ("hall", -0.10, -0.65, 3.18),
+        ("kitchen", 3.20, 2.10, 3.18),
+        ("bedroom 1", -3.35, 0.15, 6.05),
+        ("bedroom 2", -3.35, 2.50, 6.05),
+        ("bathroom 1", 3.10, 0.45, 6.05),
+        ("bathroom 2", 4.05, 2.55, 6.05),
+    )
+    for name, x, y, z in downlights:
+        add_cylinder(
+            f"V2 P3B downlight {name}",
+            (x, y, z),
+            radius=0.085,
+            depth=0.035,
+            material=warm_glow,
+            collection="V2 LIGHTING",
+            vertices=24,
+        )
+        add_house_point_light(
+            f"V2 P3B room light {name}",
+            (x, y, z - 0.18),
+            energy=46.0 if "bathroom" not in name else 38.0,
+            color=(1.0, 0.67, 0.40),
+            radius=0.34,
+        )
+    add_house_point_light(
+        "V2 P3B server light",
+        (DIMS.service_x + 0.35, DIMS.server_center_y + 0.30, -0.12),
+        energy=16.0,
+        color=(0.74, 0.84, 1.0),
+        radius=0.52,
+    )
+
+    create_camera(
+        "V2 Camera Distribution Detail",
+        (7.8, -14.6, 3.0),
+        (1.05, 0.62, 1.58),
+        lens=80.0,
+    )
+    create_camera(
+        "V2 Camera Server Detail",
+        (7.8, -15.2, 0.55),
+        (DIMS.service_x, DIMS.server_center_y, -0.72),
+        lens=68.0,
+    )
+    parent_unparented_to_rebuild_root(
+        "V2 INTERIOR", "V2 TECHNICAL", "V2 LIGHTING"
+    )
+    bpy.context.scene["hubmann_v2_phase3b"] = "complete"
+
+
+def build_phase4(materials: dict[str, bpy.types.Material]) -> None:
+    """Create stable explosion groups and deliberate scroll-camera keyframes."""
+    del materials
+    root = bpy.data.objects.get("V2 Rebuild width match")
+    if root is None:
+        raise RuntimeError("Phase 4 requires the V2 rebuild root")
+
+    def animation_group(name: str) -> bpy.types.Object:
+        group = bpy.data.objects.new(name, None)
+        bpy.data.collections["V2 ANIMATION"].objects.link(group)
+        group.parent = root
+        return group
+
+    roof_group = animation_group("V2 Animation roof group")
+    front_group = animation_group("V2 Animation front facade group")
+    right_group = animation_group("V2 Animation right facade group")
+
+    roof_prefixes = (
+        "V2 Roof",
+        "V2 PV",
+        "V2 R4 PV",
+        "V2 R5 PV",
+        "V2 P3A front",
+        "V2 P3A rear",
+        "V2 P3B roof service path",
+    )
+    for obj in list(bpy.data.objects):
+        if obj in {root, roof_group, front_group, right_group}:
+            continue
+        if obj.name.startswith(roof_prefixes):
+            obj.parent = roof_group
+        elif obj.name.startswith("V2 Facade"):
+            obj.parent = front_group
+        elif obj.name.startswith(("V2 Exterior right", "V2 P3A right")):
+            obj.parent = right_group
+
+    panel_keyframes = (
+        (1, 0.0, (0.0, 0.0, 0.0), (0.0, 0.0, 0.0)),
+        (28, 0.35, (-0.30, -0.55, 0.0), (0.45, 0.0, 0.0)),
+        (40, 1.35, (-6.60, -1.20, 0.0), (4.80, 0.0, 0.0)),
+        (52, 1.85, (-7.20, -1.45, 0.0), (5.45, 0.0, 0.0)),
+        (70, 1.85, (-7.20, -1.45, 0.0), (5.45, 0.0, 0.0)),
+        (82, 1.65, (-7.00, -1.35, 0.0), (5.55, 0.0, 0.0)),
+        (92, 2.20, (-7.20, -1.45, 0.0), (5.65, 0.0, 0.0)),
+        (104, 2.00, (-7.20, -1.45, 0.0), (5.65, 0.0, 0.0)),
+        (120, 0.0, (0.0, 0.0, 0.0), (0.0, 0.0, 0.0)),
+    )
+    flexible = bpy.data.objects.get("V2 P3B flexible roof riser")
+    flexible_base_location = flexible.location.copy() if flexible is not None else None
+    flexible_length = 1.22
+    for frame, roof_lift, front_location, right_location in panel_keyframes:
+        roof_group.location = (0.0, 0.0, roof_lift)
+        front_group.location = front_location
+        right_group.location = right_location
+        for group in (roof_group, front_group, right_group):
+            group.keyframe_insert(data_path="location", frame=frame)
+        if flexible is not None and flexible_base_location is not None:
+            flexible.location = flexible_base_location + Vector((0.0, 0.0, roof_lift / 2))
+            flexible.scale = (1.0, 1.0, 1.0 + roof_lift / flexible_length)
+            flexible.keyframe_insert(data_path="location", frame=frame)
+            flexible.keyframe_insert(data_path="scale", frame=frame)
+
+    camera = bpy.data.objects["V2 Camera Mockup"]
+    camera_keyframes = (
+        (1, (15.2, -33.0, 9.1), (0.0, -0.10, 3.25), 62.0),
+        (28, (14.2, -30.5, 8.2), (0.0, 0.05, 3.30), 68.0),
+        (40, (11.8, -25.5, 4.9), (-0.25, 0.20, 1.55), 72.0),
+        (52, (10.4, -22.3, 3.25), (1.55, 0.55, 1.48), 78.0),
+        (70, (8.7, -20.2, 1.25), (1.70, -4.15, -0.72), 76.0),
+        (82, (1.8, -14.0, 5.95), (1.80, 1.45, 4.48), 82.0),
+        (92, (13.0, -27.0, 11.1), (2.35, 0.10, 7.78), 70.0),
+        (104, (15.5, -32.8, 8.9), (0.15, -0.10, 3.45), 64.0),
+        (120, (14.5, -31.5, 8.2), (0.0, -0.20, 2.95), 66.0),
+    )
+    for frame, location, target, lens in camera_keyframes:
+        camera.location = location
+        look_at(camera, target)
+        camera.data.lens = lens
+        camera.keyframe_insert(data_path="location", frame=frame)
+        camera.keyframe_insert(data_path="rotation_euler", frame=frame)
+        camera.data.keyframe_insert(data_path="lens", frame=frame)
+
+    bpy.context.scene.frame_set(1)
+    bpy.context.scene["hubmann_v2_phase4"] = "complete"
+    bpy.context.scene["hubmann_v2_animation_keyframes"] = (
+        "1,28,40,52,70,82,92,104,120"
+    )
+
+
 def save_scene() -> None:
     BLEND_PATH.parent.mkdir(parents=True, exist_ok=True)
     QA_DIR.mkdir(parents=True, exist_ok=True)
@@ -3430,6 +4109,11 @@ def render_still(
         for collection in bpy.data.collections:
             collection.hide_render = False
 
+        # From phase 3 onward the detailed F2 collection is authoritative.
+        # Never re-enable the retired blockouts during proof rendering.
+        if bpy.data.collections.get("V2 DETAILED FURNITURE") is not None:
+            bpy.data.collections["V2 FURNITURE"].hide_render = True
+
         if mode in {"cutaway", "plan_ground", "plan_upper", "plan_server"}:
             bpy.data.collections["V2 FACADE"].hide_render = True
         if mode == "cutaway":
@@ -3456,6 +4140,10 @@ def render_still(
                 "V2 R4 distribution top conduit",
                 "V2 R4 upper ceiling conduit",
                 "V2 R5 distribution red outline",
+                "V2 P3B service path",
+                "V2 P3B flexible roof riser",
+                "V2 P3B roof service path",
+                "V2 P3B bathroom controller",
                 "V2 Upper",
                 "V2 Server",
                 "V2 R4 bedroom",
@@ -3470,6 +4158,17 @@ def render_still(
                 "V2 R8 bathroom",
                 "V2 Plan Upper",
                 "V2 Plan Server",
+                "F2 bedroom",
+                "F2 bed ",
+                "F2 nightstand",
+                "F2 bedside",
+                "F2 bathroom",
+                "F2 vanity",
+                "F2 basin",
+                "F2 mirror",
+                "F2 shower",
+                "F2 rain shower",
+                "F2 toilet",
             )
             for obj in bpy.data.objects:
                 if obj.name.startswith(hidden_prefixes):
@@ -3483,6 +4182,10 @@ def render_still(
                 "V2 R4 distribution top conduit",
                 "V2 R4 upper ceiling conduit",
                 "V2 R5 distribution red outline",
+                "V2 P3B service path",
+                "V2 P3B flexible roof riser",
+                "V2 P3B roof service path",
+                "V2 P3B bathroom controller",
                 "V2 Upper ceiling",
                 "V2 Ground",
                 "V2 Foundation",
@@ -3500,6 +4203,18 @@ def render_still(
                 "V2 R8 living",
                 "V2 Plan Ground",
                 "V2 Plan Server",
+                "F2 sofa",
+                "F2 lounge",
+                "F2 coffee",
+                "F2 TV",
+                "F2 plant",
+                "F2 dining",
+                "F2 chair",
+                "F2 kitchen",
+                "F2 tall cabinet",
+                "F2 oven",
+                "F2 cooktop",
+                "F2 pendant",
             )
             for obj in bpy.data.objects:
                 if obj.name.startswith(hidden_prefixes):
@@ -3508,6 +4223,8 @@ def render_still(
             allowed_prefixes = (
                 "V2 Server",
                 "V2 Plan Server",
+                "V2 P3B server",
+                "V2 P3B service path 1",
             )
             for obj in bpy.data.objects:
                 if obj.type in {"MESH", "FONT", "CURVE"} and not obj.name.startswith(
@@ -3626,16 +4343,96 @@ def render_rebuild_layout_final() -> None:
     )
 
 
+def render_phase3a_proofs() -> None:
+    render_proof_set(
+        "phase-03a-materials-v01",
+        (
+            ("V2 Camera Mockup", "01-material-cutaway.png", "cutaway"),
+            ("V2 Camera Material Detail", "02-right-facade-detail.png", "facade"),
+            ("V2 Camera Right", "03-right-facade.png", "facade"),
+        ),
+    )
+
+
+def render_phase3b_proofs() -> None:
+    render_proof_set(
+        "phase-03b-technical-light-v01",
+        (
+            ("V2 Camera Mockup", "01-lit-cutaway.png", "cutaway"),
+            (
+                "V2 Camera Distribution Detail",
+                "02-distribution-detail.png",
+                "cutaway",
+            ),
+            ("V2 Camera Server Detail", "03-server-detail.png", "cutaway"),
+        ),
+    )
+
+
+def render_phase4_keyframes() -> None:
+    proof_dir = QA_DIR / "phase-04-animation-keyframes-v01"
+    proof_dir.mkdir(parents=True, exist_ok=True)
+    scene = bpy.context.scene
+    default_frames = (1, 28, 40, 52, 70, 82, 92, 104, 120)
+    frame_filter = os.environ.get("HUBMANN_V2_FRAMES", "").strip()
+    frames = (
+        tuple(int(value.strip()) for value in frame_filter.split(",") if value.strip())
+        if frame_filter
+        else default_frames
+    )
+    invalid = tuple(frame for frame in frames if frame not in default_frames)
+    if invalid:
+        raise ValueError(f"Unsupported Phase 4 proof frames: {invalid}")
+    for frame in frames:
+        scene.frame_set(frame)
+        render_still(
+            "V2 Camera Mockup",
+            proof_dir / f"frame-{frame:03d}.png",
+            mode="animation",
+        )
+    scene.frame_set(1)
+
+
+def render_final_model_proofs() -> None:
+    proof_dir = QA_DIR / "final-model-v02"
+    proof_dir.mkdir(parents=True, exist_ok=True)
+    scene = bpy.context.scene
+    scene.frame_set(120)
+    proofs = (
+        ("V2 Camera Mockup", "01-final-cutaway.png", "cutaway"),
+        ("V2 Camera Right", "02-final-right-facade.png", "facade"),
+        ("V2 Plan Ground", "03-final-ground-plan.png", "plan_ground"),
+        ("V2 Plan Upper", "04-final-upper-plan.png", "plan_upper"),
+        ("V2 Plan Server", "05-final-server-plan.png", "plan_server"),
+        (
+            "V2 Camera Distribution Detail",
+            "06-final-distribution.png",
+            "cutaway",
+        ),
+        ("V2 Camera Server Detail", "07-final-server.png", "cutaway"),
+    )
+    proof_filter = os.environ.get("HUBMANN_V2_FINAL_PROOFS", "").strip()
+    selected = (
+        {int(value.strip()) for value in proof_filter.split(",") if value.strip()}
+        if proof_filter
+        else set(range(1, len(proofs) + 1))
+    )
+    invalid = selected.difference(range(1, len(proofs) + 1))
+    if invalid:
+        raise ValueError(f"Unsupported final proof indices: {sorted(invalid)}")
+    for index, (camera_name, filename, mode) in enumerate(proofs, 1):
+        if index not in selected:
+            continue
+        render_still(camera_name, proof_dir / filename, mode=mode)
+    scene.frame_set(1)
+
+
 def main() -> None:
     if BUILD_STAGE not in VALID_STAGES:
         raise ValueError(
             f"Unknown HUBMANN_V2_STAGE={BUILD_STAGE!r}; expected one of {VALID_STAGES}"
         )
-    implemented_stages = ("phase0", "phase1a", "phase1b", "phase2a", "phase2b")
-    if BUILD_STAGE not in implemented_stages:
-        raise NotImplementedError(
-            f"{BUILD_STAGE} is intentionally blocked until phase 2B is approved"
-        )
+    implemented_stages = VALID_STAGES
     args = script_args()
     materials = build_phase0()
     stage_index = implemented_stages.index(BUILD_STAGE)
@@ -3652,6 +4449,13 @@ def main() -> None:
         build_rebuild_match_furniture(materials)
         build_rebuild_match_presentation(materials)
         build_rebuild_match_layout(materials)
+    if stage_index >= implemented_stages.index("phase3a"):
+        build_final_detailed_furniture()
+        build_phase3a(materials)
+    if stage_index >= implemented_stages.index("phase3b"):
+        build_phase3b(materials)
+    if stage_index >= implemented_stages.index("phase4"):
+        build_phase4(materials)
     save_scene()
     if "--render-phase1a-proofs" in args:
         if BUILD_STAGE != "phase1a":
@@ -3689,6 +4493,22 @@ def main() -> None:
         if BUILD_STAGE != "phase2b":
             raise ValueError("Rebuild layout final requires HUBMANN_V2_STAGE=phase2b")
         render_rebuild_layout_final()
+    if "--render-phase3a-proofs" in args:
+        if BUILD_STAGE != "phase3a":
+            raise ValueError("Phase 3A proofs require HUBMANN_V2_STAGE=phase3a")
+        render_phase3a_proofs()
+    if "--render-phase3b-proofs" in args:
+        if BUILD_STAGE != "phase3b":
+            raise ValueError("Phase 3B proofs require HUBMANN_V2_STAGE=phase3b")
+        render_phase3b_proofs()
+    if "--render-phase4-keyframes" in args:
+        if BUILD_STAGE != "phase4":
+            raise ValueError("Phase 4 proofs require HUBMANN_V2_STAGE=phase4")
+        render_phase4_keyframes()
+    if "--render-final-model-proofs" in args:
+        if BUILD_STAGE != "phase4":
+            raise ValueError("Final proofs require HUBMANN_V2_STAGE=phase4")
+        render_final_model_proofs()
 
 
 if __name__ == "__main__":

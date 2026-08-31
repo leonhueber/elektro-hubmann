@@ -251,9 +251,9 @@ veraendern.
 - keine Mikrodetails vor Freigabe von Silhouette, Fassade und Raumaufteilung
 - kein erneutes Rendern aller 120 Frames nach kleinen Aenderungen
 
-## Aktueller Stand – Phase 2B
+## Abschlussstand – Phase 4
 
-Umgesetzt und reproduzierbar in `house_v2.py`:
+Das V2-Modell ist vollstaendig und reproduzierbar in `house_v2.py` umgesetzt:
 
 - Phase 0: separate V2-Szene, Collections, Kameras und selektive Proofs
 - Phase 1A: Baukoerper, korrekt geneigtes Satteldach und Serverraum-Huelle
@@ -261,11 +261,26 @@ Umgesetzt und reproduzierbar in `house_v2.py`:
   Lamellen und drei beschriftete Grundrisse
 - Phase 2A: reale Treppenoeffnung, gerade Treppe, Innenwaende, Tueren,
   Fensterrahmen und offene Absturzsicherung
-- Phase 2B: vereinfachte Moebel fuer alle Raeume sowie Verteiler-, Rack-,
-  USV- und Kuehlungs-Blockouts
+- Phase 2B: mockup-gerechte Detailmoebel fuer Wohnen, Kueche/Essen,
+  Schlafzimmer und Bad
+- Phase 3A: Materialoberflaechen, sichtbare Wand-Schnittkanten, Dach- und
+  Fassadenabschluesse sowie eine kollisionsfreie Bad-Rueckwand
+- Phase 3B: finaler Verteiler, Serverrack, USV, Kuehlung, durchgehender roter
+  Technikpfad und raumbezogene Beleuchtung
+- Phase 4: starre Dach-, Front- und rechte Fassadengruppen sowie neun
+  unterscheidbare Scroll-Kamerastationen
 
-Freigegebener Review-Kandidat:
-`docs/version-g-qa/blender-v2/phase-02b-furniture-v03/`
+Finale Szene:
+`assets/3d/elektro-hubmann-house-v2.blend`
 
-Naechster bewusster Stopp ist Phase 3A. Materialien, Dachdetails, Leuchten,
-rote Leitungswege und finale Technikdetails wurden noch nicht vorgezogen.
+Finale statische QA nach der Grundriss- und Moebelkorrektur:
+`docs/version-g-qa/blender-v2/final-model-v02/`
+
+Animations-QA der Schluesselframes:
+`docs/version-g-qa/blender-v2/phase-04-animation-keyframes-v01/`
+
+Die prozedurale Quelle rendert weiterhin keine 120 Frames automatisch.
+Einzelne Animations-Proofs lassen sich ueber `HUBMANN_V2_FRAMES` und einzelne
+finale Proofs ueber `HUBMANN_V2_FINAL_PROOFS` auswaehlen. Die produktive
+Web-Sequenz bleibt ein separater Export-Schritt und veraendert das fertige
+Modell nicht.
