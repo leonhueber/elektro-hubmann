@@ -23,6 +23,9 @@ export function getStaticPaths() {
     'fachhandel',
     'impressum',
     'datenschutz',
+    'agb',
+    'barrierefreiheit',
+    'bild-lizenznachweise',
   ];
   return pages.map((slug) => ({ params: { slug }, props: { slug } }));
 }
@@ -51,6 +54,9 @@ const titles: Record<string, string> = {
   fachhandel: 'Fachhandel',
   impressum: 'Impressum',
   datenschutz: 'Datenschutz',
+  agb: 'Allgemeine Geschäftsbedingungen',
+  barrierefreiheit: 'Barrierefreiheit',
+  'bild-lizenznachweise': 'Bild- und Lizenznachweise',
 };
 const title =
   service?.title ?? project?.type ?? titles[section ?? ''] ?? 'Elektro Hubmann';
@@ -492,6 +498,194 @@ const schema = {
               </>
             </div>
           </>
+        </>
+      )
+    }
+
+    {
+      section === 'agb' && (
+        <>
+          <header class="g-page-hero">
+            <p class="g-eyebrow">
+              <strong>Rechtliches</strong> · Vertragsbedingungen
+            </p>
+            <h1>Allgemeine Geschäftsbedingungen</h1>
+            <p>
+              Für diese Website sind derzeit keine verbindlichen Allgemeinen
+              Geschäftsbedingungen hinterlegt.
+            </p>
+          </header>
+          <div class="g-prose">
+            <h2>Aktueller Stand</h2>
+            <p>
+              Über diese Website werden aktuell weder ein Online-Shop noch ein
+              verbindlicher Bestell- oder Vertragsabschluss angeboten. Deshalb
+              veröffentlichen wir hier bewusst keine ungeprüften Muster-AGB.
+            </p>
+            <h2>Vertragsgrundlage</h2>
+            <p>
+              Maßgeblich sind ausschließlich die im jeweiligen Angebot oder
+              Vertrag ausdrücklich vereinbarten beziehungsweise wirksam
+              einbezogenen Bedingungen.
+            </p>
+            <h2>Künftige AGB</h2>
+            <p>
+              Falls Elektro Hubmann künftig AGB verwendet, wird hier nur die
+              tatsächlich freigegebene Fassung veröffentlicht. Sie muss zur
+              Rechtsform, zum Leistungsangebot und zum konkreten
+              Vertragsabschluss passen und speicherbar abrufbar sein.
+            </p>
+          </div>
+        </>
+      )
+    }
+
+    {
+      section === 'barrierefreiheit' && (
+        <>
+          <header class="g-page-hero">
+            <p class="g-eyebrow">
+              <strong>Barrierefreiheit</strong> · Arbeitsstand
+            </p>
+            <h1>Hinweis zur Barrierefreiheit</h1>
+            <p>
+              Uns ist wichtig, dass diese Website für möglichst viele Menschen
+              gut zugänglich ist.
+            </p>
+          </header>
+          <div class="g-prose">
+            <h2>Geltungsbereich</h2>
+            <p>
+              Dieser Hinweis bezieht sich auf die Website von Elektro Hubmann
+              unter elektro-hubmann.at. Bei ihrer Gestaltung und
+              Weiterentwicklung orientieren wir uns an den Web Content
+              Accessibility Guidelines (WCAG) 2.2, Konformitätsstufe AA.
+            </p>
+            <h2>Bereits berücksichtigte Maßnahmen</h2>
+            <ul>
+              <li>
+                semantische Seitenstruktur und nachvollziehbare Überschriften
+              </li>
+              <li>Skip-Link und sichtbare Tastaturfokusse</li>
+              <li>
+                per Tastatur bedienbare Navigation und ausreichend große Ziele
+              </li>
+              <li>aussagekräftige Alternativtexte für Inhaltsbilder</li>
+              <li>
+                reduzierte beziehungsweise statische Darstellung bei aktivierter
+                Einstellung „Bewegung reduzieren“
+              </li>
+              <li>
+                responsive Darstellung ohne notwendiges horizontales Scrollen
+              </li>
+            </ul>
+            <h2>Prüfstatus</h2>
+            <p>
+              Eine vollständige manuelle und technische Prüfung aller Seiten und
+              Funktionen ist noch nicht abgeschlossen. Deshalb geben wir derzeit
+              keine Erklärung über eine vollständige oder teilweise Konformität
+              mit WCAG 2.2 AA ab. Es können noch Barrieren bestehen.
+            </p>
+            <h2>Feedback und Kontakt</h2>
+            <p>
+              Wenn Ihnen eine Barriere auffällt, kontaktieren Sie uns bitte
+              unter <a href={company.emailHref}>{company.email}</a> oder
+              telefonisch unter <a href={company.phoneHref}>{company.phone}</a>.
+              Beschreiben Sie nach Möglichkeit die betroffene Seite und das
+              aufgetretene Problem. Wir bemühen uns um eine besser zugängliche
+              Alternative.
+            </p>
+            <h2>Stand</h2>
+            <p>
+              31. August 2026. Der Hinweis wird nach Abschluss der Prüfung und
+              vor der produktiven Aktivierung des Anfrageformulars aktualisiert.
+            </p>
+          </div>
+        </>
+      )
+    }
+
+    {
+      section === 'bild-lizenznachweise' && (
+        <>
+          <header class="g-page-hero">
+            <p class="g-eyebrow">
+              <strong>Nachweise</strong> · Arbeitsstand
+            </p>
+            <h1>Bild- und Lizenznachweise</h1>
+            <p>
+              Dieses Verzeichnis dokumentiert die im Websiteentwurf verwendeten
+              Medien und bekannte Lizenzgrundlagen.
+            </p>
+          </header>
+          <div class="g-prose">
+            <h2>Konzeptvisualisierungen</h2>
+            <p>
+              Die Architektur- und Technikvisualisierungen wurden im Rahmen des
+              Websiteentwurfs mithilfe von OpenAI ImageGen erstellt. Sie zeigen
+              keine realen Referenzprojekte, keine zugesicherten
+              Ausführungsdetails und keine verbindlich dargestellten Produkte
+              oder Hersteller.
+            </p>
+            <h2>Fotografien und Bestandsbilder</h2>
+            <p>
+              Einzelne Fotografien werden derzeit als Arbeits- und
+              Platzhalterbilder aus dem bisherigen Webauftritt verwendet.
+              Urheberschaft, abgebildete Personen und der konkrete
+              Nutzungsumfang werden vor der endgültigen Veröffentlichung geprüft
+              und dokumentiert.
+            </p>
+            <h2>Logo und Marken</h2>
+            <p>
+              Das Logo und die Bezeichnung „Elektro Hubmann“ werden für den
+              Unternehmensauftritt verwendet. Etwaige Marken-, Kennzeichen- und
+              Urheberrechte verbleiben bei den jeweiligen Rechteinhabern.
+              Abgebildete Produktformen oder Gestaltungsmerkmale begründen keine
+              Verbindung zu einem bestimmten Hersteller.
+            </p>
+            <h2>Schriften</h2>
+            <p>
+              Verwendet werden „Inter“ und „Inter Tight“, lokal eingebunden über
+              <a href="https://fontsource.org/" rel="external">
+                Fontsource
+              </a>
+              . Beide Schriftfamilien stehen unter der{' '}
+              <a href="https://openfontlicense.org/" rel="external">
+                SIL Open Font License 1.1
+              </a>
+              .
+            </p>
+            <h2>3D-Materialien</h2>
+            <p>
+              Ergänzende projektintern erzeugte 3D-Visualisierungen verwenden
+              die Texturen{' '}
+              <a
+                href="https://polyhaven.com/a/concrete_wall_009"
+                rel="external"
+              >
+                Concrete Wall 009
+              </a>
+              ,{' '}
+              <a href="https://polyhaven.com/a/oak_veneer_01" rel="external">
+                Oak Veneer 01
+              </a>{' '}
+              und{' '}
+              <a href="https://polyhaven.com/a/grey_roof_01" rel="external">
+                Grey Roof 01
+              </a>{' '}
+              von Poly Haven. Diese Materialien stehen unter{' '}
+              <a href="https://polyhaven.com/license" rel="external">
+                CC0
+              </a>
+              .
+            </p>
+            <h2>Hinweise zu Bildrechten</h2>
+            <p>
+              Hinweise zu Bild- oder Nutzungsrechten richten Sie bitte an{' '}
+              <a href={company.emailHref}>{company.email}</a>.
+            </p>
+            <p>Stand: 31. August 2026.</p>
+          </div>
         </>
       )
     }
