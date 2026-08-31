@@ -16,6 +16,7 @@ type SceneMotion = {
 };
 
 const chapters = VERSION_G_STORY_CHAPTERS;
+const scrollDistancePerChapter = 55;
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 const smoothstep = (value: number) => {
@@ -170,7 +171,7 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
           return `top ${headerHeight}px`;
         },
         end: 'bottom bottom',
-        scrub: 0.2,
+        scrub: 0.12,
         invalidateOnRefresh: true,
         onUpdate: ({ progress }) => updateVisuals(progress),
       });
@@ -194,7 +195,7 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
       style={
         {
           '--g-story-progress': '0%',
-          '--g-story-height': `${100 + chapters.length * 85}svh`,
+          '--g-story-height': `${100 + chapters.length * scrollDistancePerChapter}svh`,
         } as CSSProperties
       }
     >

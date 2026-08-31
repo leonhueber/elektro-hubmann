@@ -9,10 +9,10 @@ interface Props {
 const { baseUrl, active = '' } = Astro.props;
 const root = baseUrl.replace(/\/$/, '');
 const nav = [
-  ['Leistungen', `${root}/leistungen/`, 'leistungen'],
-  ['Projekte', `${root}/projekte/`, 'projekte'],
-  ['Unternehmen', `${root}/unternehmen/`, 'unternehmen'],
-  ['Kontakt', `${root}/kontakt/`, 'kontakt'],
+  ['Leistungen', `${root}/#leistungen`, 'leistungen'],
+  ['Projekte', `${root}/#projekte`, 'projekte'],
+  ['Unternehmen', `${root}/#unternehmen`, 'unternehmen'],
+  ['Kontakt', `${root}/#kontakt`, 'kontakt'],
 ] as const;
 ---
 
@@ -22,7 +22,7 @@ const nav = [
       <a href={company.emergencyHref}
         >Störungsdienst: <strong>{company.emergency}</strong></a
       >
-      <a href={`${root}/fachhandel/`}>Fachgeschäft & Öffnungszeiten →</a>
+      <a href={`${root}/#fachhandel`}>Fachgeschäft & Öffnungszeiten →</a>
     </div>
   </div>
   <header class="g-header">
@@ -47,11 +47,18 @@ const nav = [
         ))
       }
     </nav>
-    <a class="g-header-cta" href={`${root}/kontakt/#projektanfrage`}
+    <a class="g-header-cta" href={`${root}/#projektanfrage`}
       >Projekt anfragen <span aria-hidden="true">→</span></a
     >
     <details class="g-mobile-menu">
-      <summary><span>Menü</span></summary>
+      <summary>
+        <span class="g-menu-icon" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+        <span class="sr-only">Hauptmenü</span>
+      </summary>
       <nav aria-label="Mobile Navigation">
         {
           nav.map(([label, href, id]) => (
@@ -61,9 +68,19 @@ const nav = [
           ))
         }
         <a href={company.emergencyHref}>Störungsdienst: {company.emergency}</a>
-        <a href={`${root}/fachhandel/`}>Fachgeschäft</a>
-        <a href={`${root}/kontakt/#projektanfrage`}>Projekt anfragen →</a>
+        <a href={`${root}/#fachhandel`}>Fachgeschäft</a>
+        <a href={`${root}/#projektanfrage`}>Projekt anfragen →</a>
       </nav>
     </details>
   </header>
 </div>
+
+<script>
+  document
+    .querySelectorAll<HTMLDetailsElement>('.g-mobile-menu')
+    .forEach((menu) => {
+      menu.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => menu.removeAttribute('open'));
+      });
+    });
+</script>

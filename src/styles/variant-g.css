@@ -129,7 +129,7 @@
 
 .g-story {
   position: relative;
-  height: var(--g-story-height, 695svh);
+  height: var(--g-story-height, 485svh);
   background: #fff;
   --g-planning-image-scale: 1.12;
   --g-installation-image-scale: 1.2;
@@ -196,7 +196,7 @@
 }
 
 .g-story-image--security img {
-  transform: scale(var(--g-security-image-scale));
+  transform: translateX(-5%) scale(var(--g-security-image-scale));
 }
 
 .g-story-image--photovoltaic img {
@@ -450,6 +450,14 @@
   margin-inline: auto;
 }
 
+.g-anchor-section,
+.g-projects,
+.g-company-teaser,
+.g-contact-band,
+.g-form {
+  scroll-margin-top: calc(var(--g-header) + 20px);
+}
+
 .g-projects {
   padding-block: clamp(90px, 11vw, 170px);
 }
@@ -557,6 +565,17 @@
 }
 
 .g-company-teaser .g-outline-button {
+  margin-top: 24px;
+}
+
+.g-inline-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.g-inline-actions .g-text-link {
   margin-top: 24px;
 }
 
@@ -735,6 +754,10 @@
   border-top: 2px solid var(--g-red);
 }
 
+.g-contact-band .g-form {
+  margin-top: 54px;
+}
+
 .g-form label {
   display: grid;
   gap: 9px;
@@ -836,16 +859,46 @@
     display: block;
   }
   .g-mobile-menu summary {
-    min-width: 48px;
-    min-height: 48px;
+    width: 48px;
+    height: 48px;
     display: grid;
     place-items: center;
+    padding: 0;
     border: 1px solid var(--g-line);
+    background: #fff;
     cursor: pointer;
     list-style: none;
   }
   .g-mobile-menu summary::-webkit-details-marker {
     display: none;
+  }
+  .g-menu-icon {
+    width: 22px;
+    height: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .g-menu-icon > span {
+    width: 100%;
+    height: 2px;
+    display: block;
+    border-radius: 999px;
+    background: currentColor;
+    transform-origin: center;
+    transition:
+      opacity 180ms ease,
+      transform 180ms ease;
+  }
+  .g-mobile-menu[open] .g-menu-icon > span:first-child {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .g-mobile-menu[open] .g-menu-icon > span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  .g-mobile-menu[open] .g-menu-icon > span:last-child {
+    transform: translateY(-7px) rotate(-45deg);
   }
   .g-mobile-menu nav {
     position: absolute;
@@ -1132,7 +1185,8 @@
   }
   .g-project-image img,
   .g-story-copy,
-  .g-progress li::before {
+  .g-progress li::before,
+  .g-menu-icon > span {
     transition: none;
   }
 }

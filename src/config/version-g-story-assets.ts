@@ -78,7 +78,7 @@ export const VERSION_G_STORY_ASSET_SETS = {
 
 // Change only this value to switch the complete visual direction.
 export const ACTIVE_VERSION_G_STORY_ASSET_SET: keyof typeof VERSION_G_STORY_ASSET_SETS =
-  'objects';
+  'shedRoofPlanningHouse';
 
 export const VERSION_G_STORY_ASSETS =
   VERSION_G_STORY_ASSET_SETS[ACTIVE_VERSION_G_STORY_ASSET_SET];
@@ -91,14 +91,14 @@ export const VERSION_G_EXTENDED_STORY_ASSETS = {
     height: 1086,
   },
   lighting: {
-    src: 'optional/lighting-systems-v1.png',
-    alt: 'Architekturmodul mit Pendel-, Einbau-, Wand- und Sicherheitsbeleuchtung',
-    width: 1402,
-    height: 1122,
+    src: 'optional/lighting-systems-v2.png',
+    alt: 'Reduziertes Architekturmodul mit Pendel-, Einbau-, Wand- und indirekter Beleuchtung',
+    width: 1448,
+    height: 1086,
   },
   security: {
-    src: 'optional/security-systems-v1.png',
-    alt: 'Ungebrandete Alarm-, Brandmelde- und Kameraausstattung an einem Hauseingang',
+    src: 'optional/security-systems-v2.png',
+    alt: 'Freigestellte Alarm-, Brandmelde-, Bewegungsmelder- und Kameraausstattung',
     width: 1448,
     height: 1086,
   },
@@ -129,7 +129,7 @@ export const VERSION_G_STORY_CHAPTERS = [
     description:
       'Wir planen Elektrotechnik für Neubau, Sanierung und Gewerbe – durchdacht, präzise und zukunftssicher.',
     cta: 'Projekt besprechen',
-    href: 'kontakt/#projektanfrage',
+    href: '#projektanfrage',
     hint: 'Scrollen, um die Planung weiterzuführen',
     asset: VERSION_G_STORY_ASSETS.planning,
   },
@@ -201,7 +201,7 @@ export const VERSION_G_STORY_CHAPTERS = [
     description:
       'Kundendienst, Wartung und Erweiterungen begleiten Ihre Anlage langfristig und unkompliziert.',
     cta: 'Service anfragen',
-    href: 'kontakt/#projektanfrage',
+    href: '#projektanfrage',
     hint: 'Weiter zu unseren Referenzprojekten',
     asset: VERSION_G_STORY_ASSETS.service,
   },

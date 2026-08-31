@@ -10,7 +10,6 @@ import '../../styles/variant-g.css';
 
 const baseUrl = import.meta.env.BASE_URL;
 const root = baseUrl.replace(/\/$/, '');
-const featuredProjects = projects.slice(0, 4);
 ---
 
 <VariantGHeader baseUrl={baseUrl} />
@@ -18,11 +17,14 @@ const featuredProjects = projects.slice(0, 4);
   <h1 class="sr-only">
     Elektroinstallationen für Neubau, Sanierung und Gewerbe
   </h1>
-  <HouseStory
-    baseUrl={baseUrl}
-    client:media="(prefers-reduced-motion: no-preference)"
-  />
-  <StaticHouseChapters baseUrl={baseUrl} />
+
+  <div class="g-anchor-section" id="leistungen">
+    <HouseStory
+      baseUrl={baseUrl}
+      client:media="(prefers-reduced-motion: no-preference)"
+    />
+    <StaticHouseChapters baseUrl={baseUrl} />
+  </div>
   <noscript>
     <style is:inline>
       .g-story {
@@ -34,7 +36,7 @@ const featuredProjects = projects.slice(0, 4);
     </style>
   </noscript>
 
-  <section class="g-projects" aria-labelledby="g-projects-title">
+  <section class="g-projects" id="projekte" aria-labelledby="g-projects-title">
     <div class="g-section-heading">
       <p class="g-eyebrow">Aus der Praxis</p>
       <h2 id="g-projects-title">Projekte, die Bestand haben.</h2>
@@ -45,7 +47,7 @@ const featuredProjects = projects.slice(0, 4);
     </div>
     <div class="g-project-list">
       {
-        featuredProjects.map((project, index) => (
+        projects.map((project, index) => (
           <a
             class="g-project-row"
             href={`${root}/projekte/projekt-${index + 1}/`}
@@ -70,11 +72,13 @@ const featuredProjects = projects.slice(0, 4);
         ))
       }
     </div>
-    <a class="g-text-link" href={`${root}/projekte/`}>Alle Projekte ansehen →</a
-    >
   </section>
 
-  <section class="g-company-teaser" aria-labelledby="g-company-title">
+  <section
+    class="g-company-teaser"
+    id="unternehmen"
+    aria-labelledby="g-company-title"
+  >
     <div>
       <p class="g-eyebrow">Seit 1972</p>
       <h2 id="g-company-title">
@@ -87,15 +91,41 @@ const featuredProjects = projects.slice(0, 4);
         Erfahrung, kurze Wege und ein persönlicher Ansprechpartner prägen unsere
         Arbeit.
       </p>
-      <a class="g-outline-button" href={`${root}/unternehmen/`}
-        >Unternehmen kennenlernen →</a
-      >
+      <a class="g-outline-button" href="#kontakt">
+        Persönlich Kontakt aufnehmen →
+      </a>
+    </div>
+  </section>
+
+  <section
+    class="g-company-teaser g-shop-section"
+    id="fachhandel"
+    aria-labelledby="g-shop-title"
+  >
+    <div>
+      <p class="g-eyebrow">Fachgeschäft · Weißbriach</p>
+      <h2 id="g-shop-title">Persönliche Beratung direkt vor Ort.</h2>
+    </div>
+    <div>
+      <p>{company.address}</p>
+      <p>{company.shopHours}</p>
+      <div class="g-inline-actions">
+        <a class="g-outline-button" href={company.phoneHref}>Jetzt anrufen →</a>
+        <a
+          class="g-text-link"
+          href="https://www.google.com/maps/dir/?api=1&destination=Weißbriach+94%2C+9622+Weißbriach"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Route planen ↗
+        </a>
+      </div>
     </div>
   </section>
 
   <section
     class="g-contact-band"
-    id="projektanfrage"
+    id="kontakt"
     aria-labelledby="g-contact-title"
   >
     <p class="g-eyebrow">Ihr nächster Schritt</p>
@@ -103,10 +133,97 @@ const featuredProjects = projects.slice(0, 4);
     <div class="g-contact-links">
       <a href={company.phoneHref}>{company.phone}</a>
       <a href={company.emailHref}>{company.email}</a>
-      <a class="g-solid-button" href={`${root}/kontakt/#projektanfrage`}
-        >Projektanfrage öffnen →</a
+      <a
+        href="https://www.google.com/maps/dir/?api=1&destination=Weißbriach+94%2C+9622+Weißbriach"
+        target="_blank"
+        rel="noreferrer"
       >
+        Route planen ↗
+      </a>
     </div>
+
+    <form class="g-form" id="projektanfrage">
+      <label>
+        Name *<input name="name" autocomplete="name" required />
+      </label>
+      <label>
+        Telefonnummer *
+        <input name="phone" type="tel" autocomplete="tel" required />
+      </label>
+      <label>
+        E-Mail *
+        <input name="email" type="email" autocomplete="email" required />
+      </label>
+      <label>
+        Baustellenort *
+        <input name="location" autocomplete="street-address" required />
+      </label>
+      <label>
+        Projektart *
+        <select name="projectType" required>
+          <option value="">Bitte wählen</option>
+          <option>Neubau</option>
+          <option>Sanierung</option>
+          <option>Gewerbe</option>
+        </select>
+      </label>
+      <label>
+        Gewünschter Zeitraum
+        <input name="timeframe" />
+      </label>
+      <label class="wide">
+        Beschreibung *<textarea name="description" required></textarea>
+      </label>
+      <label class="wide">
+        Plan oder Foto (optional)
+        <input
+          name="attachment"
+          type="file"
+          accept="image/jpeg,image/png,image/webp,application/pdf"
+          aria-describedby="home-file-note"
+        />
+        <small id="home-file-note">JPEG, PNG, WebP oder PDF; maximal 10 MB.</small>
+      </label>
+      <p class="g-form-note" id="home-form-status" role="status" tabindex="-1">
+        Der Online-Versand ist derzeit noch nicht aktiviert. Nach der Prüfung
+        können Sie Ihre Anfrage per Telefon oder E-Mail übermitteln.
+      </p>
+      <button class="g-solid-button" id="home-form-check" type="button">
+        Anfrage prüfen →
+      </button>
+    </form>
   </section>
 </main>
 <VariantGFooter baseUrl={baseUrl} />
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('#projektanfrage');
+  const status = document.querySelector<HTMLElement>('#home-form-status');
+  const checkButton =
+    document.querySelector<HTMLButtonElement>('#home-form-check');
+
+  const checkForm = () => {
+    if (!form) return;
+    const file = form.elements.namedItem(
+      'attachment',
+    ) as HTMLInputElement | null;
+    if (file?.files?.[0] && file.files[0].size > 10 * 1024 * 1024) {
+      file.setCustomValidity('Die Datei darf maximal 10 MB groß sein.');
+    } else {
+      file?.setCustomValidity('');
+    }
+    if (!form.reportValidity()) return;
+    status?.focus();
+    status?.classList.add('is-ready');
+    if (status) {
+      status.textContent =
+        'Alle Pflichtfelder sind vollständig. Der Online-Versand ist noch nicht aktiviert – bitte senden Sie die Angaben per E-Mail oder rufen Sie uns an.';
+    }
+  };
+
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    checkForm();
+  });
+  checkButton?.addEventListener('click', checkForm);
+</script>
