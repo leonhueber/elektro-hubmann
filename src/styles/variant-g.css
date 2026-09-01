@@ -553,6 +553,10 @@
   row-gap: clamp(28px, 3vw, 42px);
 }
 
+.g-project-scroll-hint {
+  display: none;
+}
+
 .g-project-card {
   min-width: 0;
 }
@@ -1259,8 +1263,8 @@
   .g-company-section {
     width: var(--g-content);
     grid-template-columns: minmax(0, 1fr);
-    gap: 32px;
-    padding-block: 90px 72px;
+    gap: 28px;
+    padding-block: 76px 64px;
   }
   .g-company-year {
     top: 30px;
@@ -1269,7 +1273,7 @@
     transform: translateX(-52%);
   }
   .g-company-section h2 {
-    font-size: clamp(3.3rem, 10.5vw, 5rem);
+    font-size: clamp(3rem, 8vw, 4.3rem);
   }
   .g-company-section h2 span:first-child {
     white-space: normal;
@@ -1289,8 +1293,8 @@
   .g-shop-section {
     width: var(--g-content);
     grid-template-columns: minmax(0, 1fr);
-    gap: 56px;
-    padding-block: 90px 88px;
+    gap: 46px;
+    padding-block: 76px 72px;
   }
   .g-shop-section h2 span {
     white-space: normal;
@@ -1306,14 +1310,21 @@
 @media (max-width: 620px) {
   .variant-g {
     --g-content: min(100% - 28px, 1180px);
+    --g-info-height: 34px;
+    --g-nav-height: 68px;
   }
   .g-info-bar > div {
     width: calc(100% - 28px);
+    min-height: var(--g-info-height);
     gap: 10px;
   }
   .g-info-bar a {
+    min-height: var(--g-info-height);
     font-size: 0.64rem;
     line-height: 1.2;
+  }
+  .g-info-bar a:first-child {
+    white-space: nowrap;
   }
   .g-info-bar a:last-child {
     justify-content: flex-end;
@@ -1327,9 +1338,43 @@
   }
   .g-header {
     grid-template-columns: 1fr auto;
+    padding-inline: 14px;
+  }
+  .g-logo img {
+    width: 134px;
   }
   .g-header-cta {
     display: none;
+  }
+  .g-mobile-menu summary {
+    width: 44px;
+    height: 44px;
+  }
+  .g-mobile-menu nav {
+    right: -4px;
+    width: min(320px, calc(100vw - 28px));
+    box-shadow: 0 18px 45px rgb(17 18 20 / 10%);
+  }
+  .g-story-visual {
+    inset: 44px 10px 46% 10px;
+  }
+  .g-story-copy-stack {
+    inset: 52% 14px 0;
+  }
+  .g-story-copy {
+    padding-top: 14px;
+  }
+  .g-story-copy h2 {
+    margin-bottom: 12px;
+    font-size: clamp(1.9rem, 9.2vw, 2.45rem);
+  }
+  .g-story-description {
+    margin-bottom: 14px;
+    font-size: 0.81rem;
+    line-height: 1.38;
+  }
+  .g-story .g-outline-button {
+    width: min(100%, 250px);
   }
   .g-static-chapter {
     padding-block: 44px 62px;
@@ -1367,35 +1412,79 @@
   }
   .g-projects {
     width: var(--g-content);
-    padding-block: 62px 74px;
+    padding-block: 54px 62px;
   }
   .g-section-separator {
     width: var(--g-content);
   }
   .g-projects .g-section-heading {
-    margin-bottom: 30px;
-    padding-bottom: 30px;
+    margin-bottom: 16px;
+    padding-bottom: 26px;
   }
   .g-projects .g-section-heading h2 {
-    margin-bottom: 20px;
-    font-size: clamp(2.9rem, 14vw, 4.25rem);
+    margin-bottom: 18px;
+    font-size: clamp(2.65rem, 12vw, 3.4rem);
   }
   .g-projects .g-section-heading > p:last-child {
-    font-size: 0.95rem;
-    line-height: 1.55;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  .g-project-scroll-hint {
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--g-muted);
+    font-size: 0.72rem;
+    font-weight: 620;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .g-project-scroll-hint span {
+    color: var(--g-red);
+    font-size: 1rem;
   }
   .g-project-list {
-    grid-template-columns: 1fr;
-    row-gap: 30px;
+    width: calc(100% + 14px);
+    margin-right: -14px;
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    padding: 0 14px 16px 0;
+    scroll-padding-inline: 0 14px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    overscroll-behavior-inline: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  .g-project-list::-webkit-scrollbar {
+    display: none;
+  }
+  .g-project-card {
+    flex: 0 0 min(82vw, 310px);
+    overflow: hidden;
+    border: 1px solid var(--g-line);
+    background: #fff;
+    box-shadow: 0 14px 34px rgb(17 18 20 / 7%);
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
   }
   .g-project-image {
     height: auto;
-    aspect-ratio: 1.5 / 1;
+    aspect-ratio: 1.45 / 1;
+  }
+  .g-project-copy {
+    min-height: 88px;
+    padding: 14px 14px 16px;
   }
   .g-project-card h3 {
-    font-size: 1.25rem;
+    font-size: 1.08rem;
+    line-height: 1.12;
   }
-  .g-footer-grid,
+  .g-project-card p {
+    margin-top: 7px;
+    font-size: 0.8rem;
+  }
   .g-facts {
     grid-template-columns: 1fr;
   }
@@ -1405,50 +1494,110 @@
     border-bottom: 1px solid var(--g-line);
   }
   .g-company-section .g-facts::before {
-    left: 28px;
+    top: -18px;
+    left: 20px;
+    height: 36px;
   }
   .g-company-section .g-facts {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 28px;
   }
   .g-company-section .g-facts div {
-    min-height: 112px;
-    padding: 26px 28px;
+    min-height: 92px;
+    padding: 20px;
+    border-right: 1px solid var(--g-line);
+    border-bottom: 0;
+  }
+  .g-company-section .g-facts div:nth-child(2) {
+    border-right: 0;
+  }
+  .g-company-section .g-facts div:last-child {
+    min-height: 82px;
+    grid-column: 1 / -1;
+    border-top: 1px solid var(--g-line);
+    border-right: 0;
+  }
+  .g-company-section .g-facts div:first-child {
+    padding-left: 20px;
+  }
+  .g-company-section .g-facts strong {
+    font-size: 1.75rem;
+  }
+  .g-company-section .g-facts span {
+    font-size: 0.82rem;
+  }
+  .g-company-section {
+    gap: 24px;
+    padding-block: 64px 56px;
+  }
+  .g-company-year {
+    top: 28px;
+    font-size: clamp(10rem, 46vw, 13rem);
+  }
+  .g-company-eyebrow {
+    margin-bottom: 42px;
+  }
+  .g-company-eyebrow::after {
+    bottom: -21px;
+    width: 28px;
+  }
+  .g-company-section h2 {
+    font-size: clamp(2.65rem, 12vw, 3.15rem);
+    line-height: 0.98;
+  }
+  .g-company-section .g-company-copy > p {
+    font-size: 0.92rem;
+    line-height: 1.55;
+  }
+  .g-company-section .g-outline-button {
+    width: 100%;
+    min-height: 52px;
+    margin-top: 22px;
+    padding-inline: 16px;
+    font-size: 0.8rem;
   }
   .g-shop-section {
-    gap: 44px;
-    padding-block: 72px;
+    gap: 34px;
+    padding-block: 62px 58px;
   }
   .g-shop-section h2 {
-    margin-bottom: 24px;
-    font-size: clamp(2.9rem, 14vw, 3.7rem);
+    margin-bottom: 16px;
+    font-size: clamp(2.6rem, 11.7vw, 3rem);
+    line-height: 1;
   }
   .g-shop-intro .g-eyebrow {
-    margin-bottom: 32px;
-    font-size: 1rem;
+    margin-bottom: 22px;
+    font-size: 0.78rem;
   }
   .g-company-teaser .g-shop-address {
-    font-size: 1rem;
+    font-size: 0.92rem;
+  }
+  .g-shop-actions {
+    margin-top: 22px;
+    gap: 14px;
   }
   .g-company-teaser .g-shop-actions .g-outline-button {
     width: 100%;
-    min-height: 60px;
-    padding-inline: 22px;
-    font-size: 1.2rem;
+    min-height: 52px;
+    padding-inline: 18px;
+    font-size: 0.95rem;
   }
   .g-shop-actions .g-text-link {
-    font-size: 1.4rem;
+    min-height: 40px;
+    font-size: 0.95rem;
   }
   .g-opening-hours,
   .g-opening-hours tbody {
     display: block;
   }
   .g-opening-hours tr {
-    min-height: 116px;
+    min-height: 78px;
     height: auto;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px 18px;
-    padding: 22px 0;
+    grid-template-columns: 1.02fr 0.95fr 1.25fr;
+    gap: 8px;
+    align-items: center;
+    padding: 15px 0;
   }
   .g-opening-hours th,
   .g-opening-hours td,
@@ -1457,17 +1606,46 @@
     padding: 0;
   }
   .g-opening-hours th {
-    grid-column: 1 / -1;
-    font-size: 1.15rem;
+    grid-column: auto;
+    font-size: 0.9rem;
   }
   .g-opening-hours td {
-    font-size: 1.05rem;
+    font-size: 0.82rem;
+    line-height: 1.25;
   }
   .g-opening-hours .is-closed {
+    font-size: 0.75rem;
     white-space: normal;
   }
   .g-opening-hours tr.is-today th::before {
-    left: -8px;
+    left: -6px;
+  }
+  .g-footer {
+    padding: 50px 14px 22px;
+  }
+  .g-footer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 34px 22px;
+  }
+  .g-footer-grid > div {
+    gap: 7px;
+    font-size: 0.76rem;
+  }
+  .g-footer-grid > div:first-child,
+  .g-footer-grid > div:nth-child(2) {
+    grid-column: 1 / -1;
+  }
+  .g-footer-grid > div:first-child {
+    max-width: 320px;
+  }
+  .g-footer-grid img {
+    width: 142px;
+  }
+  .g-footer-grid a {
+    min-height: 34px;
+  }
+  .g-footer-note {
+    margin-top: 34px;
   }
 }
 

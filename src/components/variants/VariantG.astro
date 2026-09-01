@@ -59,10 +59,13 @@ const openingHours = [
         Gebäudetechnik: Lösungen, die zum Gebäude und seiner Nutzung passen.
       </p>
     </div>
-    <div class="g-project-list">
+    <p class="g-project-scroll-hint" aria-hidden="true">
+      Seitlich wischen <span>→</span>
+    </p>
+    <div class="g-project-list" role="list" aria-label="Projektbeispiele">
       {
         projects.map((project) => (
-          <article class="g-project-card">
+          <article class="g-project-card" role="listitem">
             <div class="g-project-image">
               <img
                 src={`${baseUrl}${project.image.replace(/^\//, '')}`}

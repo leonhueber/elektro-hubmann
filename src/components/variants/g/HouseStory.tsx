@@ -19,7 +19,7 @@ export type SceneMotionProfile = 'standard' | 'compact';
 
 const chapters = VERSION_G_STORY_CHAPTERS;
 const desktopScrollDistancePerChapter = 55;
-const mobileScrollDistancePerChapter = 36;
+const mobileScrollDistancePerChapter = 30;
 const sceneMotionProfiles = {
   standard: {
     fadeDistance: 0.18,
