@@ -21,7 +21,10 @@ const nav = [
       <a href={company.emergencyHref}
         >Störungsdienst: <strong>{company.emergency}</strong></a
       >
-      <a href={`${root}/#fachhandel`}>Fachgeschäft & Öffnungszeiten →</a>
+      <span class="g-shop-hours">{company.shopHours}</span>
+      <a class="g-shop-hours-link" href={`${root}/#fachhandel`}>
+        Fachgeschäft &amp; Öffnungszeiten →
+      </a>
     </div>
   </div>
   <header class="g-header">

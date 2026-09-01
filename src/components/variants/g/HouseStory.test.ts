@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { VERSION_G_STORY_CHAPTERS } from '../../../config/version-g-story-assets';
-import { getSceneMotion, getStoryState } from './HouseStory';
+import {
+  getChapterScrollProgress,
+  getSceneMotion,
+  getStoryState,
+} from './HouseStory';
 
 describe('getStoryState', () => {
   it('maps every chapter center to its state', () => {
@@ -13,6 +17,19 @@ describe('getStoryState', () => {
   it('clamps progress to the first and final state', () => {
     expect(getStoryState(-1)).toBe('planning');
     expect(getStoryState(2)).toBe('energy');
+  });
+});
+
+describe('getChapterScrollProgress', () => {
+  it('targets the center of every chapter', () => {
+    VERSION_G_STORY_CHAPTERS.forEach((chapter, index) => {
+      expect(getStoryState(getChapterScrollProgress(index))).toBe(chapter.id);
+    });
+  });
+
+  it('clamps navigation outside the chapter range', () => {
+    expect(getStoryState(getChapterScrollProgress(-1))).toBe('planning');
+    expect(getStoryState(getChapterScrollProgress(99))).toBe('energy');
   });
 });
 

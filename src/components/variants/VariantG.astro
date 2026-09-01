@@ -9,6 +9,21 @@ import { company, projects } from '../../config/site';
 import '../../styles/variant-g.css';
 
 const baseUrl = import.meta.env.BASE_URL;
+const openingHours = [
+  { day: 'Montag', morning: '09:00–12:00', afternoon: '15:00–17:30' },
+  { day: 'Dienstag', morning: '09:00–12:00', afternoon: '15:00–17:30' },
+  {
+    day: 'Mittwoch',
+    morning: '09:00–12:00',
+    afternoon: 'Nachmittags geschlossen',
+  },
+  { day: 'Donnerstag', morning: '09:00–12:00', afternoon: '15:00–17:30' },
+  {
+    day: 'Freitag',
+    morning: '09:00–12:00',
+    afternoon: 'Nachmittags geschlossen',
+  },
+] as const;
 ---
 
 <VariantGHeader baseUrl={baseUrl} />
@@ -70,17 +85,20 @@ const baseUrl = import.meta.env.BASE_URL;
   </section>
 
   <section
-    class="g-company-teaser"
+    class="g-company-teaser g-company-section"
     id="unternehmen"
     aria-labelledby="g-company-title"
   >
-    <div>
-      <p class="g-eyebrow">Seit 1972</p>
+    <span class="g-company-year" aria-hidden="true">1972</span>
+    <div class="g-company-heading">
+      <p class="g-eyebrow g-company-eyebrow">Seit 1972</p>
       <h2 id="g-company-title">
-        Regional verwurzelt. Persönlich verantwortlich.
+        <span>Regional verwurzelt.</span>
+        <span>Persönlich</span>
+        <span>verantwortlich.</span>
       </h2>
     </div>
-    <div>
+    <div class="g-company-copy">
       <p>
         Elektro Hubmann ist ein Familienbetrieb aus Weißbriach. Über 50 Jahre
         Erfahrung, kurze Wege und ein persönlicher Ansprechpartner prägen unsere
@@ -111,14 +129,15 @@ const baseUrl = import.meta.env.BASE_URL;
     id="fachhandel"
     aria-labelledby="g-shop-title"
   >
-    <div>
+    <div class="g-shop-intro">
       <p class="g-eyebrow">Fachgeschäft · Weißbriach</p>
-      <h2 id="g-shop-title">Persönliche Beratung direkt vor Ort.</h2>
-    </div>
-    <div>
-      <p>{company.address}</p>
-      <p>{company.shopHours}</p>
-      <div class="g-inline-actions">
+      <h2 id="g-shop-title">
+        <span>Persönliche</span>
+        <span>Beratung direkt vor</span>
+        <span>Ort.</span>
+      </h2>
+      <p class="g-shop-address">{company.address}</p>
+      <div class="g-shop-actions">
         <a class="g-outline-button" href={company.phoneHref}>Jetzt anrufen →</a>
         <a
           class="g-text-link"
@@ -130,64 +149,43 @@ const baseUrl = import.meta.env.BASE_URL;
         </a>
       </div>
     </div>
-  </section>
-
-  <section
-    class="g-contact-band"
-    id="kontakt"
-    aria-labelledby="g-contact-title"
-  >
-    <div class="g-contact-intro">
-      <p class="g-eyebrow">Kontakt</p>
-      <h2 id="g-contact-title">Ihr Projekt beginnt mit einem Gespräch.</h2>
-      <p>
-        Kein Formular und keine Warteschleife: Rufen Sie uns an oder schreiben
-        Sie uns direkt eine E-Mail. Für Störungen und Fragen zum Fachgeschäft
-        finden Sie hier den passenden Kontakt.
-      </p>
-    </div>
-    <div class="g-contact-grid">
-      <article class="g-contact-card">
-        <p class="g-contact-kicker">Projekt &amp; Allgemeines</p>
-        <h3>Direkt mit uns sprechen.</h3>
-        <p>
-          Für neue Projekte, bestehende Anlagen und allgemeine Fragen erreichen
-          Sie uns telefonisch oder per E-Mail.
-        </p>
-        <a class="g-contact-primary" href={company.phoneHref}>
-          {company.phone}
-          <span aria-hidden="true">→</span>
-        </a>
-        <a class="g-contact-secondary" href={company.emailHref}>
-          {company.email}
-        </a>
-      </article>
-      <article class="g-contact-card g-contact-card--emergency">
-        <p class="g-contact-kicker">Störungsdienst</p>
-        <h3>Wenn Technik ausfällt.</h3>
-        <p>
-          Für Störungen steht Ihnen unsere separate Servicenummer zur Verfügung.
-        </p>
-        <a class="g-contact-primary" href={company.emergencyHref}>
-          {company.emergency}
-          <span aria-hidden="true">→</span>
-        </a>
-      </article>
-      <article class="g-contact-card">
-        <p class="g-contact-kicker">Fachgeschäft</p>
-        <h3>Persönlich in Weißbriach.</h3>
-        <address>{company.address}</address>
-        <p>{company.shopHours}</p>
-        <a
-          class="g-contact-secondary"
-          href="https://www.google.com/maps/dir/?api=1&destination=Weißbriach+94%2C+9622+Weißbriach"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Route planen ↗
-        </a>
-      </article>
+    <div class="g-shop-hours-panel">
+      <table class="g-opening-hours">
+        <caption class="sr-only">Öffnungszeiten des Fachgeschäfts</caption>
+        <tbody>
+          {
+            openingHours.map(({ day, morning, afternoon }) => (
+              <tr data-day={day.toLocaleLowerCase('de-AT')}>
+                <th scope="row">{day}</th>
+                <td>{morning}</td>
+                <td
+                  class:list={{
+                    'is-closed': afternoon.includes('geschlossen'),
+                  }}
+                >
+                  {afternoon}
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
     </div>
   </section>
 </main>
 <VariantGFooter baseUrl={baseUrl} />
+
+<script>
+  const currentWeekday = new Intl.DateTimeFormat('de-AT', {
+    weekday: 'long',
+    timeZone: 'Europe/Vienna',
+  })
+    .format(new Date())
+    .toLocaleLowerCase('de-AT');
+
+  document
+    .querySelectorAll<HTMLTableRowElement>('.g-opening-hours tr[data-day]')
+    .forEach((row) => {
+      row.classList.toggle('is-today', row.dataset.day === currentWeekday);
+    });
+</script>

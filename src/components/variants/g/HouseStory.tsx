@@ -56,6 +56,11 @@ export function getStoryState(progress: number): HouseStoryState {
   return chapters[index]!.id;
 }
 
+export function getChapterScrollProgress(chapterIndex: number) {
+  const safeIndex = Math.min(chapters.length - 1, Math.max(0, chapterIndex));
+  return (safeIndex + 0.5) / chapters.length;
+}
+
 export function getSceneMotion(
   progress: number,
   sceneIndex: number,
@@ -164,6 +169,26 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [compactMotion, setCompactMotion] = useState(false);
   const activeIndexRef = useRef(0);
+
+  const scrollToChapter = (chapterIndex: number) => {
+    const root = wrapper.current;
+    if (!root) return;
+
+    const headerHeight =
+      document.querySelector<HTMLElement>('.g-header-shell')?.offsetHeight ?? 0;
+    const rootTop = window.scrollY + root.getBoundingClientRect().top;
+    const storyStart = rootTop - headerHeight;
+    const storyEnd = rootTop + root.offsetHeight - window.innerHeight;
+    const storyDistance = Math.max(0, storyEnd - storyStart);
+    const targetProgress = getChapterScrollProgress(chapterIndex);
+
+    window.scrollTo({
+      top: storyStart + storyDistance * targetProgress,
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        ? 'auto'
+        : 'smooth',
+    });
+  };
 
   useEffect(() => {
     const root = wrapper.current;
@@ -307,14 +332,20 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
             <span>{chapters[activeIndex]?.number}</span> /{' '}
             {String(chapters.length).padStart(2, '0')}
           </strong>
-          <ol>
+          <ol aria-label="Leistungsabschnitt wählen">
             {chapters.map((chapter, index) => (
               <li
                 className={index === activeIndex ? 'is-active' : ''}
-                aria-current={index === activeIndex ? 'step' : undefined}
                 key={chapter.id}
               >
-                <span>{chapter.label}</span>
+                <button
+                  type="button"
+                  aria-label={`${chapter.number} ${chapter.label} anzeigen`}
+                  aria-current={index === activeIndex ? 'step' : undefined}
+                  onClick={() => scrollToChapter(index)}
+                >
+                  <span>{chapter.label}</span>
+                </button>
               </li>
             ))}
           </ol>
