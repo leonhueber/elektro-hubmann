@@ -247,11 +247,12 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
     <section
       ref={wrapper}
       className="g-story"
-      aria-label="Leistungen von der Planung bis zum Service"
+      aria-label="Leistungen von der Planung bis zu integrierten Energiesystemen"
       data-state={chapters[activeIndex]?.id}
       style={
         {
           '--g-story-progress': '0%',
+          '--g-story-chapter-count': chapters.length,
           '--g-story-height': `${100 + chapters.length * desktopScrollDistancePerChapter}svh`,
           '--g-story-height-mobile': `${100 + chapters.length * mobileScrollDistancePerChapter}svh`,
         } as CSSProperties

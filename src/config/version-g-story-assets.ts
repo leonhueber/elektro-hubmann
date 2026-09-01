@@ -1,5 +1,4 @@
-export type VersionGPrimaryStoryState =
-  'planning' | 'installation' | 'photovoltaic' | 'service';
+export type VersionGPrimaryStoryState = 'planning' | 'installation' | 'energy';
 
 export type VersionGStoryState =
   VersionGPrimaryStoryState | 'smarthome' | 'lighting' | 'security';
@@ -24,15 +23,9 @@ const objectAssets = {
     width: 1536,
     height: 1024,
   },
-  photovoltaic: {
-    src: 'photovoltaic-storage.webp',
-    alt: 'Photovoltaikmodul mit kompaktem, weißem Stromspeicher',
-    width: 1448,
-    height: 1086,
-  },
-  service: {
-    src: 'service-wallbox.webp',
-    alt: 'Moderne Wallbox mit ordentlich aufgewickeltem Ladekabel',
+  energy: {
+    src: 'alternatives/photovoltaic-storage-wallbox-v1.png',
+    alt: 'Photovoltaikmodul, Stromspeicher und Wallbox als abgestimmtes Energiesystem',
     width: 1448,
     height: 1086,
   },
@@ -46,7 +39,7 @@ export const VERSION_G_STORY_ASSET_SETS = {
   objects: objectAssets,
   integratedEnergyHouse: {
     ...objectAssets,
-    photovoltaic: {
+    energy: {
       src: 'alternatives/energy-house-integrated-v1.png',
       alt: 'Modernes Wohnhaus mit Photovoltaikanlage, Stromspeicher und Wallbox',
       width: 1448,
@@ -178,32 +171,20 @@ export const VERSION_G_STORY_CHAPTERS = [
       'Mit Alarmanlagen, Blitzschutz und moderner Gebäudetechnik schützen wir Haus, Betrieb und Menschen.',
     cta: 'Sicherheit besprechen',
     href: '#kontakt',
-    hint: 'Weiter zur Photovoltaik',
+    hint: 'Weiter zu den Energiesystemen',
     asset: VERSION_G_EXTENDED_STORY_ASSETS.security,
   },
   {
-    id: 'photovoltaic',
+    id: 'energy',
     number: '06',
-    label: 'Photovoltaik',
-    title: ['Energie smart', 'nutzen.', 'Zukunft sicher', 'denken.'],
+    label: 'Energiesysteme',
+    title: ['Energie erzeugen.', 'Speichern.', 'Laden.'],
     description:
-      'Mit Photovoltaik, Speicher und intelligenten Lösungen schaffen wir nachhaltige Energiekonzepte.',
-    cta: 'Energieprojekt besprechen',
-    href: '#kontakt',
-    hint: 'Weiter zu Service und Wartung',
-    asset: VERSION_G_STORY_ASSETS.photovoltaic,
-  },
-  {
-    id: 'service',
-    number: '07',
-    label: 'Service',
-    title: ['Auch nach dem', 'Projekt verlässlich', 'an Ihrer Seite.'],
-    description:
-      'Kundendienst, Wartung und Erweiterungen begleiten Ihre Anlage langfristig und unkompliziert.',
-    cta: 'Service anfragen',
+      'Photovoltaik, Stromspeicher und Ladeinfrastruktur planen wir als abgestimmtes Gesamtsystem – inklusive zuverlässigem Service.',
+    cta: 'Energielösung anfragen',
     href: '#kontakt',
     hint: 'Weiter zu unseren Referenzprojekten',
-    asset: VERSION_G_STORY_ASSETS.service,
+    asset: VERSION_G_STORY_ASSETS.energy,
   },
 ] as const satisfies readonly VersionGStoryChapter[];
 

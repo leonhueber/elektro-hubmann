@@ -134,8 +134,7 @@
   --g-smarthome-image-scale: 1.14;
   --g-lighting-image-scale: 1.08;
   --g-security-image-scale: 1.12;
-  --g-photovoltaic-image-scale: 1.32;
-  --g-service-image-scale: 1.35;
+  --g-energy-image-scale: 1.05;
 }
 
 .g-story-stage {
@@ -197,12 +196,8 @@
   transform: translateX(-5%) scale(var(--g-security-image-scale));
 }
 
-.g-story-image--photovoltaic img {
-  transform: scale(var(--g-photovoltaic-image-scale));
-}
-
-.g-story-image--service img {
-  transform: scale(var(--g-service-image-scale));
+.g-story-image--energy img {
+  transform: scale(var(--g-energy-image-scale));
 }
 
 .g-story-copy-stack {
@@ -799,8 +794,7 @@
     --g-smarthome-image-scale: 1.05;
     --g-lighting-image-scale: 1.02;
     --g-security-image-scale: 1.04;
-    --g-photovoltaic-image-scale: 1.05;
-    --g-service-image-scale: 1.28;
+    --g-energy-image-scale: 1;
   }
 }
 
@@ -811,8 +805,7 @@
     --g-smarthome-image-scale: 1;
     --g-lighting-image-scale: 1;
     --g-security-image-scale: 1;
-    --g-photovoltaic-image-scale: 1;
-    --g-service-image-scale: 1.2;
+    --g-energy-image-scale: 1;
   }
 }
 
@@ -907,8 +900,7 @@
     --g-smarthome-image-scale: 1;
     --g-lighting-image-scale: 1;
     --g-security-image-scale: 1;
-    --g-photovoltaic-image-scale: 1.04;
-    --g-service-image-scale: 1.12;
+    --g-energy-image-scale: 1;
   }
   .g-story-stage {
     top: var(--g-header);
@@ -971,7 +963,7 @@
   .g-progress ol {
     flex: 1;
     display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--g-story-chapter-count), minmax(0, 1fr));
     border-top: 1px solid var(--g-line);
     border-left: 0;
   }

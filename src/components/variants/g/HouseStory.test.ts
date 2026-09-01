@@ -12,7 +12,7 @@ describe('getStoryState', () => {
 
   it('clamps progress to the first and final state', () => {
     expect(getStoryState(-1)).toBe('planning');
-    expect(getStoryState(2)).toBe('service');
+    expect(getStoryState(2)).toBe('energy');
   });
 });
 
