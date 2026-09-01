@@ -5,17 +5,22 @@ interface Props {
 }
 const { baseUrl } = Astro.props;
 const root = baseUrl.replace(/\/$/, '');
+const currentYear = new Date().getFullYear();
+const mapsUrl =
+  'https://www.google.com/maps/dir/?api=1&destination=Weißbriach+94%2C+9622+Weißbriach';
 ---
 
 <footer class="g-footer" id="kontakt">
   <div class="g-footer-grid">
     <div>
-      <img
-        src={`${baseUrl}logo-elektrotechnik-hubmann.png`}
-        width="287"
-        height="78"
-        alt="Elektrotechnik Hubmann"
-      />
+      <a href={`${root}/`} aria-label="Elektro Hubmann – Startseite">
+        <img
+          src={`${baseUrl}logo-elektrotechnik-hubmann.png`}
+          width="287"
+          height="78"
+          alt="Elektrotechnik Hubmann"
+        />
+      </a>
       <p>
         Elektrotechnik für Neubau, Sanierung und Gewerbe – regional und
         persönlich.
@@ -25,15 +30,15 @@ const root = baseUrl.replace(/\/$/, '');
       <strong>Kontakt</strong>
       <a href={company.phoneHref}>{company.phone}</a>
       <a href={company.emailHref}>{company.email}</a>
-      <span>{company.address}</span>
+      <a href={mapsUrl} target="_blank" rel="noreferrer">{company.address} ↗</a>
     </div>
     <div>
       <strong>Seiten</strong>
+      <a href={`${root}/`}>Startseite</a>
       <a href={`${root}/#leistungen`}>Leistungen</a>
       <a href={`${root}/#projekte`}>Projekte</a>
       <a href={`${root}/#unternehmen`}>Unternehmen</a>
-      <a href={`${root}/#fachhandel`}>Fachhandel</a>
-      <a href={`${root}/#kontakt`}>Kontakt</a>
+      <a href={`${root}/#fachhandel`}>Fachgeschäft &amp; Öffnungszeiten</a>
     </div>
     <div>
       <strong>Rechtliches</strong>
@@ -47,6 +52,6 @@ const root = baseUrl.replace(/\/$/, '');
     </div>
   </div>
   <p class="g-footer-note">
-    Inhalte und Rechtstexte vor Veröffentlichung final prüfen.
+    © {currentYear} Elektro Hubmann. Alle Rechte vorbehalten.
   </p>
 </footer>

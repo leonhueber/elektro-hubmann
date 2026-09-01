@@ -1,54 +1,46 @@
-# Design QA – image-based Version G story
+# Design QA – project gallery and section separator
 
-## Visual truth
+## Comparison target
 
-- `C:/Users/hueberl/AppData/Local/Temp/codex-clipboard-fc040fd0-d062-4ff7-afa1-9958ed4f1fa0.png` – planning
-- `C:/Users/hueberl/AppData/Local/Temp/codex-clipboard-6b33bccc-2d70-4be6-882f-9d0537336cfe.png` – installation
-- `C:/Users/hueberl/AppData/Local/Temp/codex-clipboard-30019ed9-674d-4e60-82a3-6fa4417e9bb5.png` – photovoltaic
-- `C:/Users/hueberl/AppData/Local/Temp/codex-clipboard-4c5cad6b-110d-4250-95ba-48343ec0462a.png` – service
+- Source visual truth: `C:/Users/hueberl/AppData/Local/Temp/codex-clipboard-268618b4-418d-4deb-a6c5-65c7b99214b3.png` (1487 × 1058 px).
+- Browser-rendered implementation: `.codex-audit/projects-gallery-implementation-v2.png` (1487 × 1058 px, normalized from the section capture).
+- Full-view comparison: `.codex-audit/projects-gallery-comparison-v2.png`.
+- Mobile evidence: `.codex-audit/projects-gallery-mobile-v1.png` at 390 × 844 CSS px, DPR 1.
+- Separator evidence: `.codex-audit/company-contact-separator-v1.png`.
+- Desktop capture viewport: 1488 × 1400 CSS px, DPR 1; section crop normalized only to remove the scrollbar gutter and align it with the source dimensions.
+- State: project section at `#projekte`; no interaction state active.
 
-All four references are 1448 × 1086 px. They define one desktop scroll story with four states. The implementation was captured at a CSS viewport of 1448 × 1086 px and DPR 1. The browser content screenshots are 1433 × 1075 px because the visible browser content excludes its chrome and scrollbar; paired comparisons normalize both sides to the 1448 × 1086 reference size.
+The full-view composite keeps the complete heading, all six cards, titles, categories, rules, image crops, and white-space rhythm readable. A separate focused crop was not needed because every fidelity-critical detail remains legible at the comparison scale.
 
-## Implementation evidence
+## Findings
 
-- Planning: `.codex-audit/image-story/qa3-1448-planning.png`
-- Installation: `.codex-audit/image-story/qa2-1448-installation.png`
-- Photovoltaic: `.codex-audit/image-story/qa2-1448-photovoltaic.png`
-- Service: `.codex-audit/image-story/qa2-1448-service.png`
-- Full paired comparisons: `.codex-audit/image-story/compare3-planning.jpg`, `.codex-audit/image-story/compare2-installation.jpg`, `.codex-audit/image-story/compare2-photovoltaic.jpg`, `.codex-audit/image-story/compare2-service.jpg`
+- No actionable P0, P1, or P2 differences remain.
+- Fonts and typography: existing Inter Tight/Inter typography is preserved. Heading size, compact project titles, muted categories, weights, line heights, and wrapping follow the selected mockup.
+- Spacing and layout rhythm: the section uses a 1392 px editorial frame, two-column introduction, single hairline rule, and a three-by-two gallery. The normalized section height is within roughly 2% of the source. Mobile collapses to one column without horizontal overflow.
+- Colors and visual tokens: existing white, black, muted gray, and restrained red Hubmann tokens remain unchanged. No new radii, shadows, gradients, or card chrome were introduced.
+- Image quality and asset fidelity: six distinct 1280 × 853 WebP assets match the residential, renovation, commercial, hospitality, photovoltaic, and KNX subjects. Total delivered gallery image weight is about 612 KB.
+- Copy and content: all six supplied project titles and the selected category labels are present and legible.
+- Section transition: a semantic hairline separator now creates a clear break between the company block and the Fachgeschäft/contact area.
+- Interaction and accessibility: images retain descriptive alt text and explicit dimensions. Browser console contains no errors or warnings.
 
-Focused comparison captures were not necessary: the native-resolution full-state composites make the header, typography, CTA proportions, product edges, progress rail, and background transitions legible.
+## Comparison history
 
-## Iteration log
+1. Initial implementation: `.codex-audit/projects-gallery-viewport-v1.png`.
+   - P2: the section was approximately 118 px taller than the source because the introduction and bottom padding were too generous.
+   - Fix: tightened project-only vertical padding, heading size, heading rule spacing, and gallery offset.
+2. Final implementation: `.codex-audit/projects-gallery-viewport-v2.png` and `.codex-audit/projects-gallery-comparison-v2.png`.
+   - Post-fix section height is 1074.7 CSS px versus a 1058 px source, with matching card proportions and row rhythm.
 
-1. Replaced the Blender/canvas sequence and grey render surfaces with four purpose-made, unbranded image assets on a seamless white background.
-2. First pass findings: P2 – visual objects were too small; title wraps and CTA proportions diverged; the wallbox source exposed a rectangular background boundary.
-3. Corrected object scale, explicit title line breaks, CTA sizing and spacing; regenerated the wallbox image with a pure white edge-to-edge surface.
-4. Second pass finding: P2 – the planning house sat too close to the progress rail.
-5. Reduced planning scale from 1.18 to 1.12 and shifted it left. The third planning capture verifies clear separation and alignment.
+## Technical verification
 
-## Final surface review
+- Vitest: 13/13 tests passed.
+- Astro production build: 0 errors, 0 warnings, 7 static pages built successfully.
+- Desktop and 390 px mobile states rendered in the in-app browser.
+- Mobile document width: 375 CSS px with no horizontal overflow; gallery card width: 347 CSS px.
+- Browser console: no errors or warnings.
 
-- Typography: Inter Tight and Inter, with deliberate desktop line breaks matching the references.
-- Layout: left editorial column, large central object stage, right progress rail; mobile switches to four complete vertical chapters.
-- Color: white, black/anthracite, and restrained Hubmann red only.
-- Imagery: high-resolution WebP assets, no embedded Hubmann or manufacturer branding, no captions, watermarks, or visible image bounds.
-- Motion: normal page scrolling with GSAP-controlled opacity, scale, and lateral transitions; no wheel interception.
-- Accessibility: semantic headings, descriptive alt text, inactive story links removed from tab order, `aria-current` on the active step, and complete static content for reduced motion and widths up to 860 px.
-- Responsive checks: 1440 × 1024, 1024 × 768, 768 × 1024, and 390 × 844; no horizontal overflow found.
-- Interaction check: navigation, CTAs, mobile disclosure menu, and chapter links inspected. Browser console had no errors or warnings.
+## Follow-up polish
 
-## Intentional differences
-
-- The live site retains the official two-line company logo and the required information bar instead of copying the mockup header verbatim.
-- Product visuals intentionally omit the mockups' fictional Hubmann/product branding.
-- Fine blueprint annotations are simplified so they remain decorative and do not introduce unreadable generated text.
-
-## Technical checks
-
-- Astro check: 0 errors, 0 warnings, 0 hints.
-- ESLint: passed.
-- Vitest: 15/15 tests passed.
-- Production build: 20 static pages built successfully.
+- P3: the generated project photography intentionally differs in exact scene details from the conceptual mockup while preserving its composition and art direction.
 
 final result: passed

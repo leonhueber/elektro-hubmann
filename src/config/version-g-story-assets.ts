@@ -1,7 +1,6 @@
 export type VersionGPrimaryStoryState = 'planning' | 'installation' | 'energy';
 
-export type VersionGStoryState =
-  VersionGPrimaryStoryState | 'smarthome' | 'lighting' | 'security';
+export type VersionGStoryState = VersionGPrimaryStoryState | 'lighting';
 
 export type VersionGStoryAsset = {
   src: string;
@@ -135,48 +134,24 @@ export const VERSION_G_STORY_CHAPTERS = [
       'Von Elektroinstallationen bis zur Netzwerktechnik setzen wir Technik sauber, sicher und zuverlässig um.',
     cta: 'Installation anfragen',
     href: '#kontakt',
-    hint: 'Weiter zu SmartHome und KNX',
+    hint: 'Weiter zur Beleuchtung',
     asset: VERSION_G_STORY_ASSETS.installation,
   },
   {
-    id: 'smarthome',
-    number: '03',
-    label: 'SmartHome',
-    title: ['Smarte Technik.', 'Komfortabel gesteuert.'],
-    description:
-      'Mit SmartHome, KNX und intelligenter Steuerung vernetzen wir Licht, Beschattung, Heizung und Sicherheit.',
-    cta: 'Beratung anfragen',
-    href: '#kontakt',
-    hint: 'Weiter zur Beleuchtung',
-    asset: VERSION_G_EXTENDED_STORY_ASSETS.smarthome,
-  },
-  {
     id: 'lighting',
-    number: '04',
+    number: '03',
     label: 'Beleuchtung',
     title: ['Licht, das Räume', 'und Sicherheit', 'schafft.'],
     description:
       'Von Wohnraumlicht bis zur Sicherheits- und Notbeleuchtung planen wir funktionale und ästhetische Lösungen.',
     cta: 'Beleuchtung besprechen',
     href: '#kontakt',
-    hint: 'Weiter zur Sicherheitstechnik',
+    hint: 'Weiter zu den Energiesystemen',
     asset: VERSION_G_EXTENDED_STORY_ASSETS.lighting,
   },
   {
-    id: 'security',
-    number: '05',
-    label: 'Sicherheit',
-    title: ['Sicherheit,', 'auf die Sie sich', 'verlassen können.'],
-    description:
-      'Mit Alarmanlagen, Blitzschutz und moderner Gebäudetechnik schützen wir Haus, Betrieb und Menschen.',
-    cta: 'Sicherheit besprechen',
-    href: '#kontakt',
-    hint: 'Weiter zu den Energiesystemen',
-    asset: VERSION_G_EXTENDED_STORY_ASSETS.security,
-  },
-  {
     id: 'energy',
-    number: '06',
+    number: '04',
     label: 'Energiesysteme',
     title: ['Energie erzeugen.', 'Speichern.', 'Laden.'],
     description:

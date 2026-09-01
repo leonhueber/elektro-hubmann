@@ -472,6 +472,14 @@
   margin-inline: auto;
 }
 
+.g-section-separator {
+  width: min(calc(100% - 48px), 1392px);
+  height: 0;
+  margin: 0 auto;
+  border: 0;
+  border-top: 1px solid var(--g-ink);
+}
+
 .g-anchor-section,
 .g-projects,
 .g-company-teaser,
@@ -480,12 +488,42 @@
 }
 
 .g-projects {
-  padding-block: clamp(90px, 11vw, 170px);
+  width: min(calc(100% - 48px), 1392px);
+  padding-block: clamp(54px, 4vw, 64px) clamp(52px, 4vw, 72px);
 }
 
 .g-section-heading {
-  max-width: 700px;
-  margin-bottom: clamp(54px, 7vw, 90px);
+  margin-bottom: clamp(38px, 4vw, 56px);
+}
+
+.g-projects .g-section-heading {
+  max-width: none;
+  margin-bottom: clamp(42px, 3.4vw, 50px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+  grid-template-rows: auto 1fr;
+  column-gap: clamp(48px, 9vw, 150px);
+  padding-bottom: clamp(30px, 2.6vw, 38px);
+  border-bottom: 1px solid var(--g-ink);
+}
+
+.g-projects .g-section-heading .g-eyebrow {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.g-projects .g-section-heading h2 {
+  grid-column: 1;
+  grid-row: 2;
+  align-self: start;
+  font-size: clamp(3.2rem, 4.8vw, 4.6rem);
+}
+
+.g-projects .g-section-heading > p:last-child {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: start;
+  margin-top: 3px;
 }
 
 .g-section-heading h2,
@@ -509,26 +547,22 @@
 }
 
 .g-project-list {
-  border-top: 1px solid var(--g-ink);
-}
-
-.g-project-row {
-  min-height: 320px;
   display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  align-items: center;
-  gap: clamp(34px, 7vw, 96px);
-  padding-block: 34px;
-  border-bottom: 1px solid var(--g-line);
-  text-decoration: none;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: clamp(18px, 2vw, 30px);
+  row-gap: clamp(28px, 3vw, 42px);
 }
 
-.g-project-row:nth-child(even) .g-project-image {
-  order: 2;
+.g-project-card {
+  min-width: 0;
+}
+
+.g-project-copy {
+  padding-top: 14px;
 }
 
 .g-project-image {
-  height: 340px;
+  aspect-ratio: 1.58 / 1;
   overflow: hidden;
   background: #f1f1ef;
 }
@@ -537,23 +571,30 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: saturate(0.86);
+  filter: saturate(0.88);
+  transition:
+    transform 500ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 300ms ease;
 }
 
-.g-project-row span {
-  color: var(--g-red);
-  font-size: 0.7rem;
+.g-project-card:hover .g-project-image img {
+  transform: scale(1.025);
+  filter: saturate(1);
 }
 
-.g-project-row h3 {
-  margin: 16px 0 12px;
-  font-size: clamp(1.8rem, 3vw, 3.1rem);
-  line-height: 1;
-  letter-spacing: -0.04em;
+.g-project-card h3 {
+  margin: 0;
+  font-size: clamp(1.12rem, 1.45vw, 1.48rem);
+  font-weight: 620;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
 }
 
-.g-project-row p {
+.g-project-card p {
+  margin: 8px 0 0;
   color: var(--g-muted);
+  font-size: 0.9rem;
+  line-height: 1.35;
 }
 
 .g-text-link {
@@ -709,12 +750,12 @@
 }
 
 .g-shop-section {
-  width: min(1424px, calc(100% - 112px));
-  grid-template-columns: minmax(0, 0.75fr) minmax(600px, 1.2fr);
+  width: min(1260px, calc(100% - 96px));
+  grid-template-columns: minmax(0, 0.86fr) minmax(560px, 1.14fr);
   align-items: start;
-  column-gap: clamp(72px, 7.8vw, 120px);
+  column-gap: clamp(56px, 6vw, 88px);
   row-gap: 0;
-  padding-block: clamp(110px, 11vw, 188px) clamp(110px, 10vw, 170px);
+  padding-block: clamp(88px, 8vw, 128px) clamp(88px, 7.5vw, 120px);
   border-top: 0;
 }
 
@@ -724,15 +765,15 @@
 }
 
 .g-shop-intro .g-eyebrow {
-  margin-bottom: clamp(32px, 2.5vw, 40px);
+  margin-bottom: clamp(26px, 2vw, 32px);
   color: var(--g-muted);
-  font-size: clamp(1rem, 1.5vw, 1.45rem);
+  font-size: clamp(0.82rem, 1vw, 1rem);
 }
 
 .g-shop-section h2 {
   max-width: none;
-  margin-bottom: 20px;
-  font-size: clamp(3.35rem, 4.8vw, 4.65rem);
+  margin-bottom: 18px;
+  font-size: clamp(3rem, 3.55vw, 3.65rem);
   line-height: 1.04;
   letter-spacing: -0.055em;
 }
@@ -745,31 +786,31 @@
 .g-company-teaser .g-shop-address {
   margin: 0;
   color: var(--g-muted);
-  font-size: clamp(1rem, 1.7vw, 1.6rem);
+  font-size: clamp(0.95rem, 1.15vw, 1.2rem);
   line-height: 1.5;
 }
 
 .g-shop-actions {
-  margin-top: clamp(30px, 2.5vw, 34px);
+  margin-top: clamp(24px, 2vw, 28px);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 40px;
+  gap: 28px;
 }
 
 .g-company-teaser .g-shop-actions .g-outline-button {
-  width: min(100%, 380px);
-  min-height: 80px;
+  width: min(100%, 320px);
+  min-height: 64px;
   margin: 0;
-  padding-inline: 38px;
-  font-size: 1.2rem;
+  padding-inline: 28px;
+  font-size: 1rem;
 }
 
 .g-shop-actions .g-text-link {
   min-height: 44px;
   margin: 0;
   color: var(--g-red);
-  font-size: 1.4rem;
+  font-size: 1.05rem;
 }
 
 .g-opening-hours {
@@ -781,7 +822,7 @@
 
 .g-opening-hours tr {
   position: relative;
-  height: 121px;
+  height: 96px;
   border-bottom: 1px solid var(--g-line);
 }
 
@@ -794,13 +835,13 @@
 
 .g-opening-hours th {
   width: 33%;
-  font-size: clamp(1.15rem, 1.9vw, 1.75rem);
+  font-size: clamp(1.05rem, 1.4vw, 1.35rem);
   font-weight: 650;
 }
 
 .g-opening-hours td {
   width: 34%;
-  font-size: clamp(1.05rem, 1.75vw, 1.6rem);
+  font-size: clamp(1rem, 1.25vw, 1.25rem);
 }
 
 .g-opening-hours td:last-child {
@@ -809,7 +850,7 @@
 
 .g-opening-hours .is-closed {
   color: var(--g-muted);
-  font-size: clamp(0.95rem, 1.25vw, 1.08rem);
+  font-size: clamp(0.9rem, 1vw, 0.98rem);
   white-space: nowrap;
 }
 
@@ -822,7 +863,7 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  left: -14px;
+  left: -10px;
   border-left: 3px solid var(--g-red);
 }
 
@@ -922,6 +963,21 @@
 }
 .g-facts span {
   color: var(--g-muted);
+}
+
+@media (min-width: 861px) and (max-width: 1180px) {
+  .g-shop-section {
+    width: var(--g-content);
+    grid-template-columns: minmax(0, 1fr);
+    gap: 52px;
+    padding-block: 88px;
+  }
+  .g-shop-intro {
+    max-width: 620px;
+  }
+  .g-shop-section h2 span {
+    white-space: normal;
+  }
 }
 
 @media (max-width: 1120px) {
@@ -1178,11 +1234,23 @@
   .g-static-chapter .g-scroll-hint {
     display: none;
   }
-  .g-project-row {
+  .g-projects .g-section-heading {
     grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    column-gap: 0;
+    padding-bottom: 38px;
   }
-  .g-project-row:nth-child(even) .g-project-image {
-    order: 0;
+  .g-projects .g-section-heading .g-eyebrow,
+  .g-projects .g-section-heading h2,
+  .g-projects .g-section-heading > p:last-child {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .g-projects .g-section-heading > p:last-child {
+    margin-top: 0;
+  }
+  .g-project-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .g-company-teaser {
     grid-template-columns: 1fr;
@@ -1297,8 +1365,35 @@
   .g-progress li span {
     display: none;
   }
+  .g-projects {
+    width: var(--g-content);
+    padding-block: 62px 74px;
+  }
+  .g-section-separator {
+    width: var(--g-content);
+  }
+  .g-projects .g-section-heading {
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+  }
+  .g-projects .g-section-heading h2 {
+    margin-bottom: 20px;
+    font-size: clamp(2.9rem, 14vw, 4.25rem);
+  }
+  .g-projects .g-section-heading > p:last-child {
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+  .g-project-list {
+    grid-template-columns: 1fr;
+    row-gap: 30px;
+  }
   .g-project-image {
-    height: 260px;
+    height: auto;
+    aspect-ratio: 1.5 / 1;
+  }
+  .g-project-card h3 {
+    font-size: 1.25rem;
   }
   .g-footer-grid,
   .g-facts {
@@ -1327,10 +1422,21 @@
     margin-bottom: 24px;
     font-size: clamp(2.9rem, 14vw, 3.7rem);
   }
+  .g-shop-intro .g-eyebrow {
+    margin-bottom: 32px;
+    font-size: 1rem;
+  }
+  .g-company-teaser .g-shop-address {
+    font-size: 1rem;
+  }
   .g-company-teaser .g-shop-actions .g-outline-button {
     width: 100%;
     min-height: 60px;
     padding-inline: 22px;
+    font-size: 1.2rem;
+  }
+  .g-shop-actions .g-text-link {
+    font-size: 1.4rem;
   }
   .g-opening-hours,
   .g-opening-hours tbody {
@@ -1352,6 +1458,10 @@
   }
   .g-opening-hours th {
     grid-column: 1 / -1;
+    font-size: 1.15rem;
+  }
+  .g-opening-hours td {
+    font-size: 1.05rem;
   }
   .g-opening-hours .is-closed {
     white-space: normal;
