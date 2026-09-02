@@ -636,10 +636,10 @@
   position: relative;
   isolation: isolate;
   width: min(1384px, calc(100% - 64px));
-  grid-template-columns: minmax(0, 1.73fr) minmax(300px, 0.77fr);
-  column-gap: clamp(64px, 7vw, 120px);
+  grid-template-columns: minmax(0, 1.62fr) minmax(280px, 0.72fr);
+  column-gap: clamp(56px, 6vw, 104px);
   row-gap: 0;
-  padding-block: clamp(112px, 8vw, 150px) clamp(78px, 7vw, 112px);
+  padding-block: clamp(122px, 8.5vw, 158px) clamp(64px, 5.5vw, 88px);
   overflow: visible;
   border-top: 0;
 }
@@ -647,11 +647,11 @@
 .g-company-year {
   position: absolute;
   z-index: -1;
-  top: clamp(10px, 1vw, 18px);
+  top: clamp(68px, 4.5vw, 84px);
   left: 43%;
   color: #f1f1f1;
   font-family: 'Inter Tight Variable', Inter, sans-serif;
-  font-size: clamp(24rem, 36vw, 39rem);
+  font-size: clamp(20rem, 31vw, 34rem);
   font-weight: 690;
   line-height: 0.74;
   letter-spacing: -0.09em;
@@ -667,24 +667,14 @@
   min-width: 0;
 }
 
-.g-company-eyebrow {
-  position: relative;
-  margin-bottom: clamp(48px, 4vw, 66px);
-}
-
-.g-company-eyebrow::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -27px;
-  width: 36px;
-  border-bottom: 2px solid var(--g-red);
+.g-company-heading {
+  padding-top: clamp(48px, 3.2vw, 58px);
 }
 
 .g-company-section h2 {
   max-width: none;
   margin: 0;
-  font-size: clamp(4.4rem, 6.2vw, 6.75rem);
+  font-size: clamp(3.8rem, 5.3vw, 5.75rem);
   font-weight: 650;
   line-height: 1.02;
   letter-spacing: -0.06em;
@@ -699,27 +689,27 @@
 }
 
 .g-company-copy {
-  padding-top: clamp(112px, 8vw, 142px);
+  padding-top: clamp(76px, 5.5vw, 104px);
 }
 
 .g-company-section .g-company-copy > p {
   max-width: 33ch;
-  font-size: clamp(1rem, 1.15vw, 1.12rem);
-  line-height: 1.65;
+  font-size: clamp(0.95rem, 1vw, 1.03rem);
+  line-height: 1.58;
 }
 
 .g-company-section .g-outline-button {
-  width: min(100%, 348px);
-  min-height: 64px;
-  margin-top: clamp(34px, 3.5vw, 54px);
-  padding-inline: 26px;
-  font-size: 0.9rem;
+  width: min(100%, 320px);
+  min-height: 56px;
+  margin-top: clamp(28px, 2.6vw, 40px);
+  padding-inline: 22px;
+  font-size: 0.84rem;
 }
 
 .g-company-section .g-facts {
   position: relative;
   grid-template-columns: 1.05fr 1.06fr 0.95fr;
-  margin-top: clamp(64px, 5vw, 83px);
+  margin-top: clamp(48px, 4vw, 64px);
   border-block: 0;
   border-top: 1px solid var(--g-ink);
 }
@@ -728,29 +718,29 @@
   content: '';
   position: absolute;
   z-index: 1;
-  top: -25px;
-  left: 84px;
-  height: 50px;
+  top: -21px;
+  left: 68px;
+  height: 42px;
   border-left: 3px solid var(--g-red);
 }
 
 .g-company-section .g-facts div {
-  min-height: 150px;
-  padding: 46px 56px 18px;
+  min-height: 122px;
+  padding: 34px 44px 16px;
 }
 
 .g-company-section .g-facts div:first-child {
-  padding-left: 28px;
+  padding-left: 24px;
 }
 
 .g-company-section .g-facts strong {
-  font-size: clamp(2.5rem, 3.3vw, 3.65rem);
+  font-size: clamp(2.1rem, 2.7vw, 3rem);
   line-height: 1;
   letter-spacing: -0.045em;
 }
 
 .g-company-section .g-facts span {
-  font-size: clamp(0.95rem, 1.2vw, 1.12rem);
+  font-size: clamp(0.86rem, 1vw, 1rem);
 }
 
 .g-shop-section {
@@ -904,6 +894,29 @@
   display: inline-flex;
   align-items: center;
   text-decoration: none;
+}
+
+.g-footer-phone-list {
+  display: grid;
+  gap: 12px;
+  margin-block: 2px 4px;
+}
+
+.g-footer-phone-list a {
+  min-height: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.g-footer-phone-list span {
+  font-size: 0.7rem;
+}
+
+.g-footer-phone-list strong {
+  color: var(--g-red);
+  font-size: 1rem;
+  letter-spacing: -0.015em;
 }
 
 .g-footer-note {
@@ -1263,17 +1276,17 @@
   .g-company-section {
     width: var(--g-content);
     grid-template-columns: minmax(0, 1fr);
-    gap: 28px;
-    padding-block: 76px 64px;
+    gap: 24px;
+    padding-block: 68px 56px;
   }
   .g-company-year {
-    top: 30px;
+    top: 58px;
     left: 50%;
-    font-size: clamp(12rem, 52vw, 24rem);
+    font-size: clamp(10rem, 45vw, 20rem);
     transform: translateX(-52%);
   }
   .g-company-section h2 {
-    font-size: clamp(3rem, 8vw, 4.3rem);
+    font-size: clamp(2.7rem, 7vw, 3.7rem);
   }
   .g-company-section h2 span:first-child {
     white-space: normal;
@@ -1285,10 +1298,10 @@
     max-width: 46ch;
   }
   .g-company-section .g-outline-button {
-    margin-top: 28px;
+    margin-top: 24px;
   }
   .g-company-section .g-facts {
-    margin-top: 36px;
+    margin-top: 30px;
   }
   .g-shop-section {
     width: var(--g-content);
@@ -1494,17 +1507,17 @@
     border-bottom: 1px solid var(--g-line);
   }
   .g-company-section .g-facts::before {
-    top: -18px;
-    left: 20px;
-    height: 36px;
+    top: -16px;
+    left: 18px;
+    height: 32px;
   }
   .g-company-section .g-facts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    margin-top: 28px;
+    margin-top: 24px;
   }
   .g-company-section .g-facts div {
-    min-height: 92px;
-    padding: 20px;
+    min-height: 84px;
+    padding: 17px;
     border-right: 1px solid var(--g-line);
     border-bottom: 0;
   }
@@ -1512,49 +1525,45 @@
     border-right: 0;
   }
   .g-company-section .g-facts div:last-child {
-    min-height: 82px;
+    min-height: 72px;
     grid-column: 1 / -1;
     border-top: 1px solid var(--g-line);
     border-right: 0;
   }
   .g-company-section .g-facts div:first-child {
-    padding-left: 20px;
+    padding-left: 17px;
   }
   .g-company-section .g-facts strong {
-    font-size: 1.75rem;
+    font-size: 1.55rem;
   }
   .g-company-section .g-facts span {
-    font-size: 0.82rem;
+    font-size: 0.78rem;
   }
   .g-company-section {
-    gap: 24px;
-    padding-block: 64px 56px;
+    gap: 20px;
+    padding-block: 58px 48px;
   }
   .g-company-year {
-    top: 28px;
-    font-size: clamp(10rem, 46vw, 13rem);
+    top: 52px;
+    font-size: clamp(8.5rem, 40vw, 10.5rem);
   }
-  .g-company-eyebrow {
-    margin-bottom: 42px;
-  }
-  .g-company-eyebrow::after {
-    bottom: -21px;
-    width: 28px;
+  .g-company-heading {
+    padding-top: 44px;
   }
   .g-company-section h2 {
-    font-size: clamp(2.65rem, 12vw, 3.15rem);
+    font-size: clamp(2.3rem, 10.8vw, 2.7rem);
     line-height: 0.98;
   }
   .g-company-section .g-company-copy > p {
-    font-size: 0.92rem;
-    line-height: 1.55;
+    font-size: 0.88rem;
+    line-height: 1.5;
   }
   .g-company-section .g-outline-button {
     width: 100%;
-    min-height: 52px;
-    margin-top: 22px;
-    padding-inline: 16px;
-    font-size: 0.8rem;
+    min-height: 48px;
+    margin-top: 18px;
+    padding-inline: 15px;
+    font-size: 0.76rem;
   }
   .g-shop-section {
     gap: 34px;
@@ -1573,18 +1582,20 @@
     font-size: 0.92rem;
   }
   .g-shop-actions {
-    margin-top: 22px;
-    gap: 14px;
+    margin-top: 18px;
+    flex-flow: row wrap;
+    align-items: center;
+    gap: 10px 22px;
   }
   .g-company-teaser .g-shop-actions .g-outline-button {
-    width: 100%;
-    min-height: 52px;
-    padding-inline: 18px;
-    font-size: 0.95rem;
+    width: auto;
+    min-height: 48px;
+    padding-inline: 20px;
+    font-size: 0.88rem;
   }
   .g-shop-actions .g-text-link {
-    min-height: 40px;
-    font-size: 0.95rem;
+    min-height: 48px;
+    font-size: 0.88rem;
   }
   .g-opening-hours,
   .g-opening-hours tbody {
@@ -1643,6 +1654,17 @@
   }
   .g-footer-grid a {
     min-height: 34px;
+  }
+  .g-footer-phone-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    gap: 16px;
+  }
+  .g-footer-phone-list a {
+    min-height: 48px;
+  }
+  .g-footer-phone-list strong {
+    font-size: 0.95rem;
   }
   .g-footer-note {
     margin-top: 34px;

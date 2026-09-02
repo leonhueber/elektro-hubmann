@@ -28,7 +28,16 @@ const mapsUrl =
     </div>
     <div>
       <strong>Kontakt</strong>
-      <a href={company.phoneHref}>{company.phone}</a>
+      <div class="g-footer-phone-list">
+        <a href={company.phoneHref}>
+          <span>Büro &amp; Fachgeschäft</span>
+          <strong>{company.phone}</strong>
+        </a>
+        <a href={company.emergencyHref}>
+          <span>Störungsdienst</span>
+          <strong>{company.emergency}</strong>
+        </a>
+      </div>
       <a href={company.emailHref}>{company.email}</a>
       <a href={mapsUrl} target="_blank" rel="noreferrer">{company.address} ↗</a>
     </div>
