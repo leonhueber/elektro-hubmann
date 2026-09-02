@@ -473,11 +473,11 @@
 }
 
 .g-section-separator {
-  width: min(calc(100% - 48px), 1392px);
+  width: var(--g-content);
   height: 0;
   margin: 0 auto;
   border: 0;
-  border-top: 1px solid var(--g-ink);
+  border-top: 1px solid var(--g-line);
 }
 
 .g-anchor-section,
@@ -636,10 +636,10 @@
   position: relative;
   isolation: isolate;
   width: min(1384px, calc(100% - 64px));
-  grid-template-columns: minmax(0, 1.62fr) minmax(280px, 0.72fr);
-  column-gap: clamp(56px, 6vw, 104px);
+  grid-template-columns: minmax(0, 1.58fr) minmax(270px, 0.7fr);
+  column-gap: clamp(52px, 5.5vw, 92px);
   row-gap: 0;
-  padding-block: clamp(122px, 8.5vw, 158px) clamp(64px, 5.5vw, 88px);
+  padding-block: clamp(140px, 9.5vw, 176px) clamp(92px, 7vw, 120px);
   overflow: visible;
   border-top: 0;
 }
@@ -647,11 +647,11 @@
 .g-company-year {
   position: absolute;
   z-index: -1;
-  top: clamp(68px, 4.5vw, 84px);
+  top: clamp(82px, 5.5vw, 98px);
   left: 43%;
   color: #f1f1f1;
   font-family: 'Inter Tight Variable', Inter, sans-serif;
-  font-size: clamp(20rem, 31vw, 34rem);
+  font-size: clamp(18rem, 28vw, 30rem);
   font-weight: 690;
   line-height: 0.74;
   letter-spacing: -0.09em;
@@ -668,13 +668,13 @@
 }
 
 .g-company-heading {
-  padding-top: clamp(48px, 3.2vw, 58px);
+  padding-top: clamp(36px, 2.6vw, 44px);
 }
 
 .g-company-section h2 {
   max-width: none;
   margin: 0;
-  font-size: clamp(3.8rem, 5.3vw, 5.75rem);
+  font-size: clamp(3.35rem, 4.75vw, 5.2rem);
   font-weight: 650;
   line-height: 1.02;
   letter-spacing: -0.06em;
@@ -689,27 +689,27 @@
 }
 
 .g-company-copy {
-  padding-top: clamp(76px, 5.5vw, 104px);
+  padding-top: clamp(66px, 4.8vw, 88px);
 }
 
 .g-company-section .g-company-copy > p {
   max-width: 33ch;
-  font-size: clamp(0.95rem, 1vw, 1.03rem);
-  line-height: 1.58;
+  font-size: clamp(0.92rem, 0.95vw, 0.99rem);
+  line-height: 1.54;
 }
 
 .g-company-section .g-outline-button {
-  width: min(100%, 320px);
-  min-height: 56px;
-  margin-top: clamp(28px, 2.6vw, 40px);
-  padding-inline: 22px;
-  font-size: 0.84rem;
+  width: min(100%, 300px);
+  min-height: 52px;
+  margin-top: clamp(24px, 2.2vw, 34px);
+  padding-inline: 20px;
+  font-size: 0.8rem;
 }
 
 .g-company-section .g-facts {
   position: relative;
   grid-template-columns: 1.05fr 1.06fr 0.95fr;
-  margin-top: clamp(48px, 4vw, 64px);
+  margin-top: clamp(40px, 3.5vw, 52px);
   border-block: 0;
   border-top: 1px solid var(--g-ink);
 }
@@ -718,29 +718,29 @@
   content: '';
   position: absolute;
   z-index: 1;
-  top: -21px;
-  left: 68px;
-  height: 42px;
+  top: -18px;
+  left: 62px;
+  height: 36px;
   border-left: 3px solid var(--g-red);
 }
 
 .g-company-section .g-facts div {
-  min-height: 122px;
-  padding: 34px 44px 16px;
+  min-height: 108px;
+  padding: 28px 40px 14px;
 }
 
 .g-company-section .g-facts div:first-child {
-  padding-left: 24px;
+  padding-left: 22px;
 }
 
 .g-company-section .g-facts strong {
-  font-size: clamp(2.1rem, 2.7vw, 3rem);
+  font-size: clamp(1.85rem, 2.4vw, 2.65rem);
   line-height: 1;
   letter-spacing: -0.045em;
 }
 
 .g-company-section .g-facts span {
-  font-size: clamp(0.86rem, 1vw, 1rem);
+  font-size: clamp(0.82rem, 0.92vw, 0.93rem);
 }
 
 .g-shop-section {
@@ -1276,17 +1276,17 @@
   .g-company-section {
     width: var(--g-content);
     grid-template-columns: minmax(0, 1fr);
-    gap: 24px;
-    padding-block: 68px 56px;
+    gap: 20px;
+    padding-block: 82px 72px;
   }
   .g-company-year {
-    top: 58px;
+    top: 66px;
     left: 50%;
-    font-size: clamp(10rem, 45vw, 20rem);
+    font-size: clamp(9rem, 41vw, 18rem);
     transform: translateX(-52%);
   }
   .g-company-section h2 {
-    font-size: clamp(2.7rem, 7vw, 3.7rem);
+    font-size: clamp(2.45rem, 6.4vw, 3.35rem);
   }
   .g-company-section h2 span:first-child {
     white-space: normal;
@@ -1298,10 +1298,10 @@
     max-width: 46ch;
   }
   .g-company-section .g-outline-button {
-    margin-top: 24px;
+    margin-top: 20px;
   }
   .g-company-section .g-facts {
-    margin-top: 30px;
+    margin-top: 24px;
   }
   .g-shop-section {
     width: var(--g-content);
@@ -1507,17 +1507,17 @@
     border-bottom: 1px solid var(--g-line);
   }
   .g-company-section .g-facts::before {
-    top: -16px;
-    left: 18px;
-    height: 32px;
+    top: -14px;
+    left: 16px;
+    height: 28px;
   }
   .g-company-section .g-facts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    margin-top: 24px;
+    margin-top: 20px;
   }
   .g-company-section .g-facts div {
-    min-height: 84px;
-    padding: 17px;
+    min-height: 76px;
+    padding: 15px;
     border-right: 1px solid var(--g-line);
     border-bottom: 0;
   }
@@ -1525,45 +1525,45 @@
     border-right: 0;
   }
   .g-company-section .g-facts div:last-child {
-    min-height: 72px;
+    min-height: 66px;
     grid-column: 1 / -1;
     border-top: 1px solid var(--g-line);
     border-right: 0;
   }
   .g-company-section .g-facts div:first-child {
-    padding-left: 17px;
+    padding-left: 15px;
   }
   .g-company-section .g-facts strong {
-    font-size: 1.55rem;
+    font-size: 1.45rem;
   }
   .g-company-section .g-facts span {
-    font-size: 0.78rem;
+    font-size: 0.75rem;
   }
   .g-company-section {
-    gap: 20px;
-    padding-block: 58px 48px;
+    gap: 18px;
+    padding-block: 78px 66px;
   }
   .g-company-year {
-    top: 52px;
-    font-size: clamp(8.5rem, 40vw, 10.5rem);
+    top: 60px;
+    font-size: clamp(8rem, 36vw, 9.5rem);
   }
   .g-company-heading {
-    padding-top: 44px;
+    padding-top: 38px;
   }
   .g-company-section h2 {
-    font-size: clamp(2.3rem, 10.8vw, 2.7rem);
+    font-size: clamp(2.08rem, 9.8vw, 2.45rem);
     line-height: 0.98;
   }
   .g-company-section .g-company-copy > p {
-    font-size: 0.88rem;
-    line-height: 1.5;
+    font-size: 0.85rem;
+    line-height: 1.48;
   }
   .g-company-section .g-outline-button {
-    width: 100%;
-    min-height: 48px;
-    margin-top: 18px;
-    padding-inline: 15px;
-    font-size: 0.76rem;
+    width: auto;
+    min-height: 46px;
+    margin-top: 16px;
+    padding-inline: 18px;
+    font-size: 0.74rem;
   }
   .g-shop-section {
     gap: 34px;
