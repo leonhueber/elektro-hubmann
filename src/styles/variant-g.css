@@ -504,7 +504,7 @@
   grid-template-rows: auto 1fr;
   column-gap: clamp(48px, 9vw, 150px);
   padding-bottom: clamp(30px, 2.6vw, 38px);
-  border-bottom: 1px solid var(--g-ink);
+  border-bottom: 1px solid var(--g-line);
 }
 
 .g-projects .g-section-heading .g-eyebrow {
@@ -627,11 +627,6 @@
   margin-top: 24px;
 }
 
-.g-company-teaser .g-facts {
-  grid-column: 1 / -1;
-  margin-top: clamp(34px, 5vw, 64px);
-}
-
 .g-company-section {
   position: relative;
   isolation: isolate;
@@ -660,8 +655,7 @@
 }
 
 .g-company-heading,
-.g-company-copy,
-.g-company-section .g-facts {
+.g-company-copy {
   position: relative;
   z-index: 1;
   min-width: 0;
@@ -706,43 +700,6 @@
   font-size: 0.8rem;
 }
 
-.g-company-section .g-facts {
-  position: relative;
-  grid-template-columns: 1.05fr 1.06fr 0.95fr;
-  margin-top: clamp(40px, 3.5vw, 52px);
-  border-block: 0;
-  border-top: 1px solid var(--g-ink);
-}
-
-.g-company-section .g-facts::before {
-  content: '';
-  position: absolute;
-  z-index: 1;
-  top: -18px;
-  left: 62px;
-  height: 36px;
-  border-left: 3px solid var(--g-red);
-}
-
-.g-company-section .g-facts div {
-  min-height: 108px;
-  padding: 28px 40px 14px;
-}
-
-.g-company-section .g-facts div:first-child {
-  padding-left: 22px;
-}
-
-.g-company-section .g-facts strong {
-  font-size: clamp(1.85rem, 2.4vw, 2.65rem);
-  line-height: 1;
-  letter-spacing: -0.045em;
-}
-
-.g-company-section .g-facts span {
-  font-size: clamp(0.82rem, 0.92vw, 0.93rem);
-}
-
 .g-shop-section {
   width: min(1260px, calc(100% - 96px));
   grid-template-columns: minmax(0, 0.86fr) minmax(560px, 1.14fr);
@@ -784,6 +741,30 @@
   line-height: 1.5;
 }
 
+.g-shop-contact {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 12px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.g-shop-contact a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  max-width: 100%;
+  color: inherit;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+
+.g-shop-contact a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
 .g-shop-actions {
   margin-top: clamp(24px, 2vw, 28px);
   display: flex;
@@ -810,7 +791,6 @@
 .g-opening-hours {
   width: 100%;
   border-collapse: collapse;
-  border-top: 1px solid var(--g-ink);
   table-layout: fixed;
 }
 
@@ -896,27 +876,14 @@
   text-decoration: none;
 }
 
-.g-footer-phone-list {
-  display: grid;
-  gap: 12px;
-  margin-block: 2px 4px;
+.g-footer-phone {
+  flex-wrap: wrap;
+  column-gap: 0.35em;
 }
 
-.g-footer-phone-list a {
-  min-height: 0;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-}
-
-.g-footer-phone-list span {
-  font-size: 0.7rem;
-}
-
-.g-footer-phone-list strong {
-  color: var(--g-red);
-  font-size: 1rem;
-  letter-spacing: -0.015em;
+.g-footer-phone span {
+  color: inherit;
+  white-space: nowrap;
 }
 
 .g-footer-note {
@@ -954,32 +921,6 @@
   padding-left: 20px;
   color: var(--g-muted);
   line-height: 1.8;
-}
-
-.g-facts {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  border-block: 1px solid var(--g-ink);
-}
-
-.g-facts div {
-  min-height: 180px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 8px;
-  padding: 28px;
-  border-right: 1px solid var(--g-line);
-}
-
-.g-facts div:last-child {
-  border: 0;
-}
-.g-facts strong {
-  font-size: 1.8rem;
-}
-.g-facts span {
-  color: var(--g-muted);
 }
 
 @media (min-width: 861px) and (max-width: 1180px) {
@@ -1300,9 +1241,6 @@
   .g-company-section .g-outline-button {
     margin-top: 20px;
   }
-  .g-company-section .g-facts {
-    margin-top: 24px;
-  }
   .g-shop-section {
     width: var(--g-content);
     grid-template-columns: minmax(0, 1fr);
@@ -1498,47 +1436,6 @@
     margin-top: 7px;
     font-size: 0.8rem;
   }
-  .g-facts {
-    grid-template-columns: 1fr;
-  }
-  .g-facts div {
-    min-height: 125px;
-    border-right: 0;
-    border-bottom: 1px solid var(--g-line);
-  }
-  .g-company-section .g-facts::before {
-    top: -14px;
-    left: 16px;
-    height: 28px;
-  }
-  .g-company-section .g-facts {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    margin-top: 20px;
-  }
-  .g-company-section .g-facts div {
-    min-height: 76px;
-    padding: 15px;
-    border-right: 1px solid var(--g-line);
-    border-bottom: 0;
-  }
-  .g-company-section .g-facts div:nth-child(2) {
-    border-right: 0;
-  }
-  .g-company-section .g-facts div:last-child {
-    min-height: 66px;
-    grid-column: 1 / -1;
-    border-top: 1px solid var(--g-line);
-    border-right: 0;
-  }
-  .g-company-section .g-facts div:first-child {
-    padding-left: 15px;
-  }
-  .g-company-section .g-facts strong {
-    font-size: 1.45rem;
-  }
-  .g-company-section .g-facts span {
-    font-size: 0.75rem;
-  }
   .g-company-section {
     gap: 18px;
     padding-block: 78px 66px;
@@ -1654,17 +1551,6 @@
   }
   .g-footer-grid a {
     min-height: 34px;
-  }
-  .g-footer-phone-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    width: 100%;
-    gap: 16px;
-  }
-  .g-footer-phone-list a {
-    min-height: 48px;
-  }
-  .g-footer-phone-list strong {
-    font-size: 0.95rem;
   }
   .g-footer-note {
     margin-top: 34px;

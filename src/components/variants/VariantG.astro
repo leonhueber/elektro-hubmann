@@ -93,7 +93,7 @@ const openingHours = [
     id="unternehmen"
     aria-labelledby="g-company-title"
   >
-    <span class="g-company-year" aria-hidden="true">1972</span>
+    <span class="g-company-year"><span class="sr-only">Seit </span>1972</span>
     <div class="g-company-heading">
       <h2 id="g-company-title">
         <span>Regional verwurzelt.</span>
@@ -107,23 +107,7 @@ const openingHours = [
         Erfahrung, kurze Wege und ein persönlicher Ansprechpartner prägen unsere
         Arbeit.
       </p>
-      <a class="g-outline-button" href="#kontakt">
-        Persönlich Kontakt aufnehmen →
-      </a>
-    </div>
-    <div class="g-facts" aria-label="Unternehmensdaten">
-      <div>
-        <strong>1972</strong>
-        <span>Gründungsjahr</span>
-      </div>
-      <div>
-        <strong>50+</strong>
-        <span>Jahre Erfahrung</span>
-      </div>
-      <div>
-        <strong>Weißbriach</strong>
-        <span>Regionaler Standort</span>
-      </div>
+      <a class="g-outline-button" href="#kontakt"> Kontakt aufnehmen → </a>
     </div>
   </section>
 
@@ -135,13 +119,16 @@ const openingHours = [
     aria-labelledby="g-shop-title"
   >
     <div class="g-shop-intro">
-      <p class="g-eyebrow">Fachgeschäft · Weißbriach</p>
+      <p class="g-eyebrow">Fachgeschäft &amp; Öffnungszeiten</p>
       <h2 id="g-shop-title">
-        <span>Persönliche</span>
-        <span>Beratung direkt vor</span>
-        <span>Ort.</span>
+        <span>Beratung</span>
+        <span>direkt vor Ort.</span>
       </h2>
       <p class="g-shop-address">{company.address}</p>
+      <div class="g-shop-contact">
+        <a href={company.phoneHref}>Telefon: {company.phone}</a>
+        <a href={company.emailHref}>{company.email}</a>
+      </div>
       <div class="g-shop-actions">
         <a class="g-outline-button" href={company.phoneHref}>Jetzt anrufen →</a>
         <a

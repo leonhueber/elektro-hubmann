@@ -21,25 +21,19 @@ const mapsUrl =
           alt="Elektrotechnik Hubmann"
         />
       </a>
-      <p>
-        Elektrotechnik für Neubau, Sanierung und Gewerbe – regional und
-        persönlich.
-      </p>
     </div>
     <div>
       <strong>Kontakt</strong>
-      <div class="g-footer-phone-list">
-        <a href={company.phoneHref}>
-          <span>Büro &amp; Fachgeschäft</span>
-          <strong>{company.phone}</strong>
-        </a>
-        <a href={company.emergencyHref}>
-          <span>Störungsdienst</span>
-          <strong>{company.emergency}</strong>
-        </a>
-      </div>
+      <a class="g-footer-phone" href={company.phoneHref}>
+        Telefon: <span>{company.phone}</span>
+      </a>
+      <a class="g-footer-phone" href={company.emergencyHref}>
+        Störungsdienst: <span>{company.emergency}</span>
+      </a>
       <a href={company.emailHref}>{company.email}</a>
-      <a href={mapsUrl} target="_blank" rel="noreferrer">{company.address} ↗</a>
+      <a href={mapsUrl} target="_blank" rel="noreferrer">
+        {company.address} ↗
+      </a>
     </div>
     <div>
       <strong>Seiten</strong>
