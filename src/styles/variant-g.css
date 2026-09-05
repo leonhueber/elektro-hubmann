@@ -750,6 +750,7 @@
   line-height: 1.5;
 }
 
+.g-shop-address a,
 .g-shop-contact a {
   display: inline-flex;
   align-items: center;
@@ -760,32 +761,12 @@
   text-decoration: none;
 }
 
-.g-shop-contact a:hover {
+.g-shop-address a:hover,
+.g-shop-address a:focus-visible,
+.g-shop-contact a:hover,
+.g-shop-contact a:focus-visible {
   text-decoration: underline;
   text-underline-offset: 0.2em;
-}
-
-.g-shop-actions {
-  margin-top: clamp(24px, 2vw, 28px);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 28px;
-}
-
-.g-company-teaser .g-shop-actions .g-outline-button {
-  width: min(100%, 320px);
-  min-height: 64px;
-  margin: 0;
-  padding-inline: 28px;
-  font-size: 1rem;
-}
-
-.g-shop-actions .g-text-link {
-  min-height: 44px;
-  margin: 0;
-  color: var(--g-red);
-  font-size: 1.05rem;
 }
 
 .g-opening-hours {
@@ -1477,22 +1458,6 @@
   }
   .g-company-teaser .g-shop-address {
     font-size: 0.92rem;
-  }
-  .g-shop-actions {
-    margin-top: 18px;
-    flex-flow: row wrap;
-    align-items: center;
-    gap: 10px 22px;
-  }
-  .g-company-teaser .g-shop-actions .g-outline-button {
-    width: auto;
-    min-height: 48px;
-    padding-inline: 20px;
-    font-size: 0.88rem;
-  }
-  .g-shop-actions .g-text-link {
-    min-height: 48px;
-    font-size: 0.88rem;
   }
   .g-opening-hours,
   .g-opening-hours tbody {

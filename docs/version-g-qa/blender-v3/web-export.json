@@ -1,0 +1,21 @@
+{
+  "pilot": false,
+  "profiles": {
+    "desktop": {
+      "frames": 181,
+      "uniqueFrames": 118,
+      "sequenceBytes": 6488656,
+      "posterBytes": 48070,
+      "width": 1280,
+      "height": 1100
+    },
+    "mobile": {
+      "frames": 91,
+      "uniqueFrames": 62,
+      "sequenceBytes": 1771912,
+      "posterBytes": 24744,
+      "width": 800,
+      "height": 760
+    }
+  }
+}

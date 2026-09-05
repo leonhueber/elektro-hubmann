@@ -1,0 +1,69 @@
+{
+  "passed": true,
+  "scene": "C:\\Users\\hueberl\\Private_Projects\\elektro-bubmann\\assets\\3d\\elektro-hubmann-house-v3-r3-web.blend",
+  "checks": [
+    {
+      "name": "All 181 frames reproduce when evaluated backwards",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "name": "desktop lifted roof stays in frame until faded",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "name": "desktop stable annotation pose: installation",
+      "pass": true
+    },
+    {
+      "name": "desktop stable annotation pose: lighting",
+      "pass": true
+    },
+    {
+      "name": "desktop stable annotation pose: smarthome",
+      "pass": true
+    },
+    {
+      "name": "desktop stable annotation pose: security",
+      "pass": true
+    },
+    {
+      "name": "desktop stable annotation pose: energy",
+      "pass": true
+    },
+    {
+      "name": "mobile lifted roof stays in frame until faded",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "name": "mobile stable annotation pose: installation",
+      "pass": true
+    },
+    {
+      "name": "mobile stable annotation pose: lighting",
+      "pass": true
+    },
+    {
+      "name": "mobile stable annotation pose: smarthome",
+      "pass": true
+    },
+    {
+      "name": "mobile stable annotation pose: security",
+      "pass": true
+    },
+    {
+      "name": "mobile stable annotation pose: energy",
+      "pass": true
+    },
+    {
+      "name": "Roof above house during interior chapters",
+      "pass": true
+    },
+    {
+      "name": "Roof returns to its seat",
+      "pass": true
+    }
+  ]
+}

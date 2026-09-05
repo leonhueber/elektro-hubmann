@@ -6,8 +6,6 @@ interface Props {
 const { baseUrl } = Astro.props;
 const root = baseUrl.replace(/\/$/, '');
 const currentYear = new Date().getFullYear();
-const mapsUrl =
-  'https://www.google.com/maps/dir/?api=1&destination=Weißbriach+94%2C+9622+Weißbriach';
 ---
 
 <footer class="g-footer" id="kontakt">
@@ -31,7 +29,7 @@ const mapsUrl =
         Störungsdienst: <span>{company.emergency}</span>
       </a>
       <a href={company.emailHref}>{company.email}</a>
-      <a href={mapsUrl} target="_blank" rel="noreferrer">
+      <a href={company.mapsHref} target="_blank" rel="noreferrer">
         {company.address} ↗
       </a>
     </div>

@@ -1,171 +1,115 @@
-export type VersionGPrimaryStoryState = 'planning' | 'installation' | 'energy';
-
-export type VersionGStoryState = VersionGPrimaryStoryState | 'lighting';
-
+import { houseManifest } from '../lib/house-v3';
+export type VersionGStoryState =
+  | 'planning'
+  | 'installation'
+  | 'lighting'
+  | 'smarthome'
+  | 'security'
+  | 'energy';
 export type VersionGStoryAsset = {
   src: string;
   alt: string;
   width: number;
   height: number;
 };
-
-const objectAssets = {
-  planning: {
-    src: 'planning-house.webp',
-    alt: 'Architektonischer Schnitt eines modernen Hauses auf einem Bauplan',
-    width: 1448,
-    height: 1086,
-  },
-  installation: {
-    src: 'installation-cabinet.webp',
-    alt: 'Geöffneter, sauber verdrahteter elektrischer Verteilerschrank',
-    width: 1536,
-    height: 1024,
-  },
-  energy: {
-    src: 'alternatives/photovoltaic-storage-wallbox-v1.png',
-    alt: 'Photovoltaikmodul, Stromspeicher und Wallbox als abgestimmtes Energiesystem',
-    width: 1448,
-    height: 1086,
-  },
-} satisfies Record<VersionGPrimaryStoryState, VersionGStoryAsset>;
-
-/**
- * Keep every visual direction as a named set. A set may reuse assets from
- * another set, so testing a single replacement never duplicates image files.
- */
-export const VERSION_G_STORY_ASSET_SETS = {
-  objects: objectAssets,
-  integratedEnergyHouse: {
-    ...objectAssets,
-    energy: {
-      src: 'alternatives/energy-house-integrated-v1.png',
-      alt: 'Modernes Wohnhaus mit Photovoltaikanlage, Stromspeicher und Wallbox',
-      width: 1448,
-      height: 1086,
-    },
-  },
-  technicalPlanningHouse: {
-    ...objectAssets,
-    planning: {
-      src: 'alternatives/planning-house-technical-v1.png',
-      alt: 'Technischer Schnitt eines modernen Wohnhauses mit sichtbarer Elektroplanung',
-      width: 1448,
-      height: 1086,
-    },
-  },
-  shedRoofPlanningHouse: {
-    ...objectAssets,
-    planning: {
-      src: 'alternatives/planning-house-shed-roof-v1.png',
-      alt: 'Modernes Pultdachhaus mit realistisch dargestellter Elektro-Haustechnik',
-      width: 1448,
-      height: 1086,
-    },
-  },
-} satisfies Record<
-  string,
-  Record<VersionGPrimaryStoryState, VersionGStoryAsset>
->;
-
-// Change only this value to switch the complete visual direction.
-export const ACTIVE_VERSION_G_STORY_ASSET_SET: keyof typeof VERSION_G_STORY_ASSET_SETS =
-  'shedRoofPlanningHouse';
-
-export const VERSION_G_STORY_ASSETS =
-  VERSION_G_STORY_ASSET_SETS[ACTIVE_VERSION_G_STORY_ASSET_SET];
-
-export const VERSION_G_EXTENDED_STORY_ASSETS = {
-  smarthome: {
-    src: 'optional/smarthome-controls-v2.png',
-    alt: 'Schwarzes SmartHome-Wanddisplay, Smartphone und weißes Steuergerät',
-    width: 1448,
-    height: 1086,
-  },
-  lighting: {
-    src: 'optional/lighting-systems-v2.png',
-    alt: 'Reduziertes Architekturmodul mit Pendel-, Einbau-, Wand- und indirekter Beleuchtung',
-    width: 1448,
-    height: 1086,
-  },
-  security: {
-    src: 'optional/security-systems-v2.png',
-    alt: 'Freigestellte Alarm-, Brandmelde-, Bewegungsmelder- und Kameraausstattung',
-    width: 1448,
-    height: 1086,
-  },
-} satisfies Record<string, VersionGStoryAsset>;
-
-export type VersionGStoryChapter = {
-  id: VersionGStoryState;
-  number: string;
-  label: string;
-  title: readonly string[];
-  description: string;
-  cta: string;
-  href: string;
-  hint: string;
-  asset: VersionGStoryAsset;
-};
-
-/**
- * Shared by the animated desktop story and the static mobile fallback so every
- * chapter remains visible and consistently numbered in both experiences.
- */
-export const VERSION_G_STORY_CHAPTERS = [
+const copy: Record<
+  VersionGStoryState,
   {
-    id: 'planning',
-    number: '01',
+    label: string;
+    title: string[];
+    description: string;
+    cta: string;
+    hint: string;
+    alt: string;
+    components: string[];
+  }
+> = {
+  planning: {
     label: 'Planung',
     title: ['Ein gutes Haus', 'beginnt mit', 'einem klaren Plan.'],
     description:
-      'Wir planen Elektrotechnik für Neubau, Sanierung und Gewerbe – durchdacht, präzise und zukunftssicher.',
+      'Wir planen Elektrotechnik für Neubau, Sanierung und Gewerbe – abgestimmt auf Ihr Gebäude und Ihren Alltag.',
     cta: 'Projekt besprechen',
-    href: '#kontakt',
-    hint: 'Scrollen, um die Planung weiterzuführen',
-    asset: VERSION_G_STORY_ASSETS.planning,
+    hint: 'Scrollen und das Haus entdecken',
+    alt: 'Eingeschossiges Wohnhaus mit Flachdach und Photovoltaik als Anschauungsmodell für die Elektroplanung.',
+    components: ['Gebäudeplanung', 'Anschlüsse'],
   },
-  {
-    id: 'installation',
-    number: '02',
+  installation: {
     label: 'Installation',
-    title: ['Saubere Installation.', 'Präzise umgesetzt.'],
+    title: ['Was hinter den', 'Wänden steckt.'],
     description:
-      'Von Elektroinstallationen bis zur Netzwerktechnik setzen wir Technik sauber, sicher und zuverlässig um.',
+      'Von der Verteilung bis zur Steckdose: Wir installieren Elektrotechnik und strukturierte Netzwerke sauber und vorausschauend.',
     cta: 'Installation anfragen',
-    href: '#kontakt',
     hint: 'Weiter zur Beleuchtung',
-    asset: VERSION_G_STORY_ASSETS.installation,
+    alt: 'Nahansicht des Technikraums im geöffneten Wohnhaus mit Elektroverteilung, Netzwerkschrank und getrennten Strom- und Datenwegen.',
+    components: ['Elektroverteilung', 'Strom & Netzwerk'],
   },
-  {
-    id: 'lighting',
-    number: '03',
+  lighting: {
     label: 'Beleuchtung',
-    title: ['Licht, das Räume', 'und Sicherheit', 'schafft.'],
+    title: ['Licht macht', 'Räume lebendig.'],
     description:
-      'Von Wohnraumlicht bis zur Sicherheits- und Notbeleuchtung planen wir funktionale und ästhetische Lösungen.',
-    cta: 'Beleuchtung besprechen',
-    href: '#kontakt',
-    hint: 'Weiter zu den Energiesystemen',
-    asset: VERSION_G_EXTENDED_STORY_ASSETS.lighting,
+      'Gezieltes Arbeitslicht, eine angenehme Wohnatmosphäre und Licht am Eingang: Wir planen die passende Beleuchtung.',
+    cta: 'Lichtplanung besprechen',
+    hint: 'Weiter zum Smart Home',
+    alt: 'Geöffnetes Haus mit warm beleuchtetem Wohnbereich, Esstisch, Arbeitsplatz und Eingang.',
+    components: ['Wohnraumlicht', 'Arbeits- & Außenlicht'],
   },
-  {
-    id: 'energy',
-    number: '04',
-    label: 'Energiesysteme',
-    title: ['Energie erzeugen.', 'Speichern.', 'Laden.'],
+  smarthome: {
+    label: 'Smart Home',
+    title: ['Ein Tastendruck.', 'Alles passt.'],
     description:
-      'Photovoltaik, Stromspeicher und Ladeinfrastruktur planen wir als abgestimmtes Gesamtsystem – inklusive zuverlässigem Service.',
-    cta: 'Energielösung anfragen',
-    href: '#kontakt',
-    hint: 'Weiter zu unseren Referenzprojekten',
-    asset: VERSION_G_STORY_ASSETS.energy,
+      'Mit vernetzter Gebäudesteuerung stimmen Sie Licht und Beschattung auf Ihren Alltag ab – einfach und komfortabel.',
+    cta: 'Smart Home besprechen',
+    hint: 'Weiter zur Sicherheit',
+    alt: 'Smart-Home-Ansicht mit KNX-Steuerung und abgesenkter Beschattung am Schlafzimmerfenster.',
+    components: ['KNX-Steuerung', 'Licht & Beschattung'],
   },
-] as const satisfies readonly VersionGStoryChapter[];
-
+  security: {
+    label: 'Sicherheit',
+    title: ['Ein gutes Gefühl.', 'Auch unterwegs.'],
+    description:
+      'Von der Videosprechanlage bis zur Alarm- und Brandmeldetechnik: Wir planen Schutz passend zu Ihrem Gebäude.',
+    cta: 'Sicherheit besprechen',
+    hint: 'Weiter zur Photovoltaik',
+    alt: 'Nahansicht des Hauseingangs mit Videosprechanlage.',
+    components: ['Videosprechanlage', 'Alarm- & Brandmeldetechnik'],
+  },
+  energy: {
+    label: 'Photovoltaik',
+    title: ['Auf dem Dach', 'beginnt die', 'eigene Energie.'],
+    description:
+      'Wir planen und installieren Ihre Photovoltaikanlage – vom Dachmodul über den Wechselrichter bis zum Anschluss im Haus.',
+    cta: 'Photovoltaik anfragen',
+    hint: 'Weiter zu unseren Projekten',
+    alt: 'Erhöhte Ansicht des Wohnhauses mit acht Photovoltaikmodulen auf dem wieder aufgesetzten Flachdach.',
+    components: ['PV-Module', 'Wechselrichter'],
+  },
+};
+export const VERSION_G_STORY_CHAPTERS = houseManifest.chapters.map(
+  (chapter, index) => {
+    const id = chapter.id as VersionGStoryState;
+    const content = copy[id];
+    return {
+      ...chapter,
+      ...content,
+      id,
+      number: String(index + 1).padStart(2, '0'),
+      href: '#kontakt',
+      asset: {
+        src: `${houseManifest.assetPath.replace('images/version-g/', '')}desktop/${id}.webp`,
+        alt: content.alt,
+        width: houseManifest.profiles.desktop.width,
+        height: houseManifest.profiles.desktop.height,
+      },
+    };
+  },
+);
+export const VERSION_G_STORY_ASSETS = Object.fromEntries(
+  VERSION_G_STORY_CHAPTERS.map((chapter) => [chapter.id, chapter.asset]),
+) as Record<VersionGStoryState, VersionGStoryAsset>;
 export function versionGStoryAssetUrl(
   baseUrl: string,
   asset: VersionGStoryAsset,
 ) {
-  return `${baseUrl}images/version-g/story/${asset.src}`;
+  return `${baseUrl}images/version-g/${asset.src}`;
 }

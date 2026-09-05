@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Elektro Hubmann · Scroll-Mockups V3</title>
+    <style>
+      *{box-sizing:border-box}body{margin:0;background:#f5f5f3;color:#161719;font-family:Inter,Arial,sans-serif}button,a{font:inherit}button{cursor:pointer}a{color:inherit}button:focus-visible,a:focus-visible{outline:3px solid #e30613;outline-offset:4px}.top{padding:22px 30px;border-bottom:1px solid #ddd;display:flex;gap:24px;align-items:center;background:white}.brand{flex:1}.brand strong{display:block;font-size:18px;letter-spacing:-.4px}.brand p{margin:7px 0 0;font-size:12px;color:#666}.actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{border:1px solid #d4d4d4;background:white;padding:10px 14px;border-radius:3px}.actions button[aria-pressed=true]{border-color:#e30613;color:#c8000c}.layout{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:calc(100vh - 92px)}aside{padding:26px 15px;border-right:1px solid #ddd;background:#fff}nav{display:grid;gap:4px}nav button{display:flex;gap:12px;text-align:left;align-items:center;border:0;border-left:2px solid transparent;background:transparent;padding:14px 12px;color:#666;font-size:13px}nav button[aria-current=step]{border-left-color:#e30613;background:#faf4f4;color:#111}nav span{font-size:11px;font-variant-numeric:tabular-nums;color:#ba1420}aside p{font-size:12px;line-height:1.6;color:#777;margin:28px 12px}main{min-width:0;padding:24px}.meta{display:flex;gap:20px;align-items:center;margin:0 0 16px}.meta div{flex:1}.meta h1{font-size:20px;margin:0 0 6px;font-weight:600;letter-spacing:-.5px}.meta p{margin:0;color:#68696d;font-size:13px}.meta a{font-size:12px;white-space:nowrap}.frames{display:grid;gap:28px}.frame{display:none;margin:0;min-width:0}.frame.active{display:block}.frame a{display:block;background:white}.frame img{display:block;width:100%;height:auto}.frame figcaption{display:none}.frames.overview{grid-template-columns:repeat(2,minmax(0,1fr))}.frames.overview .frame{display:block}.frames.overview figcaption{display:block;font-size:13px;margin-top:10px;line-height:1.5}.frames.overview figcaption strong{display:block}.frames.mobile .frame{max-width:390px;margin-inline:auto}.frames.mobile.overview{max-width:860px;margin:auto}.note{font-size:13px;color:#65666a;line-height:1.6;margin:18px 0 0;max-width:850px}.pager{display:flex;justify-content:space-between;margin-top:22px;gap:12px}.pager button{background:white;border:1px solid #d2d2d2;padding:11px 18px;border-radius:3px}.pager button:disabled{opacity:.35;cursor:default}.foot{padding:22px 0;font-size:12px;color:#737477}.foot a{margin-right:20px}@media(max-width:800px){.top{padding:18px;align-items:flex-start;flex-direction:column;gap:14px}.layout{grid-template-columns:1fr}aside{padding:10px 15px;border-right:0;border-bottom:1px solid #ddd}nav{display:flex;overflow-x:auto}nav button{flex-shrink:0;padding:12px}aside p{display:none}main{padding:18px}.frames.overview{grid-template-columns:1fr}.meta{align-items:flex-start}.meta h1{font-size:18px}.meta p{font-size:12px}.meta a{font-size:11px}.note{font-size:12px}}@media print{aside,.top,.meta,.pager,.note,.foot{display:none}.layout{display:block}main{padding:0}.frames{display:block!important}.frame{display:block!important;break-after:page}.frame figcaption{display:block!important}.frame img{max-height:90vh;object-fit:contain}.frames.mobile .frame{max-width:390px}}
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <div class="brand"><strong>Elektro Hubmann · Haus V3 / R2</strong><p>Architektur überholt: Schlafzimmer, Bad und vollständige Erschließung fehlen. Raumaufteilung in R3 korrigiert.</p></div>
+      <div class="actions" aria-label="Darstellung">
+        <button id="desktop" aria-pressed="true">Desktop · 8 Zustände</button>
+        <button id="mobile" aria-pressed="false">Mobil · 2 Beispiele</button>
+        <button id="overview" aria-pressed="false">Übersicht</button>
+      </div>
+    </header>
+    <div class="layout">
+      <aside><nav aria-label="Mockup wählen" id="navigation"></nav><p>Acht Bildzustände innerhalb der sechs Leistungskapitel. Öffnung und Abschluss sind Übergänge.<br /><br />Bildentwürfe für die nächste Blender-Modellrunde.</p></aside>
+      <main>
+        <div class="meta"><div><h1 id="title"></h1><p id="phase"></p></div><a id="original" target="_blank" rel="noopener">Original öffnen ↗</a></div>
+        <div class="frames" id="frames"></div>
+        <p class="note" id="description"></p>
+        <div class="pager"><button id="previous">← Zurück</button><button id="next">Weiter →</button></div>
+        <div class="foot"><a href="README.md">Erläuterungen & Quellen</a><span>Mit ← und → durch die Zustände wechseln.</span></div>
+      </main>
+    </div>
+    <script>
+      const states = [
+        {id:'planung',label:'Planung',chapter:'01 · Planung',range:'0–10 %',file:'states/01-planung.png',text:'Geschlossenes Haus als Einstieg. Klare Wohnarchitektur, zurückgesetzter Eingang und ruhige Materialpalette.'},
+        {id:'oeffnung',label:'Öffnung',chapter:'02 · Installation',range:'10–23 %',file:'states/02-oeffnung.png',text:'Das Dach hebt sich als Einheit. Die vordere Hülle öffnet sich; im folgenden Zustand blendet das Dach aus.'},
+        {id:'installation',label:'Installation',chapter:'02 · Installation',range:'23–37 %',file:'states/03-installation.png',mobile:'mobile/03-installation.png',text:'Der offene Schnitt macht Verteilung und ausgewählte Strom- und Datenwege sichtbar. Mobil bleibt eine zentrale Beschriftung.'},
+        {id:'beleuchtung',label:'Beleuchtung',chapter:'03 · Beleuchtung',range:'37–51 %',file:'states/04-beleuchtung.png',text:'Leitungsakzente treten zurück. Licht auf Arbeitsplatte, Wand und Boden erklärt die Wirkung im Wohnraum.'},
+        {id:'smart-home',label:'Smart Home',chapter:'04 · Smart Home',range:'51–64 %',file:'states/05-smart-home.png',text:'Taster und halb geschlossene Beschattung verbinden Bedienung und Wirkung. Das Licht bleibt Teil derselben Szene.'},
+        {id:'sicherheit',label:'Sicherheit',chapter:'05 · Sicherheit',range:'64–76 %',file:'states/06-sicherheit.png',mobile:'mobile/06-sicherheit-r2.png',text:'Eine nähere Einstellung zeigt Türstation und Türkontakt. Mobil konzentriert sich der Ausschnitt auf die Videosprechanlage.'},
+        {id:'photovoltaik',label:'Photovoltaik',chapter:'06 · Photovoltaik',range:'76–93 %',file:'states/07-photovoltaik-r2.png',text:'Das Dach sitzt wieder auf. Eine lokale Schnittöffnung zeigt die Verbindung zum Wechselrichter und zur Hausverteilung.'},
+        {id:'abschluss',label:'Abschluss',chapter:'06 · Abschluss',range:'93–100 %',file:'states/08-abschluss.png',text:'Das Haus schließt sich vollständig. Warmes Licht und die Projektanfrage bilden den ruhigen Abschluss.'},
+      ];
+      let mode='desktop',index=0,overview=false;
+      const el=id=>document.getElementById(id);
+      const list=()=>states.filter(s=>mode==='desktop'||s.mobile);
+      function render(){
+        const shown=list();index=Math.min(index,shown.length-1);const current=shown[index];
+        el('navigation').replaceChildren(...shown.map((state,i)=>{const b=document.createElement('button');b.type='button';b.setAttribute('aria-current',i===index?'step':'false');const n=document.createElement('span');n.textContent=String(states.indexOf(state)+1).padStart(2,'0');b.append(n,document.createTextNode(state.label));b.onclick=()=>{index=i;overview=false;render()};return b}));
+        el('frames').className='frames'+(mode==='mobile'?' mobile':'')+(overview?' overview':'');
+        el('frames').replaceChildren(...shown.map((state,i)=>{const figure=document.createElement('figure');figure.className='frame'+(i===index?' active':'');const link=document.createElement('a');link.href=mode==='mobile'?state.mobile:state.file;link.target='_blank';link.rel='noopener';const image=document.createElement('img');image.src=link.getAttribute('href');image.alt=state.label+' – '+(mode==='mobile'?'mobiles':'Desktop')+' Mockup der Haus-Story';image.decoding='async';image.loading=i===index?'eager':'lazy';link.append(image);const caption=document.createElement('figcaption');const title=document.createElement('strong');title.textContent=String(states.indexOf(state)+1).padStart(2,'0')+' · '+state.label;caption.append(title,document.createTextNode(state.text));figure.append(link,caption);return figure}));
+        el('title').textContent=overview?'Alle '+shown.length+' Mockups':String(states.indexOf(current)+1).padStart(2,'0')+' · '+current.label;
+        el('phase').textContent=overview?'Gemeinsame Bildsprache und Unterschiede vergleichen':current.chapter+' · Entwurf für '+current.range+' des Scrollverlaufs';
+        el('description').textContent=overview?'Die Prozentbereiche sind ein Vorschlag für das spätere Timing. Die Bilder zeigen Zielzustände; sie bilden noch keine berechnete 3D-Animation.':current.text;
+        el('original').href=mode==='mobile'?current.mobile:current.file;el('original').hidden=overview;
+        el('desktop').setAttribute('aria-pressed',String(mode==='desktop'));el('mobile').setAttribute('aria-pressed',String(mode==='mobile'));el('overview').setAttribute('aria-pressed',String(overview));
+        el('previous').disabled=index===0||overview;el('next').disabled=index===shown.length-1||overview;
+        history.replaceState(null,'','#'+(mode==='mobile'?'mobil-':'')+(overview?'uebersicht':current.id));
+      }
+      function setMode(nextMode){const selected=list()[index];mode=nextMode;index=Math.max(0,list().indexOf(selected));render()}
+      el('desktop').onclick=()=>setMode('desktop');el('mobile').onclick=()=>setMode('mobile');el('overview').onclick=()=>{overview=!overview;render()};
+      el('previous').onclick=()=>{if(index>0){index--;render()}};el('next').onclick=()=>{if(index<list().length-1){index++;render()}};
+      document.addEventListener('keydown',event=>{if(event.altKey||event.ctrlKey||event.metaKey||overview)return;if(event.key==='ArrowRight'&&index<list().length-1){event.preventDefault();index++;render()}if(event.key==='ArrowLeft'&&index>0){event.preventDefault();index--;render()}});
+      const initial=location.hash.slice(1);if(initial.startsWith('mobil-'))mode='mobile';overview=initial.endsWith('uebersicht');index=Math.max(0,list().findIndex(s=>s.id===initial.replace(/^mobil-/,'')));render();
+    </script>
+  </body>
+</html>

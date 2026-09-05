@@ -1,15 +1,64 @@
+const postalAddress = {
+  streetAddress: 'Weißbriach 94',
+  postalCode: '9622',
+  addressLocality: 'Weißbriach',
+  addressCountry: 'AT',
+} as const;
+
+const morning = { opens: '09:00', closes: '12:00' } as const;
+const afternoon = { opens: '15:00', closes: '17:30' } as const;
+
+export function formatOpeningPeriod(period: {
+  opens: string;
+  closes: string;
+}): string {
+  return `${period.opens}–${period.closes}`;
+}
+
+export const shopOpeningHours = [
+  { day: 'Montag', shortDay: 'Mo', schemaDay: 'Monday', morning, afternoon },
+  { day: 'Dienstag', shortDay: 'Di', schemaDay: 'Tuesday', morning, afternoon },
+  {
+    day: 'Mittwoch',
+    shortDay: 'Mi',
+    schemaDay: 'Wednesday',
+    morning,
+    afternoon: null,
+  },
+  {
+    day: 'Donnerstag',
+    shortDay: 'Do',
+    schemaDay: 'Thursday',
+    morning,
+    afternoon,
+  },
+  {
+    day: 'Freitag',
+    shortDay: 'Fr',
+    schemaDay: 'Friday',
+    morning,
+    afternoon: null,
+  },
+] as const;
+
+const closedAfternoons = shopOpeningHours
+  .filter((day) => day.afternoon === null)
+  .map((day) => day.shortDay)
+  .join(' & ');
+
 export const company = {
   name: 'Elektro Hubmann',
   proprietor: 'Ing. Peter Hubmann',
-  address: 'Weißbriach 94, 9622 Weißbriach',
+  address: `${postalAddress.streetAddress}, ${postalAddress.postalCode} ${postalAddress.addressLocality}`,
+  postalAddress,
+  mapsHref: 'https://maps.app.goo.gl/mRm8dAg8iabaR9dL7',
   phone: '04286 / 240',
   phoneHref: 'tel:+434286240',
   emergency: '0664 4343187',
   emergencyHref: 'tel:+436644343187',
   email: 'office@elektro-hubmann.at',
   emailHref: 'mailto:office@elektro-hubmann.at',
-  shopHours:
-    'Mo–Fr 09:00–12:00 und 15:00–17:30 · Mi & Fr nachmittags geschlossen',
+  shopHours: `Mo–Fr ${formatOpeningPeriod(morning)} und ${formatOpeningPeriod(afternoon)} · ${closedAfternoons} nachmittags geschlossen`,
 } as const;
 
 export const projects = [

@@ -3,6 +3,7 @@ import {
   VERSION_G_STORY_CHAPTERS,
   versionGStoryAssetUrl,
 } from '../../../config/version-g-story-assets';
+import { houseManifest, posterUrl } from '../../../lib/house-v3';
 
 interface Props {
   baseUrl: string;
@@ -16,17 +17,25 @@ const chapters = VERSION_G_STORY_CHAPTERS;
   aria-label="Leistungen von der Planung bis zu integrierten Energiesystemen"
 >
   {
-    chapters.map((chapter) => (
+    chapters.map((chapter, index) => (
       <section class="g-static-chapter" id={`g-${chapter.id}`}>
         <div class="g-static-visual">
-          <img
-            src={versionGStoryAssetUrl(baseUrl, chapter.asset)}
-            width={chapter.asset.width}
-            height={chapter.asset.height}
-            alt={chapter.asset.alt}
-            loading={chapter.id === 'planning' ? 'eager' : 'lazy'}
-            decoding="async"
-          />
+          <picture>
+            <source
+              media="(max-width: 860px)"
+              srcset={posterUrl(baseUrl, 'mobile', index)}
+              width={houseManifest.profiles.mobile.width}
+              height={houseManifest.profiles.mobile.height}
+            />
+            <img
+              src={versionGStoryAssetUrl(baseUrl, chapter.asset)}
+              width={chapter.asset.width}
+              height={chapter.asset.height}
+              alt={chapter.asset.alt}
+              loading={chapter.id === 'planning' ? 'eager' : 'lazy'}
+              decoding="async"
+            />
+          </picture>
         </div>
         <article class="g-story-copy is-active">
           <p class="g-eyebrow">

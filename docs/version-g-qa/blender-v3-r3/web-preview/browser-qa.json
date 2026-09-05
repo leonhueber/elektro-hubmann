@@ -1,0 +1,44 @@
+{
+  "revision": "r3-preview",
+  "url": "http://127.0.0.1:4321/elektro-hubmann/",
+  "desktop": {
+    "viewport": [1440, 1000],
+    "canvas": [960, 860],
+    "chapterFrames": [1, 61, 85, 109, 133, 163],
+    "reverseFromEnergyToInstallation": 61,
+    "annotationsVisibleAtChapterStops": true,
+    "navigationImageGapPx": 35.75,
+    "contactHash": "#kontakt",
+    "contactReachedClosingFrame": 181,
+    "fallbackTriggered": false
+  },
+  "mobile": {
+    "viewport": [390, 844],
+    "canvas": [640, 640],
+    "chapterFrames": [1, 61, 85, 109, 133, 163],
+    "reverseFromEnergyToInstallation": 61,
+    "installationLabelCount": 1,
+    "horizontalOverflow": false,
+    "fallbackTriggered": false
+  },
+  "compactMobile": {
+    "viewport": [375, 667],
+    "horizontalOverflow": false,
+    "imageBottomPx": 361.91,
+    "copyTopPx": 384.5,
+    "ctaBottomPx": 582.09
+  },
+  "landscapeFallback": {
+    "viewport": [844, 500],
+    "animatedStoryDisplay": "none",
+    "staticStoryDisplay": "block",
+    "staticChapterCount": 6,
+    "r3AssetPaths": true,
+    "horizontalOverflow": false
+  },
+  "limitations": [
+    "Eevee preview rendering with 32 samples; final Cycles output remains a later quality pass.",
+    "OS reduced-motion preference was not separately toggled; the shared static layout was tested using the short viewport.",
+    "Browser scrubbing used the actual chapter controls and native scroll positions; no manual wheel performance benchmark."
+  ]
+}

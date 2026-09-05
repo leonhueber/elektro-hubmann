@@ -1,338 +1,343 @@
 import type { CSSProperties } from 'react';
 import { useEffect, useRef, useState } from 'react';
+import { VERSION_G_STORY_CHAPTERS as chapters } from '../../../config/version-g-story-assets';
+import annotations from '../../../config/house-v3-annotations.json';
 import {
-  VERSION_G_STORY_CHAPTERS,
-  versionGStoryAssetUrl,
-  type VersionGStoryState,
-} from '../../../config/version-g-story-assets';
-
-export type HouseStoryState = VersionGStoryState;
-
-type SceneMotion = {
-  opacity: number;
-  x: number;
-  y: number;
-  scale: number;
-};
-
-export type SceneMotionProfile = 'standard' | 'compact';
-
-const chapters = VERSION_G_STORY_CHAPTERS;
-const desktopScrollDistancePerChapter = 55;
-const mobileScrollDistancePerChapter = 30;
-const sceneMotionProfiles = {
-  standard: {
-    fadeDistance: 0.18,
-    xTravel: 1.8,
-    inactiveX: 32,
-    yTravel: 0.7,
-    inactiveY: 1.6,
-    scaleTravel: 0.012,
-    inactiveScale: 0.12,
-  },
-  compact: {
-    fadeDistance: 0.12,
-    xTravel: 0.65,
-    inactiveX: 8,
-    yTravel: 0.25,
-    inactiveY: 0.5,
-    scaleTravel: 0.004,
-    inactiveScale: 0.035,
-  },
-} as const;
-
-const clamp = (value: number) => Math.min(1, Math.max(0, value));
-const smoothstep = (value: number) => {
-  const safeValue = clamp(value);
-  return safeValue * safeValue * (3 - 2 * safeValue);
-};
-
-export function getStoryState(progress: number): HouseStoryState {
-  const value = clamp(progress);
-  const index = Math.min(
-    chapters.length - 1,
-    Math.floor(value * chapters.length),
-  );
-  return chapters[index]!.id;
-}
-
-export function getChapterScrollProgress(chapterIndex: number) {
-  const safeIndex = Math.min(chapters.length - 1, Math.max(0, chapterIndex));
-  return (safeIndex + 0.5) / chapters.length;
-}
-
-export function getSceneMotion(
-  progress: number,
-  sceneIndex: number,
-  profile: SceneMotionProfile = 'standard',
-): SceneMotion {
-  const motionProfile = sceneMotionProfiles[profile];
-  const value = clamp(progress);
-  const start = sceneIndex / chapters.length;
-  const end = (sceneIndex + 1) / chapters.length;
-  const fadeDistance = motionProfile.fadeDistance / chapters.length;
-  let opacity = 1;
-
-  if (sceneIndex > 0 && value < start + fadeDistance) {
-    opacity = smoothstep((value - (start - fadeDistance)) / (fadeDistance * 2));
-  }
-  if (sceneIndex < chapters.length - 1 && value > end - fadeDistance) {
-    opacity = Math.min(
-      opacity,
-      1 - smoothstep((value - (end - fadeDistance)) / (fadeDistance * 2)),
-    );
-  }
-  if (value < start - fadeDistance || value > end + fadeDistance) {
-    opacity = 0;
-  }
-
-  const center = (start + end) / 2;
-  const signedDistance = Math.max(
-    -1,
-    Math.min(1, (value - center) * chapters.length * 1.25),
-  );
-  const inactiveOffset = (1 - opacity) * (value < center ? 1 : -1);
-
-  return {
-    opacity,
-    x:
-      signedDistance * -motionProfile.xTravel +
-      inactiveOffset * motionProfile.inactiveX,
-    y:
-      Math.abs(signedDistance) * motionProfile.yTravel +
-      (1 - opacity) * motionProfile.inactiveY,
-    scale:
-      1 +
-      Math.abs(signedDistance) * motionProfile.scaleTravel -
-      (1 - opacity) * motionProfile.inactiveScale,
-  };
-}
-
-function stateIndex(state: HouseStoryState) {
-  return chapters.findIndex((chapter) => chapter.id === state);
-}
-
-function ChapterContent({
-  chapter,
-  index,
-  activeIndex,
-  baseUrl,
-  compactMotion,
-}: {
-  chapter: (typeof chapters)[number];
-  index: number;
-  activeIndex: number;
-  baseUrl: string;
-  compactMotion: boolean;
-}) {
-  const active = index === activeIndex;
-  const offset = (index < activeIndex ? -1 : 1) * (compactMotion ? 22 : 56);
-  return (
-    <article
-      className={`g-story-copy ${active ? 'is-active' : ''}`}
-      aria-hidden={!active}
-      style={{
-        opacity: active ? 1 : 0,
-        transform: `translate3d(${active ? 0 : offset}px, 0, 0)`,
-      }}
-    >
-      <p className="g-eyebrow">
-        <strong>{chapter.number}</strong> · {chapter.label}
-      </p>
-      <h2 id={`g-title-${chapter.id}`}>
-        {chapter.title.map((line) => (
-          <span className="g-story-title-line" key={line}>
-            {line}
-          </span>
-        ))}
-      </h2>
-      <p className="g-story-description">{chapter.description}</p>
-      <a
-        className="g-outline-button"
-        href={`${baseUrl}${chapter.href}`}
-        tabIndex={active ? undefined : -1}
-      >
-        <span>{chapter.cta}</span>
-        <span aria-hidden="true">→</span>
-      </a>
-      <span className="g-scroll-hint">
-        {chapter.hint}
-        <i aria-hidden="true">↓</i>
-      </span>
-    </article>
-  );
-}
+  FrameQueue,
+  annotationsVisible,
+  chapterAt,
+  chapterProgress,
+  frameAt,
+  frameUrl,
+  houseManifest,
+  posterUrl,
+  progressAtFrame,
+  type HouseProfile,
+} from '../../../lib/house-v3';
 
 export default function HouseStory({ baseUrl }: { baseUrl: string }) {
-  const wrapper = useRef<HTMLElement>(null);
-  const imageLayers = useRef<Array<HTMLElement | null>>([]);
+  const root = useRef<HTMLElement>(null);
+  const canvas = useRef<HTMLCanvasElement>(null);
+  const jump = useRef<(index: number) => void>(() => {});
   const [activeIndex, setActiveIndex] = useState(0);
-  const [compactMotion, setCompactMotion] = useState(false);
-  const activeIndexRef = useRef(0);
-
-  const scrollToChapter = (chapterIndex: number) => {
-    const root = wrapper.current;
-    if (!root) return;
-
-    const headerHeight =
-      document.querySelector<HTMLElement>('.g-header-shell')?.offsetHeight ?? 0;
-    const rootTop = window.scrollY + root.getBoundingClientRect().top;
-    const storyStart = rootTop - headerHeight;
-    const storyEnd = rootTop + root.offsetHeight - window.innerHeight;
-    const storyDistance = Math.max(0, storyEnd - storyStart);
-    const targetProgress = getChapterScrollProgress(chapterIndex);
-
-    window.scrollTo({
-      top: storyStart + storyDistance * targetProgress,
-      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
-        ? 'auto'
-        : 'smooth',
-    });
-  };
-
+  const [ready, setReady] = useState(false);
   useEffect(() => {
-    const root = wrapper.current;
-    if (!root) return;
-
-    const compactMotionQuery = window.matchMedia('(max-width: 860px)');
-    let useCompactMotion = compactMotionQuery.matches;
-    setCompactMotion(useCompactMotion);
-
+    const wrapper = root.current;
+    const surface = canvas.current;
+    const context = surface?.getContext('2d', { alpha: false });
+    if (!wrapper || !surface || !context) {
+      if (wrapper) wrapper.dataset.fallback = 'true';
+      return;
+    }
+    const media = window.matchMedia('(max-width: 860px)');
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const short = window.matchMedia('(max-height: 580px)');
+    let profile: HouseProfile = media.matches ? 'mobile' : 'desktop';
+    let queue: FrameQueue<ImageBitmap> | undefined;
     let disposed = false;
-    let trigger: { kill: () => void; progress: number } | undefined;
-
-    const updateVisuals = (progress: number) => {
-      const nextProgress = clamp(progress);
-      root.style.setProperty('--g-story-progress', `${nextProgress * 100}%`);
-
-      imageLayers.current.forEach((layer, index) => {
-        if (!layer) return;
-        const motion = getSceneMotion(
-          nextProgress,
-          index,
-          useCompactMotion ? 'compact' : 'standard',
+    let raf = 0;
+    let target = 0;
+    let currentChapter = 0;
+    let fallbackGeneration = 0;
+    let lastFallbackFrame = -1;
+    let trigger:
+      | { kill(): void; progress: number; start: number; end: number }
+      | undefined;
+    const fallbackController = new AbortController();
+    const display = (image: ImageBitmap, progress: number) => {
+      surface.width = image.width;
+      surface.height = image.height;
+      context.fillStyle = '#fff';
+      context.fillRect(0, 0, surface.width, surface.height);
+      context.drawImage(image, 0, 0);
+      wrapper.dataset.frame = String(frameAt(progress, profile));
+      wrapper.style.setProperty('--g-story-progress', `${progress * 100}%`);
+      wrapper.style.setProperty(
+        '--g-annotation-opacity',
+        annotationsVisible(progress) ? '1' : '0',
+      );
+      const nextChapter = chapterAt(progress);
+      if (nextChapter !== currentChapter) {
+        currentChapter = nextChapter;
+        setActiveIndex(nextChapter);
+      }
+      setReady(true);
+    };
+    const loadImage = async (url: string, signal: AbortSignal) => {
+      const response = await fetch(url, { signal });
+      if (!response.ok)
+        throw new Error(`House asset unavailable: ${response.status}`);
+      return createImageBitmap(await response.blob());
+    };
+    const fail = () => {
+      wrapper.dataset.fallback = 'true';
+      queue?.dispose();
+      trigger?.kill();
+      setReady(false);
+    };
+    const fallback = async (frame: number) => {
+      if (frame === lastFallbackFrame) return;
+      lastFallbackFrame = frame;
+      const generation = ++fallbackGeneration;
+      const index = chapterAt(progressAtFrame(frame));
+      try {
+        const image = await loadImage(
+          posterUrl(baseUrl, profile, index),
+          fallbackController.signal,
         );
-        const visible = motion.opacity > 0.001;
-        layer.style.opacity = `${motion.opacity}`;
-        layer.style.visibility = visible ? 'visible' : 'hidden';
-        layer.style.willChange = visible ? 'transform, opacity' : 'auto';
-        layer.style.transform = `translate3d(${motion.x}vw, ${motion.y}vh, 0) scale(${motion.scale})`;
-      });
-
-      const nextIndex = stateIndex(getStoryState(nextProgress));
-      if (nextIndex !== activeIndexRef.current) {
-        activeIndexRef.current = nextIndex;
-        setActiveIndex(nextIndex);
+        if (
+          !disposed &&
+          generation === fallbackGeneration &&
+          frame === frameAt(target, profile)
+        ) {
+          display(image, chapterProgress(index));
+        }
+        image.close();
+      } catch {
+        if (!disposed && generation === fallbackGeneration) fail();
       }
     };
-
-    const handleMotionProfileChange = (event: MediaQueryListEvent) => {
-      useCompactMotion = event.matches;
-      setCompactMotion(event.matches);
-      updateVisuals(trigger?.progress ?? 0);
-    };
-    compactMotionQuery.addEventListener('change', handleMotionProfileChange);
-
-    const setupScroll = async () => {
-      const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
-        import('gsap'),
-        import('gsap/ScrollTrigger'),
-      ]);
-      if (disposed) return;
-      gsap.registerPlugin(ScrollTrigger);
-      trigger = ScrollTrigger.create({
-        trigger: root,
-        start: () => {
-          const headerHeight =
-            document.querySelector<HTMLElement>('.g-header-shell')
-              ?.offsetHeight ?? 0;
-          return `top ${headerHeight}px`;
+    const resetQueue = () => {
+      queue?.dispose();
+      fallbackGeneration++;
+      lastFallbackFrame = -1;
+      const outputProfile = profile;
+      queue = new FrameQueue<ImageBitmap>(
+        (frame, signal) =>
+          loadImage(frameUrl(baseUrl, outputProfile, frame), signal),
+        (image, frame) => {
+          fallbackGeneration++;
+          display(image, progressAtFrame(frame));
         },
-        end: 'bottom bottom',
-        scrub: useCompactMotion ? 0.06 : 0.12,
-        invalidateOnRefresh: true,
-        onUpdate: ({ progress }) => updateVisuals(progress),
-      });
-      updateVisuals(trigger.progress);
+        (frame) => {
+          void fallback(frame);
+        },
+        {
+          // Keep the larger desktop renders near the previous decoded-memory budget.
+          capacity: profile === 'mobile' ? 14 : 12,
+          concurrency: 3,
+          step: houseManifest.profiles[profile].step,
+          count: houseManifest.frameCount,
+        },
+      );
     };
-
-    void setupScroll();
-
+    const update = (progress: number) => {
+      target = progress;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() =>
+        queue?.request(frameAt(target, profile)),
+      );
+    };
+    const onProfile = () => {
+      profile = media.matches ? 'mobile' : 'desktop';
+      if (!reduced.matches && !short.matches) {
+        resetQueue();
+        update(target);
+      }
+    };
+    const onMotion = () => {
+      if (reduced.matches || short.matches) {
+        queue?.dispose();
+        queue = undefined;
+      } else if (!trigger) {
+        void setup();
+      } else {
+        resetQueue();
+        update(trigger?.progress ?? 0);
+      }
+    };
+    const setup = async () => {
+      try {
+        if (reduced.matches || short.matches) {
+          wrapper.dataset.enabled = 'true';
+          return;
+        }
+        const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
+          import('gsap'),
+          import('gsap/ScrollTrigger'),
+        ]);
+        if (disposed || wrapper.dataset.fallback === 'true') return;
+        gsap.registerPlugin(ScrollTrigger);
+        wrapper.dataset.enabled = 'true';
+        if (!reduced.matches && !short.matches) resetQueue();
+        trigger = ScrollTrigger.create({
+          trigger: wrapper,
+          start: () =>
+            `top ${document.querySelector('.g-header-shell')?.getBoundingClientRect().height ?? 0}px`,
+          end: 'bottom bottom',
+          invalidateOnRefresh: true,
+          onUpdate: ({ progress }) => update(progress),
+          onRefresh: ({ progress }) => update(progress),
+        });
+        jump.current = (index) => {
+          if (!trigger) return;
+          window.scrollTo({
+            top:
+              trigger.start +
+              (trigger.end - trigger.start) * chapterProgress(index),
+            behavior: reduced.matches ? 'auto' : 'smooth',
+          });
+        };
+        update(trigger.progress);
+      } catch {
+        if (!disposed) fail();
+      }
+    };
+    media.addEventListener('change', onProfile);
+    reduced.addEventListener('change', onMotion);
+    short.addEventListener('change', onMotion);
+    void setup();
     return () => {
       disposed = true;
-      compactMotionQuery.removeEventListener(
-        'change',
-        handleMotionProfileChange,
-      );
+      cancelAnimationFrame(raf);
+      fallbackController.abort();
+      queue?.dispose();
       trigger?.kill();
+      media.removeEventListener('change', onProfile);
+      reduced.removeEventListener('change', onMotion);
+      short.removeEventListener('change', onMotion);
     };
-  }, []);
-
+  }, [baseUrl]);
   return (
     <section
-      ref={wrapper}
-      className="g-story"
-      aria-label="Leistungen von der Planung bis zu integrierten Energiesystemen"
-      data-state={chapters[activeIndex]?.id}
+      ref={root}
+      className="g-story g-house-v3"
+      data-model="r3"
+      aria-label="Elektrotechnik im Haus entdecken"
+      data-state={chapters[activeIndex]!.id}
       style={
         {
-          '--g-story-progress': '0%',
+          '--g-story-height': '900svh',
+          '--g-story-height-mobile': '750svh',
           '--g-story-chapter-count': chapters.length,
-          '--g-story-height': `${100 + chapters.length * desktopScrollDistancePerChapter}svh`,
-          '--g-story-height-mobile': `${100 + chapters.length * mobileScrollDistancePerChapter}svh`,
         } as CSSProperties
       }
     >
       <div className="g-story-stage">
         <div className="g-story-visual" aria-hidden="true">
-          {chapters.map((chapter, index) => (
-            <figure
-              className={`g-story-image g-story-image--${chapter.id}`}
-              key={chapter.id}
-              ref={(layer) => {
-                imageLayers.current[index] = layer;
-              }}
-              style={{
-                opacity: index === 0 ? 1 : 0,
-                visibility: index === 0 ? 'visible' : 'hidden',
-                willChange: index === 0 ? 'transform, opacity' : 'auto',
-                transform: `translate3d(${index === 0 ? 0 : 10}vw, 0, 0) scale(${index === 0 ? 1 : 0.945})`,
-              }}
-            >
-              <img
-                src={versionGStoryAssetUrl(baseUrl, chapter.asset)}
-                alt=""
-                width={chapter.asset.width}
-                height={chapter.asset.height}
-                loading="eager"
-                fetchPriority={index === 0 ? 'high' : 'auto'}
-                decoding="async"
-              />
-            </figure>
-          ))}
+          <picture className={`g-house-poster ${ready ? 'is-hidden' : ''}`}>
+            <source
+              media="(max-width: 860px)"
+              srcSet={posterUrl(baseUrl, 'mobile', 0)}
+            />
+            <img
+              src={posterUrl(baseUrl, 'desktop', 0)}
+              width={houseManifest.profiles.desktop.width}
+              height={houseManifest.profiles.desktop.height}
+              alt=""
+              fetchPriority="high"
+            />
+          </picture>
+          <canvas
+            ref={canvas}
+            className={`g-house-canvas ${ready ? 'is-ready' : ''}`}
+            width={houseManifest.profiles.desktop.width}
+            height={houseManifest.profiles.desktop.height}
+          />
+          {(['desktop', 'mobile'] as const).map((profile) => {
+            const config = houseManifest.profiles[profile];
+            const annotationScale =
+              config.width / (profile === 'mobile' ? 640 : 960);
+            const labels = annotations[profile][chapters[activeIndex]!.id];
+            return (
+              <svg
+                key={profile}
+                className={`g-house-annotations g-house-annotations--${profile}`}
+                viewBox={`0 0 ${config.width} ${config.height}`}
+                aria-hidden="true"
+              >
+                {(profile === 'mobile' ? labels.slice(0, 1) : labels).map(
+                  (projected) => {
+                    const label = {
+                      ...projected,
+                      x: projected.x / annotationScale,
+                      y: projected.y / annotationScale,
+                      labelX: projected.labelX / annotationScale,
+                      labelY: projected.labelY / annotationScale,
+                    };
+                    const width =
+                      label.text.length * (profile === 'mobile' ? 14 : 11) + 28;
+                    return (
+                      <g
+                        key={label.text}
+                        transform={`scale(${annotationScale})`}
+                      >
+                        <line
+                          x1={label.x}
+                          y1={label.y}
+                          x2={label.labelX}
+                          y2={label.labelY}
+                        />
+                        <circle cx={label.x} cy={label.y} r="4" />
+                        <rect
+                          x={label.labelX - width / 2}
+                          y={label.labelY - 18}
+                          width={width}
+                          height="36"
+                          rx="3"
+                        />
+                        <text
+                          x={label.labelX}
+                          y={label.labelY}
+                          dy=".35em"
+                          textAnchor="middle"
+                        >
+                          {label.text}
+                        </text>
+                      </g>
+                    );
+                  },
+                )}
+              </svg>
+            );
+          })}
         </div>
         <div className="g-story-copy-stack">
           {chapters.map((chapter, index) => (
-            <ChapterContent
+            <article
               key={chapter.id}
-              chapter={chapter}
-              index={index}
-              activeIndex={activeIndex}
-              baseUrl={baseUrl}
-              compactMotion={compactMotion}
-            />
+              className={`g-story-copy ${index === activeIndex ? 'is-active' : ''}`}
+              aria-hidden={index !== activeIndex}
+            >
+              <p className="g-eyebrow">
+                <strong>{chapter.number}</strong> · {chapter.label}
+              </p>
+              <h2>
+                {chapter.title.map((line) => (
+                  <span className="g-story-title-line" key={line}>
+                    {line}
+                  </span>
+                ))}
+              </h2>
+              <p className="g-story-description">{chapter.description}</p>
+              <ul
+                className="g-house-components"
+                aria-label="Komponenten im Modell"
+              >
+                {chapter.components.map((component) => (
+                  <li key={component}>{component}</li>
+                ))}
+              </ul>
+              <a
+                className="g-outline-button"
+                href={`${baseUrl}${chapter.href}`}
+                tabIndex={index === activeIndex ? undefined : -1}
+              >
+                <span>{chapter.cta}</span>
+                <span aria-hidden="true">→</span>
+              </a>
+              <span className="g-scroll-hint">
+                {chapter.hint}
+                <i aria-hidden="true">↓</i>
+              </span>
+            </article>
           ))}
         </div>
-        <div
-          className="g-progress"
-          role="group"
-          aria-label="Fortschritt der Leistungs-Story"
-        >
+        <nav className="g-progress" aria-label="Leistungsabschnitt wählen">
           <strong>
-            <span>{chapters[activeIndex]?.number}</span> /{' '}
-            {String(chapters.length).padStart(2, '0')}
+            <span>{chapters[activeIndex]!.number}</span> / 06
           </strong>
-          <ol aria-label="Leistungsabschnitt wählen">
+          <ol>
             {chapters.map((chapter, index) => (
               <li
                 className={index === activeIndex ? 'is-active' : ''}
@@ -342,14 +347,14 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
                   type="button"
                   aria-label={`${chapter.number} ${chapter.label} anzeigen`}
                   aria-current={index === activeIndex ? 'step' : undefined}
-                  onClick={() => scrollToChapter(index)}
+                  onClick={() => jump.current(index)}
                 >
                   <span>{chapter.label}</span>
                 </button>
               </li>
             ))}
           </ol>
-        </div>
+        </nav>
         <div className="g-story-meter" aria-hidden="true">
           <i />
         </div>

@@ -1,0 +1,74 @@
+{
+  "version": 3,
+  "revision": "r3-preview",
+  "frameCount": 181,
+  "assetPath": "images/version-g/house-r3/",
+  "profiles": {
+    "desktop": {
+      "width": 960,
+      "height": 860,
+      "step": 2
+    },
+    "mobile": {
+      "width": 640,
+      "height": 640,
+      "step": 3
+    }
+  },
+  "chapters": [
+    {
+      "id": "planning",
+      "start": 0,
+      "rest": 0.03333333333333333,
+      "annotationFrames": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "installation",
+      "start": 0.1,
+      "rest": 0.3333333333333333,
+      "annotationFrames": [
+        59,
+        67
+      ]
+    },
+    {
+      "id": "lighting",
+      "start": 0.37,
+      "rest": 0.4666666666666667,
+      "annotationFrames": [
+        83,
+        93
+      ]
+    },
+    {
+      "id": "smarthome",
+      "start": 0.51,
+      "rest": 0.6,
+      "annotationFrames": [
+        105,
+        117
+      ]
+    },
+    {
+      "id": "security",
+      "start": 0.64,
+      "rest": 0.7333333333333333,
+      "annotationFrames": [
+        125,
+        135
+      ]
+    },
+    {
+      "id": "energy",
+      "start": 0.76,
+      "rest": 0.9,
+      "annotationFrames": [
+        159,
+        167
+      ]
+    }
+  ]
+}

@@ -1,0 +1,621 @@
+{
+  "scene": "C:\\Users\\hueberl\\Private_Projects\\elektro-bubmann\\assets\\3d\\elektro-hubmann-house-v3-r3.blend",
+  "passed": true,
+  "checks": [
+    {
+      "check": "Seven spaces: six rooms and corridor",
+      "pass": true,
+      "detail": [
+        "ROOM | Bathroom WC",
+        "ROOM | Child bedroom",
+        "ROOM | Corridor",
+        "ROOM | Living dining kitchen",
+        "ROOM | Office guest",
+        "ROOM | Parents bedroom",
+        "ROOM | Utility electrical"
+      ]
+    },
+    {
+      "check": "R3 clear room area",
+      "pass": true,
+      "detail": {
+        "Bathroom WC": 10.005,
+        "Child bedroom": 13.485,
+        "Corridor": 14.04,
+        "Living dining kitchen": 37.06,
+        "Office guest": 13.703,
+        "Parents bedroom": 20.983,
+        "Utility electrical": 7.83
+      }
+    },
+    {
+      "check": "Corridor width 1.30 m",
+      "pass": true,
+      "detail": [
+        5.6,
+        6.9,
+        0.0,
+        10.8
+      ]
+    },
+    {
+      "check": "Six direct internal room entries plus front door",
+      "pass": true,
+      "detail": {
+        "Bathroom WC": 0.8799999999999998,
+        "Child bedroom": 0.8800000000000007,
+        "Entrance": 1.0099999999999996,
+        "Living dining kitchen": 0.88,
+        "Office guest": 0.8800000000000007,
+        "Parents bedroom": 0.8799999999999989,
+        "Utility electrical": 0.88
+      }
+    },
+    {
+      "check": "Door clear widths at least 0.85 m",
+      "pass": true,
+      "detail": {
+        "Bathroom WC opening": 0.88,
+        "Child bedroom opening": 0.88,
+        "Entrance opening": 1.01,
+        "Living dining kitchen opening": 0.88,
+        "Office guest opening": 0.88,
+        "Parents bedroom opening": 0.88,
+        "Utility electrical opening": 0.88
+      }
+    },
+    {
+      "check": "Exterior window openings",
+      "pass": true,
+      "detail": [
+        "East window 1",
+        "East window 2",
+        "East window 3",
+        "Front window 1",
+        "Front window 3",
+        "Rear window 1",
+        "Rear window 2",
+        "West window 1",
+        "West window 2"
+      ]
+    },
+    {
+      "check": "Parents double bed exists",
+      "pass": true,
+      "detail": "Parents bedroom"
+    },
+    {
+      "check": "Parents double bed inside room envelope",
+      "pass": true,
+      "detail": {
+        "mesh_bounds": [
+          [
+            1.440000057220459,
+            3.4600000381469727
+          ],
+          [
+            8.239999771118164,
+            10.404999732971191
+          ],
+          [
+            0.0,
+            1.274999976158142
+          ]
+        ],
+        "room_bounds": [
+          0.0,
+          5.45,
+          6.95,
+          10.8
+        ]
+      }
+    },
+    {
+      "check": "Parents wardrobe exists",
+      "pass": true,
+      "detail": "Parents bedroom"
+    },
+    {
+      "check": "Parents wardrobe inside room envelope",
+      "pass": true,
+      "detail": {
+        "mesh_bounds": [
+          [
+            4.794999599456787,
+            5.454999923706055
+          ],
+          [
+            8.210000038146973,
+            10.65000057220459
+          ],
+          [
+            0.0,
+            2.1599998474121094
+          ]
+        ],
+        "room_bounds": [
+          0.0,
+          5.45,
+          6.95,
+          10.8
+        ]
+      }
+    },
+    {
+      "check": "Child single bed exists",
+      "pass": true,
+      "detail": "Child bedroom"
+    },
+    {
+      "check": "Child single bed inside room envelope",
+      "pass": true,
+      "detail": {
+        "mesh_bounds": [
+          [
+            10.144999504089355,
+            11.335000038146973
+          ],
+          [
+            5.170000076293945,
+            7.3349995613098145
+          ],
+          [
+            0.0,
+            1.274999976158142
+          ]
+        ],
+        "room_bounds": [
+          7.05,
+          11.4,
+          4.4,
+          7.5
+        ]
+      }
+    },
+    {
+      "check": "Child wardrobe exists",
+      "pass": true,
+      "detail": "Child bedroom"
+    },
+    {
+      "check": "Child wardrobe inside room envelope",
+      "pass": true,
+      "detail": {
+        "mesh_bounds": [
+          [
+            7.640000343322754,
+            9.300000190734863
+          ],
+          [
+            6.799999713897705,
+            7.460000038146973
+          ],
+          [
+            0.0,
+            2.1599998474121094
+          ]
+        ],
+        "room_bounds": [
+          7.05,
+          11.4,
+          4.4,
+          7.5
+        ]
+      }
+    },
+    {
+      "check": "Child desk exists",
+      "pass": true,
+      "detail": "Child bedroom"
+    },
+    {
+      "check": "Child desk inside room envelope",
+      "pass": true,
+      "detail": {
+        "mesh_bounds": [
+          [
+            7.840000152587891,
+            9.100000381469727
+          ],
+          [
+            5.019999980926514,
+            5.660000324249268
+          ],
+          [
+            0.0,
+            1.0497207641601562
+          ]
+        ],
+        "room_bounds": [
+          7.05,
+          11.4,
+          4.4,
+          7.5
+        ]
+      }
+    },
+    {
+      "check": "Office desk exists",
+      "pass": true,
+      "detail": "Office guest"
+    },
+    {
+      "check": "Office desk inside room envelope",
+      "pass": true,
+      "detail": {
+        "mesh_bounds": [
+          [
+            8.030000686645508,
+            8.670000076293945
+          ],
+          [
+            8.3149995803833,
+            9.6850004196167
+          ],
+          [
+            0.0,
+            1.0497207641601562
+          ]
+        ],
+        "room_bounds": [
+          7.05,
+          11.4,
+          7.65,
+          10.8
+        ]
+      }
+    },
+    {
+      "check": "Guest sleeper sofa exists",
+      "pass": true,
+      "detail": "Office guest"
+    },
+    {
+      "check": "Guest sleeper sofa inside room envelope",
+      "pass": true,
+      "detail": {
+        "mesh_bounds": [
+          [
+            10.270000457763672,
+            11.259343147277832
+          ],
+          [
+            8.184999465942383,
+            10.335000991821289
+          ],
+          [
+            0.0,
+            1.0432101488113403
+          ]
+        ],
+        "room_bounds": [
+          7.05,
+          11.4,
+          7.65,
+          10.8
+        ]
+      }
+    },
+    {
+      "check": "Living sectional exists",
+      "pass": true,
+      "detail": "Living dining kitchen"
+    },
+    {
+      "check": "Living sectional inside room envelope",
+      "pass": true,
+      "detail": {
+        "mesh_bounds": [
+          [
+            0.21065758168697357,
+            1.8700001239776611
+          ],
+          [
+            0.4700000286102295,
+            3.2300000190734863
+          ],
+          [
+            0.0,
+            1.0432101488113403
+          ]
+        ],
+        "room_bounds": [
+          0.0,
+          5.45,
+          0.0,
+          6.8
+        ]
+      }
+    },
+    {
+      "check": "Washing machine exists",
+      "pass": true,
+      "detail": "Utility electrical"
+    },
+    {
+      "check": "Washing machine inside room envelope",
+      "pass": true,
+      "detail": {
+        "mesh_bounds": [
+          [
+            8.00999927520752,
+            8.630000114440918
+          ],
+          [
+            1.0559998750686646,
+            1.75
+          ],
+          [
+            0.009999990463256836,
+            0.8899999856948853
+          ]
+        ],
+        "room_bounds": [
+          7.05,
+          11.4,
+          0.0,
+          1.8
+        ]
+      }
+    },
+    {
+      "check": "Dryer exists",
+      "pass": true,
+      "detail": "Utility electrical"
+    },
+    {
+      "check": "Dryer inside room envelope",
+      "pass": true,
+      "detail": {
+        "mesh_bounds": [
+          [
+            8.710000038146973,
+            9.330000877380371
+          ],
+          [
+            1.0559998750686646,
+            1.75
+          ],
+          [
+            0.009999990463256836,
+            0.8899999856948853
+          ]
+        ],
+        "room_bounds": [
+          7.05,
+          11.4,
+          0.0,
+          1.8
+        ]
+      }
+    },
+    {
+      "check": "Shower tray present",
+      "pass": true,
+      "detail": "Shower tray"
+    },
+    {
+      "check": "Toilet ceramic bowl present",
+      "pass": true,
+      "detail": "Toilet ceramic bowl"
+    },
+    {
+      "check": "Bathroom vanity present",
+      "pass": true,
+      "detail": "Bathroom vanity"
+    },
+    {
+      "check": "Electrical distribution assembly present",
+      "pass": true,
+      "detail": "Electrical distribution assembly"
+    },
+    {
+      "check": "Network rack assembly present",
+      "pass": true,
+      "detail": "Network rack assembly"
+    },
+    {
+      "check": "PV inverter present",
+      "pass": true,
+      "detail": "PV inverter"
+    },
+    {
+      "check": "KNX room controller present",
+      "pass": true,
+      "detail": "KNX room controller"
+    },
+    {
+      "check": "Video door station present",
+      "pass": true,
+      "detail": "Video door station"
+    },
+    {
+      "check": "Bathroom WC door sweep clear of furniture",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "check": "Child bedroom door sweep clear of furniture",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "check": "Living dining kitchen door sweep clear of furniture",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "check": "Office guest door sweep clear of furniture",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "check": "Parents bedroom door sweep clear of furniture",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "check": "Utility electrical door sweep clear of furniture",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "check": "Furnished obstacles leave corridor clear",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "check": "Smart Home blind stays visible and moves",
+      "pass": true,
+      "detail": {
+        "raised_scale": 0.014999999664723873,
+        "lowered_scale": 0.9623082876205444,
+        "slats": 29
+      }
+    },
+    {
+      "check": "Eight PV modules grouped with roof",
+      "pass": true,
+      "detail": [
+        "PV module 01",
+        "PV module 02",
+        "PV module 03",
+        "PV module 04",
+        "PV module 05",
+        "PV module 06",
+        "PV module 07",
+        "PV module 08"
+      ]
+    },
+    {
+      "check": "Roof lifts as one group",
+      "pass": true,
+      "detail": 1.3095908164978027
+    },
+    {
+      "check": "Roof returns to exact seat",
+      "pass": true,
+      "detail": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "check": "shell visibility frame 1",
+      "pass": true,
+      "detail": {
+        "materials": 8,
+        "min": 1.0,
+        "max": 1.0
+      }
+    },
+    {
+      "check": "shell visibility frame 62",
+      "pass": true,
+      "detail": {
+        "materials": 8,
+        "min": 0.0,
+        "max": 0.0
+      }
+    },
+    {
+      "check": "shell visibility frame 181",
+      "pass": true,
+      "detail": {
+        "materials": 8,
+        "min": 1.0,
+        "max": 1.0
+      }
+    },
+    {
+      "check": "roof visibility frame 1",
+      "pass": true,
+      "detail": {
+        "materials": 7,
+        "min": 1.0,
+        "max": 1.0
+      }
+    },
+    {
+      "check": "roof visibility frame 62",
+      "pass": true,
+      "detail": {
+        "materials": 7,
+        "min": 0.0,
+        "max": 0.0
+      }
+    },
+    {
+      "check": "roof visibility frame 181",
+      "pass": true,
+      "detail": {
+        "materials": 7,
+        "min": 1.0,
+        "max": 1.0
+      }
+    },
+    {
+      "check": "Reversible evaluation frame 1",
+      "pass": true,
+      "detail": "Roof, doors, blind, camera and material visibility"
+    },
+    {
+      "check": "Reversible evaluation frame 28",
+      "pass": true,
+      "detail": "Roof, doors, blind, camera and material visibility"
+    },
+    {
+      "check": "Reversible evaluation frame 43",
+      "pass": true,
+      "detail": "Roof, doors, blind, camera and material visibility"
+    },
+    {
+      "check": "Reversible evaluation frame 62",
+      "pass": true,
+      "detail": "Roof, doors, blind, camera and material visibility"
+    },
+    {
+      "check": "Reversible evaluation frame 86",
+      "pass": true,
+      "detail": "Roof, doors, blind, camera and material visibility"
+    },
+    {
+      "check": "Reversible evaluation frame 113",
+      "pass": true,
+      "detail": "Roof, doors, blind, camera and material visibility"
+    },
+    {
+      "check": "Reversible evaluation frame 129",
+      "pass": true,
+      "detail": "Roof, doors, blind, camera and material visibility"
+    },
+    {
+      "check": "Reversible evaluation frame 146",
+      "pass": true,
+      "detail": "Roof, doors, blind, camera and material visibility"
+    },
+    {
+      "check": "Reversible evaluation frame 161",
+      "pass": true,
+      "detail": "Roof, doors, blind, camera and material visibility"
+    },
+    {
+      "check": "Reversible evaluation frame 181",
+      "pass": true,
+      "detail": "Roof, doors, blind, camera and material visibility"
+    },
+    {
+      "check": "No external linked libraries",
+      "pass": true,
+      "detail": 0
+    },
+    {
+      "check": "Texture assets packed",
+      "pass": true,
+      "detail": [
+        "oak_veneer_01_diff_1k.jpg"
+      ]
+    }
+  ]
+}

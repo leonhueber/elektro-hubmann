@@ -1,0 +1,21 @@
+{
+  "revision": "r3-preview",
+  "profiles": {
+    "desktop": {
+      "sampledFrames": 91,
+      "uniqueFrames": 86,
+      "sequenceBytes": 2760196,
+      "width": 960,
+      "height": 860,
+      "posterBytes": 19806
+    },
+    "mobile": {
+      "sampledFrames": 61,
+      "uniqueFrames": 58,
+      "sequenceBytes": 1074624,
+      "width": 640,
+      "height": 640,
+      "posterBytes": 11192
+    }
+  }
+}

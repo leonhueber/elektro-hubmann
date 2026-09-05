@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { serializeStructuredData } from '../lib/structured-data';
 
 interface Props {
   title: string;
@@ -45,7 +46,7 @@ const socialImage = new URL(ogImage, Astro.site ?? Astro.url.origin);
         <script
           is:inline
           type="application/ld+json"
-          set:html={JSON.stringify(schema)}
+          set:html={serializeStructuredData(schema)}
         />
       )
     }

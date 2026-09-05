@@ -1,0 +1,228 @@
+{
+  "revision": "r3-detail-01",
+  "passed": true,
+  "checks": [
+    {
+      "canvas": [
+        1200,
+        1075
+      ],
+      "overflow": false,
+      "poster": "http://127.0.0.1:4321/elektro-hubmann/images/version-g/house-r3-detail/desktop/planning.webp",
+      "state": {
+        "enabled": "true",
+        "frame": "85",
+        "model": "r3",
+        "state": "lighting"
+      },
+      "storyHeight": 9000,
+      "viewport": [
+        1440,
+        1000
+      ]
+    },
+    {
+      "overflow": false,
+      "state": {
+        "enabled": "true",
+        "frame": "61",
+        "model": "r3",
+        "state": "installation"
+      },
+      "viewport": [
+        1440,
+        1000
+      ]
+    },
+    {
+      "state": {
+        "enabled": "true",
+        "frame": "163",
+        "model": "r3",
+        "state": "energy"
+      },
+      "viewport": [
+        1440,
+        1000
+      ]
+    },
+    {
+      "state": {
+        "enabled": "true",
+        "frame": "133",
+        "model": "r3",
+        "state": "security"
+      },
+      "viewport": [
+        1440,
+        1000
+      ]
+    },
+    {
+      "state": {
+        "enabled": "true",
+        "frame": "109",
+        "model": "r3",
+        "state": "smarthome"
+      },
+      "viewport": [
+        1440,
+        1000
+      ]
+    },
+    {
+      "state": {
+        "enabled": "true",
+        "frame": "7",
+        "model": "r3",
+        "state": "planning"
+      },
+      "viewport": [
+        1440,
+        1000
+      ]
+    },
+    {
+      "canvas": [
+        720,
+        720
+      ],
+      "overflow": false,
+      "poster": "http://127.0.0.1:4321/elektro-hubmann/images/version-g/house-r3-detail/mobile/planning.webp",
+      "state": {
+        "enabled": "true",
+        "frame": "109",
+        "model": "r3",
+        "state": "smarthome"
+      },
+      "storyHeight": 6330,
+      "viewport": [
+        390,
+        844
+      ]
+    },
+    {
+      "state": {
+        "enabled": "true",
+        "frame": "61",
+        "model": "r3",
+        "state": "installation"
+      },
+      "viewport": [
+        390,
+        844
+      ]
+    },
+    {
+      "state": {
+        "enabled": "true",
+        "frame": "85",
+        "model": "r3",
+        "state": "lighting"
+      },
+      "viewport": [
+        390,
+        844
+      ]
+    },
+    {
+      "state": {
+        "enabled": "true",
+        "frame": "133",
+        "model": "r3",
+        "state": "security"
+      },
+      "viewport": [
+        390,
+        844
+      ]
+    },
+    {
+      "state": {
+        "enabled": "true",
+        "frame": "163",
+        "model": "r3",
+        "state": "energy"
+      },
+      "viewport": [
+        390,
+        844
+      ]
+    },
+    {
+      "overflow": false,
+      "state": {
+        "enabled": "true",
+        "frame": "7",
+        "model": "r3",
+        "state": "planning"
+      },
+      "viewport": [
+        390,
+        844
+      ]
+    },
+    {
+      "ctaBottom": 582.09375,
+      "overflow": false,
+      "state": {
+        "enabled": "true",
+        "frame": "76",
+        "model": "r3",
+        "state": "lighting"
+      },
+      "viewport": [
+        375,
+        667
+      ]
+    },
+    {
+      "animatedDisplay": "none",
+      "chapters": 6,
+      "overflow": false,
+      "staticDisplay": "block",
+      "usesNewPosters": false,
+      "viewport": [
+        844,
+        500
+      ]
+    },
+    {
+      "canvas": [
+        720,
+        720
+      ],
+      "ctaBottom": 582.09375,
+      "freshLoad": true,
+      "overflow": false,
+      "state": {
+        "enabled": "true",
+        "frame": "61",
+        "model": "r3",
+        "state": "installation"
+      },
+      "viewport": [
+        375,
+        667
+      ]
+    },
+    {
+      "animatedDisplay": "none",
+      "chapters": 6,
+      "freshLoad": true,
+      "overflow": false,
+      "staticDisplay": "block",
+      "usesNewPosters": true,
+      "viewport": [
+        844,
+        500
+      ]
+    }
+  ],
+  "notes": [
+    "All six chapters reached their expected rest frames on desktop and mobile, including reverse navigation.",
+    "The existing hot-reloaded tab retained old server-rendered fallback markup; a fresh page load served all six detailed posters correctly.",
+    "The final compact-view check was performed after viewport resizing settled.",
+    "OS reduced-motion preference was not changed; its shared static fallback was verified using a short viewport."
+  ]
+}

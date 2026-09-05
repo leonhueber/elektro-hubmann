@@ -53,6 +53,14 @@ Der lokale Entwicklungsserver verwendet denselben Basispfad wie GitHub Pages:
 9. [Responsiveness, Barrierefreiheit und EU-/AT-Checkliste](docs/09-responsive-accessibility-eu-checkliste.md)
    – umgesetzte Responsive-Matrix sowie verbindliche spätere Accessibility-,
    Datenschutz-, Rechts- und Hosting-Gates.
+10. [Hausmodell V3](docs/10-hausmodell-v3-plan.md) – Blender-Aufbau,
+    Öffnungsanimation, Leistungsstationen und Anschluss an die Scroll-Story.
+11. [Hausmodell V3 – gestalterischer Neustart](docs/11-hausmodell-v3-gestalterischer-neustart.md)
+    – aktueller Vorschlag für Hausform, Bildgestaltung und die nächste Modellrunde.
+12. [Haus R3 – Website-Animation](docs/12-haus-r3-website-animation.md)
+    – separate Animationsszene, Kapitelkameras, Desktop-/Mobilsequenz und Web-Export.
+13. [Haus R3 – Materialien und Einrichtung](docs/13-haus-r3-materialien-und-details.md)
+    – detaillierte Möbel, Textilien, Oberflächen und die höher aufgelöste Web-Ausgabe.
 
 ## Ausgewähltes Design
 

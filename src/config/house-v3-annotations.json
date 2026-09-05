@@ -1,0 +1,112 @@
+{
+  "desktop": {
+    "planning": [],
+    "installation": [
+      {
+        "text": "Elektroverteilung",
+        "x": 658.14,
+        "y": 322.84,
+        "labelX": 324.0,
+        "labelY": 172.0
+      },
+      {
+        "text": "Netzwerk",
+        "x": 904.86,
+        "y": 411.23,
+        "labelX": 948.0,
+        "labelY": 903.0
+      }
+    ],
+    "lighting": [
+      {
+        "text": "Wohnraumlicht",
+        "x": 286.77,
+        "y": 553.46,
+        "labelX": 276.0,
+        "labelY": 913.75
+      }
+    ],
+    "smarthome": [
+      {
+        "text": "Beschattung",
+        "x": 400.72,
+        "y": 152.14,
+        "labelX": 312.0,
+        "labelY": 172.0
+      },
+      {
+        "text": "KNX-Steuerung",
+        "x": 871.82,
+        "y": 702.67,
+        "labelX": 876.0,
+        "labelY": 924.5
+      }
+    ],
+    "security": [
+      {
+        "text": "Videosprechanlage",
+        "x": 710.52,
+        "y": 517.3,
+        "labelX": 876.0,
+        "labelY": 215.0
+      }
+    ],
+    "energy": [
+      {
+        "text": "Photovoltaik",
+        "x": 553.4,
+        "y": 486.17,
+        "labelX": 336.0,
+        "labelY": 139.75
+      }
+    ]
+  },
+  "mobile": {
+    "planning": [],
+    "installation": [
+      {
+        "text": "Elektroverteilung",
+        "x": 394.89,
+        "y": 231.21,
+        "labelX": 194.4,
+        "labelY": 115.2
+      }
+    ],
+    "lighting": [
+      {
+        "text": "Wohnraumlicht",
+        "x": 168.23,
+        "y": 369.77,
+        "labelX": 165.6,
+        "labelY": 612.0
+      }
+    ],
+    "smarthome": [
+      {
+        "text": "Beschattung",
+        "x": 240.43,
+        "y": 128.78,
+        "labelX": 187.2,
+        "labelY": 115.2
+      }
+    ],
+    "security": [
+      {
+        "text": "Videosprechanlage",
+        "x": 426.31,
+        "y": 347.88,
+        "labelX": 525.6,
+        "labelY": 144.0
+      }
+    ],
+    "energy": [
+      {
+        "text": "Photovoltaik",
+        "x": 331.47,
+        "y": 328.57,
+        "labelX": 201.6,
+        "labelY": 93.6
+      }
+    ]
+  }
+}
