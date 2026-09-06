@@ -27,19 +27,47 @@ export function frameAt(progress: number, profile: HouseProfile = 'desktop') {
 export function progressAtFrame(frame: number) {
   return clampProgress((frame - 1) / (manifest.frameCount - 1));
 }
+/** Time-based follow, independent of wheel frequency and display refresh rate. */
+export function followScroll(
+  position: number,
+  target: number,
+  deltaMs: number,
+) {
+  const amount = -Math.expm1(-Math.max(0, Math.min(50, deltaMs)) / 150);
+  return position + (clampProgress(target) - position) * amount;
+}
+
+/** Cross a reading hold freely, but never skip a distinct native motion image. */
+export function nextMotionFrame(
+  from: number,
+  toward: number,
+  profile: HouseProfile,
+) {
+  if (from === toward) return toward;
+  const step = manifest.profiles[profile].step * Math.sign(toward - from);
+  const source = sourceFrame(profile, from);
+  for (
+    let frame = from + step;
+    step > 0 ? frame <= toward : frame >= toward;
+    frame += step
+  ) {
+    if (sourceFrame(profile, frame) !== source) return frame;
+  }
+  return toward;
+}
 export function sourceFrame(profile: HouseProfile, frame: number) {
   return (aliases[profile] as Record<string, number>)[String(frame)] ?? frame;
 }
 export function frameUrl(base: string, profile: HouseProfile, frame: number) {
   const source = sourceFrame(profile, frame);
-  return `${base}${manifest.assetPath}${profile}/frame-${String(source).padStart(4, '0')}.webp`;
+  return `${base}${manifest.assetPath}${profile}/frame-${String(source).padStart(4, '0')}.webp?v=${manifest.revision}`;
 }
 export function posterUrl(
   base: string,
   profile: HouseProfile,
   chapter: number,
 ) {
-  return `${base}${manifest.assetPath}${profile}/${manifest.chapters[chapter]!.id}.webp`;
+  return `${base}${manifest.assetPath}${profile}/${manifest.chapters[chapter]!.id}.webp?v=${manifest.revision}`;
 }
 export type DecodedFrame = { width: number; height: number; close(): void };
 type QueueOptions = {
@@ -56,7 +84,10 @@ export class FrameQueue<T extends DecodedFrame> {
   private pending = new Map<number, AbortController>();
   private failed = new Set<number>();
   private queue: number[] = [];
+  private wanted = new Set<number>();
   private target = 1;
+  private direction = 1;
+  private requested = false;
   private disposed = false;
   constructor(
     private load: (frame: number, signal: AbortSignal) => Promise<T>,
@@ -72,9 +103,14 @@ export class FrameQueue<T extends DecodedFrame> {
   private source(frame: number) {
     return this.options.resolveFrame?.(frame) ?? frame;
   }
+  has(frame: number) {
+    return this.cache.has(this.source(frame));
+  }
   request(frame: number) {
     if (this.disposed) return;
-    const direction = frame >= this.target ? 1 : -1;
+    if (this.requested && frame === this.target) return;
+    this.requested = true;
+    if (frame !== this.target) this.direction = Math.sign(frame - this.target);
     this.target = frame;
     const source = this.source(frame);
     const cached = this.cache.get(source);
@@ -85,26 +121,41 @@ export class FrameQueue<T extends DecodedFrame> {
     } else if (this.failed.has(source)) {
       this.error(frame);
     }
-    this.queue = [frame];
-    for (let offset = 1; offset <= 5; offset++) {
-      this.queue.push(
-        frame + offset * direction * this.options.step,
-        frame - offset * direction * this.options.step,
-      );
+    // Count distinct images, not aliased timeline positions. Prefetch across
+    // long holds so the first camera movement is already decoded when needed.
+    const ahead = this.neighbors(frame, this.direction);
+    const behind = this.neighbors(frame, -this.direction);
+    const wanted = new Set([source]);
+    while (
+      wanted.size < this.options.capacity &&
+      (ahead.length || behind.length)
+    ) {
+      for (const candidates of [ahead, ahead, behind]) {
+        if (wanted.size < this.options.capacity && candidates.length)
+          wanted.add(candidates.shift()!);
+      }
     }
-    this.queue = [
-      ...new Set(
-        this.queue
-          .filter(
-            (candidate) => candidate >= 1 && candidate <= this.options.count,
-          )
-          .map((candidate) => this.source(candidate)),
-      ),
-    ];
+    this.wanted = wanted;
+    this.queue = [...wanted];
     for (const [frame, controller] of this.pending) {
       if (!this.queue.includes(frame)) controller.abort();
     }
     this.pump();
+  }
+  private neighbors(frame: number, direction: number) {
+    const found = new Set<number>();
+    const current = this.source(frame);
+    const step = direction * this.options.step;
+    for (
+      let next = frame + step;
+      next >= 1 && next <= this.options.count;
+      next += step
+    ) {
+      const source = this.source(next);
+      if (source !== current) found.add(source);
+      if (found.size >= this.options.capacity) break;
+    }
+    return [...found];
   }
   private pump() {
     if (this.disposed) return;
@@ -128,9 +179,10 @@ export class FrameQueue<T extends DecodedFrame> {
           if (frame === this.source(this.target))
             this.display(image, this.target);
           while (this.cache.size > this.options.capacity) {
-            const oldest = [...this.cache.keys()].find(
-              (key) => key !== this.source(this.target),
-            )!;
+            const keys = [...this.cache.keys()];
+            const oldest =
+              keys.find((key) => !this.wanted.has(key)) ??
+              keys.find((key) => key !== this.source(this.target))!;
             this.cache.get(oldest)!.close();
             this.cache.delete(oldest);
           }
@@ -157,5 +209,45 @@ export class FrameQueue<T extends DecodedFrame> {
     for (const image of this.cache.values()) image.close();
     this.cache.clear();
     this.queue = [];
+  }
+}
+
+/** A buffered playhead: scroll chooses the destination, decoded frames set pace. */
+export class ScrollPlayback<T extends DecodedFrame> {
+  private position = 0;
+  private target = 0;
+  private lastTime: number | undefined;
+  constructor(
+    private frames: FrameQueue<T>,
+    private profile: HouseProfile,
+  ) {}
+  seek(progress: number) {
+    this.position = this.target = clampProgress(progress);
+    this.lastTime = undefined;
+    this.frames.request(frameAt(this.position, this.profile));
+  }
+  follow(progress: number) {
+    this.target = clampProgress(progress);
+  }
+  tick(time: number) {
+    const delta =
+      this.lastTime === undefined ? 1000 / 60 : time - this.lastTime;
+    const proposed =
+      Math.abs(this.target - this.position) < 0.00001
+        ? this.target
+        : followScroll(this.position, this.target, delta);
+    const wanted = frameAt(proposed, this.profile);
+    const next = nextMotionFrame(
+      frameAt(this.position, this.profile),
+      wanted,
+      this.profile,
+    );
+    this.frames.request(next);
+    // Never run the clock past a missing frame and catch up with a visible jump.
+    if (this.frames.has(next))
+      this.position = next === wanted ? proposed : progressAtFrame(next);
+    const running = this.position !== this.target || !this.frames.has(next);
+    this.lastTime = running ? time : undefined;
+    return running;
   }
 }

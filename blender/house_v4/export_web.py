@@ -16,8 +16,9 @@ OUT = ROOT/'docs/version-g-qa/blender-v4/web'
 
 def main():
     frames, aliases = schedule()
+    renders = OUT/'renders'/MANIFEST['revision']
     for frame in frames:
-        source = OUT/'renders'/f'frame-{frame:04d}.png'
+        source = renders/f'frame-{frame:04d}.png'
         with Image.open(source) as image:
             if image.size != (1000, 1000):
                 raise RuntimeError(f'Wrong frame dimensions: {source} {image.size}')
@@ -33,7 +34,7 @@ def main():
         hashes = {}
         for frame in frames:
             name = f'frame-{frame:04d}.webp'
-            with Image.open(OUT/'renders'/f'frame-{frame:04d}.png') as image:
+            with Image.open(renders/f'frame-{frame:04d}.png') as image:
                 image = image.convert('RGB')
                 if image.size != (config['width'], config['height']):
                     image = image.resize((config['width'], config['height']), Image.Resampling.LANCZOS)
@@ -49,6 +50,14 @@ def main():
             'decodedCacheBytes': config['width']*config['height']*4*config['cacheFrames'],
             'sha256': hashes,
         }
+    # Remove only obsolete generated sequence files, after the complete export.
+    expected = {f'frame-{frame:04d}.webp' for frame in frames}
+    for profile in MANIFEST['profiles']:
+        destination = (ROOT/'public'/MANIFEST['assetPath']/profile).resolve()
+        destination.relative_to((ROOT/'public/images/version-g').resolve())
+        for stale in destination.glob('frame-????.webp'):
+            if stale.name not in expected:
+                stale.unlink()
     config = ROOT/'src/config'
     (config/'house-v4-manifest.json').write_text(json.dumps(MANIFEST, indent=2)+'\n', encoding='utf-8', newline='\n')
     (config/'house-v4-frames.json').write_text(json.dumps({p: aliases for p in MANIFEST['profiles']}, indent=2)+'\n', encoding='utf-8', newline='\n')

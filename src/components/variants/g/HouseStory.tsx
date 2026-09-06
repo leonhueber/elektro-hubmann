@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { VERSION_G_STORY_CHAPTERS as chapters } from '../../../config/version-g-story-assets';
 import {
   FrameQueue,
+  ScrollPlayback,
   chapterAt,
   chapterProgress,
   frameAt,
@@ -33,14 +34,16 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
     const short = window.matchMedia('(max-height: 580px)');
     let profile: HouseProfile = media.matches ? 'mobile' : 'desktop';
     let queue: FrameQueue<ImageBitmap> | undefined;
+    let playback: ScrollPlayback<ImageBitmap> | undefined;
+    let initialPosition = true;
+    let drawnImage: ImageBitmap | undefined;
     let disposed = false;
+    let visible = true;
     let raf = 0;
     let staticRaf = 0;
     let target = 0;
     let shownProgress = 0;
     let currentChapter = 0;
-    let fallbackGeneration = 0;
-    let lastFallbackFrame = -1;
     let resizeProgress: number | undefined;
     let staticProgress: number | undefined;
     let trigger:
@@ -52,16 +55,18 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
           end: number;
         }
       | undefined;
-    const fallbackController = new AbortController();
     const display = (image: ImageBitmap, progress: number) => {
       shownProgress = progress;
       if (surface.width !== image.width || surface.height !== image.height) {
         surface.width = image.width;
         surface.height = image.height;
       }
-      context.fillStyle = '#fff';
-      context.fillRect(0, 0, surface.width, surface.height);
-      context.drawImage(image, 0, 0);
+      if (drawnImage !== image) {
+        context.fillStyle = '#fff';
+        context.fillRect(0, 0, surface.width, surface.height);
+        context.drawImage(image, 0, 0);
+        drawnImage = image;
+      }
       wrapper.dataset.frame = String(frameAt(progress, profile));
       wrapper.style.setProperty('--g-story-progress', `${progress * 100}%`);
       const nextChapter = chapterAt(progress);
@@ -72,7 +77,7 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
       setReady(true);
     };
     const loadImage = async (url: string, signal: AbortSignal) => {
-      const response = await fetch(url, { signal });
+      const response = await fetch(url, { signal, cache: 'force-cache' });
       if (!response.ok)
         throw new Error(`House asset unavailable: ${response.status}`);
       return createImageBitmap(await response.blob());
@@ -111,59 +116,45 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
     };
     const fail = () => {
       wrapper.dataset.fallback = 'true';
+      cancelAnimationFrame(raf);
+      raf = 0;
+      playback = undefined;
       queue?.dispose();
       trigger?.kill();
       setReady(false);
       if (shownProgress > 0 && shownProgress < 1)
         showStaticChapter(shownProgress);
     };
-    const fallback = async (frame: number) => {
-      if (frame === lastFallbackFrame) return;
-      lastFallbackFrame = frame;
-      const generation = ++fallbackGeneration;
-      const index = chapterAt(progressAtFrame(frame));
-      try {
-        const image = await loadImage(
-          posterUrl(baseUrl, profile, index),
-          fallbackController.signal,
-        );
-        if (
-          !disposed &&
-          generation === fallbackGeneration &&
-          frame === frameAt(target, profile)
-        ) {
-          display(image, chapterProgress(index));
-        }
-        image.close();
-      } catch {
-        if (!disposed && generation === fallbackGeneration) fail();
-      }
-    };
     const resetQueue = () => {
       queue?.dispose();
-      fallbackGeneration++;
-      lastFallbackFrame = -1;
+      initialPosition = true;
+      drawnImage = undefined;
       const outputProfile = profile;
       queue = new FrameQueue<ImageBitmap>(
         (frame, signal) =>
           loadImage(frameUrl(baseUrl, outputProfile, frame), signal),
         (image, frame) => {
-          fallbackGeneration++;
           display(image, progressAtFrame(frame));
         },
-        (frame) => {
-          void fallback(frame);
-        },
+        fail,
         {
           capacity: houseManifest.profiles[profile].cacheFrames,
-          concurrency: 3,
+          concurrency: 6,
           step: houseManifest.profiles[profile].step,
           count: houseManifest.frameCount,
           resolveFrame: (frame) => sourceFrame(outputProfile, frame),
         },
       );
+      playback = new ScrollPlayback(queue, profile);
     };
-    const update = (progress: number) => {
+    const tick = (time: number) => {
+      raf = 0;
+      if (disposed || reduced.matches || short.matches || !playback) return;
+      const running = playback.tick(time);
+      if (running && wrapper.dataset.fallback !== 'true')
+        raf = requestAnimationFrame(tick);
+    };
+    const update = (progress: number, immediate = false) => {
       if (disposed || reduced.matches || short.matches) return;
       // Resize and ScrollTrigger callbacks can precede the media-query event.
       // Hold the displayed pose until the new profile has refreshed its bounds.
@@ -178,10 +169,13 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
         return;
       }
       target = progress;
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() =>
-        queue?.request(frameAt(target, profile)),
-      );
+      if (initialPosition || immediate || !visible) {
+        playback?.seek(progress);
+        initialPosition = false;
+      } else {
+        playback?.follow(progress);
+      }
+      if (visible && !raf) raf = requestAnimationFrame(tick);
     };
     const onProfile = () => {
       if (wrapper.dataset.fallback === 'true') return;
@@ -204,12 +198,13 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
       if (reduced.matches || short.matches) {
         const wasInStory = !!trigger && shownProgress > 0 && shownProgress < 1;
         resizeProgress = undefined;
-        fallbackGeneration++;
         queue?.dispose();
         queue = undefined;
+        playback = undefined;
         trigger?.kill();
         trigger = undefined;
         cancelAnimationFrame(raf);
+        raf = 0;
         if (wasInStory) {
           staticProgress = shownProgress;
           showStaticChapter(shownProgress);
@@ -254,7 +249,7 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
                 top: start + (end - start) * preserved,
                 behavior: 'instant',
               });
-              update(preserved);
+              update(preserved, true);
             } else {
               update(progress);
             }
@@ -269,11 +264,31 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
             behavior: reduced.matches ? 'auto' : 'smooth',
           });
         };
-        update(trigger.progress);
+        // onRefresh may have restored a chapter by scrolling. The trigger's
+        // progress still describes the pre-restoration position until its next
+        // update; do not replace the restored playhead with that stale value.
+        if (initialPosition) update(trigger.progress, true);
       } catch {
         if (!disposed) fail();
       }
     };
+    // Anchor links may leave the entire story in one jump. Do not decode the
+    // complete movie offscreen; restore the scroll position when it re-enters.
+    const visibility =
+      typeof IntersectionObserver === 'undefined'
+        ? undefined
+        : new IntersectionObserver(([entry]) => {
+            if (disposed || !entry) return;
+            visible = entry.isIntersecting;
+            if (!visible) {
+              playback?.seek(target);
+              cancelAnimationFrame(raf);
+              raf = 0;
+            } else if (playback && !raf) {
+              raf = requestAnimationFrame(tick);
+            }
+          });
+    visibility?.observe(wrapper);
     media.addEventListener('change', onProfile);
     reduced.addEventListener('change', onMotion);
     short.addEventListener('change', onMotion);
@@ -281,9 +296,9 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
     void setup();
     return () => {
       disposed = true;
+      visibility?.disconnect();
       cancelAnimationFrame(raf);
       cancelAnimationFrame(staticRaf);
-      fallbackController.abort();
       queue?.dispose();
       trigger?.kill();
       media.removeEventListener('change', onProfile);

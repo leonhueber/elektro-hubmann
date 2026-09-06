@@ -8,7 +8,7 @@
 </style>
 <main>
 <h1>V4 · Native Bewegungsprüfung</h1>
-<p>Kleine Cycles-Vorschau der durchgehenden Blender-Kamera. Die Website erhält den separaten Export mit 1000 px / 720 px. Die acht Ruheansichten gehören zu sechs Leistungs-Kapiteln.</p>
+<p>Finale Cycles-Bildfolge der durchgehenden Blender-Kamera mit konstantem warmem Licht. Dieselben Bilder werden in der Website verwendet (1000 px / 720 px). Die acht Ruheansichten gehören zu sechs Leistungs-Kapiteln.</p>
 <nav aria-label="Prüfansicht">
 <button data-progress=".04">Planung</button><button data-progress=".215">Öffnung</button><button data-progress=".35">Erdgeschoss</button><button data-progress=".47">Licht</button><button data-progress=".63">Obergeschoss</button><button data-progress=".79">Eingang</button><button data-progress=".91">PV</button><button data-progress=".99">Abschluss</button>
 </nav>
@@ -23,13 +23,15 @@
 <p><a href="../compare.html">Modell und ausgewählte Vorlage vergleichen</a> · <a href="motion-samples.json">Native Kamerapositionen</a></p>
 </main>
 <script type="module">
+const manifest=await fetch('./manifest.json').then(r=>r.json());
+const step=manifest.profiles.desktop.step;
 const {aliases}=await fetch('./frame-schedule.json').then(r=>r.json());
 const frame=document.querySelector('#frame'),scrub=document.querySelector('#scrub'),position=document.querySelector('#position'),status=document.querySelector('#status');
 let value=0,playing=0,last=0,request=0;
 function show(v){
- value=Math.max(0,Math.min(1440,v));const index=1+Math.round(value/4)*4,source=aliases[index]??index;
+ value=Math.max(0,Math.min(1440,v));const index=1+Math.round(value/step)*step,source=aliases[index]??index;
  scrub.value=String(index-1);position.value=((index-1)/14.4).toFixed(1);status.value=`Frame ${index} / 1441`;
- const url=`preview/frame-${String(source).padStart(4,'0')}.png`;
+ const url=`../../../../public/${manifest.assetPath}desktop/frame-${String(source).padStart(4,'0')}.webp?v=${manifest.revision}`;
  if(frame.getAttribute('src')!==url)frame.src=url;
  document.querySelectorAll('[data-progress]').forEach(b=>b.setAttribute('aria-pressed',String(Math.abs(Number(b.dataset.progress)*1440-value)<5)));
 }
@@ -38,6 +40,7 @@ function start(direction){cancelAnimationFrame(request);if(direction===1&&value>
 document.querySelector('#play').onclick=()=>start(1);document.querySelector('#reverse').onclick=()=>start(-1);document.querySelector('#pause').onclick=()=>{playing=0;cancelAnimationFrame(request)};
 scrub.oninput=()=>{playing=0;show(Number(scrub.value))};position.oninput=()=>{playing=0;show(Number(position.value)*14.4)};
 document.querySelectorAll('[data-progress]').forEach(b=>b.onclick=()=>{playing=0;show(Number(b.dataset.progress)*1440)});
+scrub.step=String(step);
 show(0);
 </script>
 </html>

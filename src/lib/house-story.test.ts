@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
   FrameQueue,
+  ScrollPlayback,
+  followScroll,
+  nextMotionFrame,
   chapterAt,
   chapterProgress,
   frameAt,
@@ -36,17 +39,18 @@ describe('shared Blender timeline', () => {
   });
   it('preserves the project base path', () => {
     expect(frameUrl('/elektro-hubmann/', 'mobile', 1)).toMatch(
-      /^\/elektro-hubmann\/images\/version-g\/[^/]+\/mobile\/frame-\d{4}\.webp$/,
+      /^\/elektro-hubmann\/images\/version-g\/[^/]+\/mobile\/frame-\d{4}\.webp\?v=v4-scroll-\d+$/,
     );
   });
   it('resolves long reading holds to a single exported image without alias chains', () => {
     for (const profile of ['desktop', 'mobile'] as const) {
       expect(sourceFrame(profile, 57)).toBe(1);
       expect(sourceFrame(profile, 113)).toBe(1);
-      for (let frame = 1; frame <= 1441; frame += 4) {
+      const step = houseManifest.profiles[profile].step;
+      for (let frame = 1; frame <= 1441; frame += step) {
         const source = sourceFrame(profile, frame);
         expect(sourceFrame(profile, source)).toBe(source);
-        expect((source - 1) % 4).toBe(0);
+        expect((source - 1) % step).toBe(0);
       }
     }
   });
@@ -59,6 +63,26 @@ const settle = async () => {
 };
 
 describe('frame loading during scrubbing', () => {
+  it('does not evict and decode upcoming frames again during a forward run', async () => {
+    const load = vi.fn(async (_frame: number, _signal: AbortSignal) =>
+      bitmap(),
+    );
+    const queue = new FrameQueue(load, vi.fn(), vi.fn(), {
+      capacity: 6,
+      concurrency: 3,
+      count: 100,
+      step: 1,
+    });
+    for (let frame = 1; frame <= 40; frame++) {
+      queue.request(frame);
+      for (let i = 0; i < 5; i++) await settle();
+      expect(queue.has(frame)).toBe(true);
+    }
+    const decoded = load.mock.calls.map((call) => call[0]);
+    expect(new Set(decoded).size).toBe(decoded.length);
+    queue.dispose();
+  });
+
   it('decodes aliases once and still displays the latest timeline position', async () => {
     let finish!: (image: Bitmap) => void;
     const load = vi.fn(
@@ -211,5 +235,125 @@ describe('frame loading during scrubbing', () => {
     await settle();
     expect(late.close).toHaveBeenCalledOnce();
     expect(display).not.toHaveBeenCalled();
+  });
+});
+
+describe('buffered scroll playback', () => {
+  const profile = 'desktop';
+  const step = houseManifest.profiles[profile].step;
+  const createQueue = (
+    load: (frame: number, signal: AbortSignal) => Promise<Bitmap>,
+    display = vi.fn(),
+  ) =>
+    new FrameQueue(load, display, vi.fn(), {
+      capacity: 12,
+      concurrency: 3,
+      step,
+      count: houseManifest.frameCount,
+      resolveFrame: (frame) => sourceFrame(profile, frame),
+    });
+
+  it('follows equally over time at 30, 60 and 120 Hz and reverses without overshoot', () => {
+    const positions = [30, 60, 120].map((hz) => {
+      let position = 0;
+      for (let i = 0; i < hz; i++)
+        position = followScroll(position, 1, 1000 / hz);
+      return position;
+    });
+    expect(positions[0]).toBeCloseTo(positions[1]!, 10);
+    expect(positions[1]).toBeCloseTo(positions[2]!, 10);
+    const reversed = followScroll(0.4, 0.1, 16);
+    expect(reversed).toBeLessThan(0.4);
+    expect(reversed).toBeGreaterThan(0.1);
+  });
+
+  it('loads distinct upcoming frames even while parked on a long reading hold', async () => {
+    const load = vi.fn(async () => bitmap());
+    const queue = createQueue(load);
+    queue.request(1);
+    for (let i = 0; i < 20; i++) await settle();
+    expect(load.mock.calls.length).toBe(12);
+    expect(queue.has(nextMotionFrame(1, frameAt(0.2), profile))).toBe(true);
+    queue.dispose();
+  });
+
+  it('visits every native motion image after a large scroll jump, in both directions', async () => {
+    const display = vi.fn();
+    const queue = createQueue(async () => bitmap(), display);
+    const playback = new ScrollPlayback(queue, profile);
+    playback.seek(0.08);
+    await settle();
+    playback.follow(0.3);
+    let time = 0;
+    for (let i = 0; i < 900; i++) {
+      const running = playback.tick((time += 1000 / 60));
+      await settle();
+      if (!running) break;
+    }
+    const expected = [
+      ...new Set(
+        Array.from(
+          { length: (frameAt(0.3) - frameAt(0.08)) / step + 1 },
+          (_, i) => sourceFrame(profile, frameAt(0.08) + i * step),
+        ),
+      ),
+    ];
+    expect([
+      ...new Set(
+        display.mock.calls.map((call) => sourceFrame(profile, call[1])),
+      ),
+    ]).toEqual(expected);
+    expect(display.mock.lastCall?.[1]).toBe(frameAt(0.3));
+    display.mockClear();
+    playback.follow(0.08);
+    for (let i = 0; i < 900; i++) {
+      const running = playback.tick((time += 1000 / 60));
+      await settle();
+      if (!running) break;
+    }
+    expect([
+      ...new Set(
+        display.mock.calls.map((call) => sourceFrame(profile, call[1])),
+      ),
+    ]).toEqual(expected.slice(0, -1).reverse());
+    expect(display.mock.lastCall?.[1]).toBe(frameAt(0.08));
+    queue.dispose();
+  });
+
+  it('waits for a delayed frame instead of cancelling it or jumping ahead', async () => {
+    const start = frameAt(0.12);
+    const blocked = sourceFrame(profile, start + step);
+    let finish!: (image: Bitmap) => void;
+    let signal!: AbortSignal;
+    const display = vi.fn();
+    const queue = createQueue(async (frame, pendingSignal) => {
+      if (frame === blocked) {
+        signal = pendingSignal;
+        return new Promise<Bitmap>((resolve) => {
+          finish = resolve;
+        });
+      }
+      return bitmap();
+    }, display);
+    const playback = new ScrollPlayback(queue, profile);
+    playback.seek(progressAtFrame(start));
+    await settle();
+    playback.follow(0.3);
+    for (let i = 0; i < 60; i++) {
+      playback.tick(i * 16);
+      await settle();
+    }
+    expect(display.mock.lastCall?.[1]).toBe(start);
+    expect(signal.aborted).toBe(false);
+    finish(bitmap());
+    await settle();
+    expect(display.mock.lastCall?.[1]).toBe(start + step);
+    playback.follow(progressAtFrame(start));
+    for (let i = 60; i < 160; i++) {
+      playback.tick(i * 16);
+      await settle();
+    }
+    expect(display.mock.lastCall?.[1]).toBe(start);
+    queue.dispose();
   });
 });

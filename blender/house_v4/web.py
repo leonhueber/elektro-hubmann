@@ -199,7 +199,9 @@ def render(args):
     scene.render.resolution_x = scene.render.resolution_y = args.size
     scene.cycles.samples = args.samples
     scene.render.use_persistent_data = True
-    folder = OUT/('preview' if args.preview else 'renders')
+    if scene.get('web_revision') != MANIFEST['revision']:
+        raise RuntimeError('Rebuild the native animation before rendering this revision.')
+    folder = OUT/('preview' if args.preview else 'renders')/MANIFEST['revision']
     folder.mkdir(parents=True, exist_ok=True)
     frames = schedule()[0] if args.all else [int(v) for v in args.frames.split(',') if v]
     for frame in frames:

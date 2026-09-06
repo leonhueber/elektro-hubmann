@@ -1,0 +1,236 @@
+{
+  "revision": "v4-scroll-02",
+  "passed": true,
+  "nativeAnimationSha256": "67333ec5c09a85d02a690da81cbc59e357255c17255bbe1f6c1e20b20da6303d",
+  "interiorLights": 19,
+  "constantWarmLighting": [
+    {
+      "name": "Kitchen | task lighting",
+      "watts": 65,
+      "color": [
+        1.0,
+        0.46000000834465027,
+        0.18000000715255737
+      ],
+      "keyframes": 721,
+      "minimumWatts": 65.0,
+      "maximumWatts": 65.0
+    },
+    {
+      "name": "Living | floor lamp | warm pool",
+      "watts": 30.0,
+      "color": [
+        1.0,
+        0.46000000834465027,
+        0.18000000715255737
+      ],
+      "keyframes": 721,
+      "minimumWatts": 30.0,
+      "maximumWatts": 30.0
+    },
+    {
+      "name": "Dining | warm pendant pool",
+      "watts": 70,
+      "color": [
+        1.0,
+        0.46000000834465027,
+        0.18000000715255737
+      ],
+      "keyframes": 721,
+      "minimumWatts": 70.0,
+      "maximumWatts": 70.0
+    },
+    {
+      "name": "Office | task lamp | warm pool",
+      "watts": 12.0,
+      "color": [
+        1.0,
+        0.46000000834465027,
+        0.18000000715255737
+      ],
+      "keyframes": 721,
+      "minimumWatts": 12.0,
+      "maximumWatts": 12.0
+    },
+    {
+      "name": "Parents | bedside lamp | warm pool",
+      "watts": 12.0,
+      "color": [
+        1.0,
+        0.46000000834465027,
+        0.18000000715255737
+      ],
+      "keyframes": 721,
+      "minimumWatts": 12.0,
+      "maximumWatts": 12.0
+    },
+    {
+      "name": "Parents | bedside lamp | warm pool.001",
+      "watts": 12.0,
+      "color": [
+        1.0,
+        0.46000000834465027,
+        0.18000000715255737
+      ],
+      "keyframes": 721,
+      "minimumWatts": 12.0,
+      "maximumWatts": 12.0
+    },
+    {
+      "name": "Child front | bedside lamp | warm pool",
+      "watts": 12.0,
+      "color": [
+        1.0,
+        0.46000000834465027,
+        0.18000000715255737
+      ],
+      "keyframes": 721,
+      "minimumWatts": 12.0,
+      "maximumWatts": 12.0
+    },
+    {
+      "name": "Child rear | bedside lamp | warm pool",
+      "watts": 12.0,
+      "color": [
+        1.0,
+        0.46000000834465027,
+        0.18000000715255737
+      ],
+      "keyframes": 721,
+      "minimumWatts": 12.0,
+      "maximumWatts": 12.0
+    },
+    {
+      "name": "Entrance | warm downlight",
+      "watts": 28,
+      "color": [
+        1.0,
+        0.46000000834465027,
+        0.18000000715255737
+      ],
+      "keyframes": 721,
+      "minimumWatts": 28.0,
+      "maximumWatts": 28.0
+    },
+    {
+      "name": "EG | Living ceiling light",
+      "watts": 110,
+      "color": [
+        1.0,
+        0.46000000834465027,
+        0.18000000715255737
+      ],
+      "keyframes": 721,
+      "minimumWatts": 110.0,
+      "maximumWatts": 110.0
+    },
+    {
+      "name": "EG | Hall ceiling light",
+      "watts": 65,
+      "color": [
+        1.0,
+        0.46000000834465027,
+        0.18000000715255737
+      ],
+      "keyframes": 721,
+      "minimumWatts": 65.0,
+      "maximumWatts": 65.0
+    },
+    {
+      "name": "EG | Utility ceiling light",
+      "watts": 75,
+      "color": [
+        1.0,
+        0.46000000834465027,
+        0.18000000715255737
+      ],
+      "keyframes": 721,
+      "minimumWatts": 75.0,
+      "maximumWatts": 75.0
+    },
+    {
+      "name": "EG | Guest WC ceiling light",
+      "watts": 40,
+      "color": [
+        1.0,
+        0.46000000834465027,
+        0.18000000715255737
+      ],
+      "keyframes": 721,
+      "minimumWatts": 40.0,
+      "maximumWatts": 40.0
+    },
+    {
+      "name": "EG | Office ceiling light",
+      "watts": 90,
+      "color": [
+        1.0,
+        0.46000000834465027,
+        0.18000000715255737
+      ],
+      "keyframes": 721,
+      "minimumWatts": 90.0,
+      "maximumWatts": 90.0
+    },
+    {
+      "name": "OG | Parents ceiling light",
+      "watts": 140,
+      "color": [
+        1.0,
+        0.46000000834465027,
+        0.18000000715255737
+      ],
+      "keyframes": 721,
+      "minimumWatts": 140.0,
+      "maximumWatts": 140.0
+    },
+    {
+      "name": "OG | Child front ceiling light",
+      "watts": 100,
+      "color": [
+        1.0,
+        0.46000000834465027,
+        0.18000000715255737
+      ],
+      "keyframes": 721,
+      "minimumWatts": 100.0,
+      "maximumWatts": 100.0
+    },
+    {
+      "name": "OG | Child rear ceiling light",
+      "watts": 100,
+      "color": [
+        1.0,
+        0.46000000834465027,
+        0.18000000715255737
+      ],
+      "keyframes": 721,
+      "minimumWatts": 100.0,
+      "maximumWatts": 100.0
+    },
+    {
+      "name": "OG | Bathroom ceiling light",
+      "watts": 100,
+      "color": [
+        1.0,
+        0.46000000834465027,
+        0.18000000715255737
+      ],
+      "keyframes": 721,
+      "minimumWatts": 100.0,
+      "maximumWatts": 100.0
+    },
+    {
+      "name": "OG | Landing ceiling light",
+      "watts": 65,
+      "color": [
+        1.0,
+        0.46000000834465027,
+        0.18000000715255737
+      ],
+      "keyframes": 721,
+      "minimumWatts": 65.0,
+      "maximumWatts": 65.0
+    }
+  ]
+}

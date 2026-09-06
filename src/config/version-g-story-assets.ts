@@ -111,5 +111,5 @@ export function versionGStoryAssetUrl(
   baseUrl: string,
   asset: VersionGStoryAsset,
 ) {
-  return `${baseUrl}images/version-g/${asset.src}`;
+  return `${baseUrl}images/version-g/${asset.src}?v=${houseManifest.revision}`;
 }

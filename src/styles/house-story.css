@@ -31,8 +31,15 @@
 .g-house-v4 .g-story-copy h2 {
   font-size: clamp(2.65rem, 4.05vw, 4.3rem);
 }
+.g-house-v4 .g-story-copy {
+  transform: translateY(8px);
+}
 .g-house-v4 .g-story-copy.is-active {
-  transition: none;
+  transform: none;
+  transition:
+    opacity 260ms ease-out,
+    transform 320ms ease-out;
+  transition-delay: 30ms;
 }
 .g-house-v4 .g-progress {
   width: 103px;

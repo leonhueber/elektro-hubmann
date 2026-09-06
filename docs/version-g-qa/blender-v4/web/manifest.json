@@ -1,20 +1,20 @@
 {
   "version": 4,
-  "revision": "v4-scroll-01",
+  "revision": "v4-scroll-02",
   "frameCount": 1441,
   "assetPath": "images/version-g/house-v4/",
   "profiles": {
     "desktop": {
       "width": 1000,
       "height": 1000,
-      "step": 4,
-      "cacheFrames": 6
+      "step": 2,
+      "cacheFrames": 12
     },
     "mobile": {
       "width": 720,
       "height": 720,
-      "step": 4,
-      "cacheFrames": 9
+      "step": 2,
+      "cacheFrames": 18
     }
   },
   "chapters": [

@@ -1,22 +1,31 @@
 {
-  "revision": "v4-scroll-01",
-  "checkedAtUTC": "2026-09-06T14:37:01.961264+00:00",
-  "nativeArchitectureChecksPassed": 14,
-  "nativeMotionTestsPassed": 4,
-  "frontendTestsPassed": 20,
+  "revision": "v4-scroll-02",
+  "checkedAtUTC": "2026-09-06T19:29:11.946559+00:00",
+  "nativeArchitecture": {
+    "sourceUnchanged": true,
+    "priorChecksPassed": 14
+  },
+  "nativeMotionTestsPassed": 5,
+  "nativeInteriorLightsValidated": 19,
+  "frontendTestsPassed": 25,
   "astroDiagnostics": {
     "errors": 0,
     "warnings": 0,
     "hints": 0
   },
   "eslint": "passed",
+  "changedFrontendFormatting": "passed",
   "productionBuildPages": 7,
   "assets": {
-    "nativeFrames": 189,
+    "nativeFrames": 373,
+    "newNativeRenders": 331,
+    "reusedExactNativeFrames": 42,
     "timelinePositions": 1441,
-    "sampledPositions": 361,
-    "webFiles": 390,
-    "dimensionsAndHashes": "passed"
+    "sampledPositions": 721,
+    "webFiles": 758,
+    "dimensionsAndHashes": "passed",
+    "desktopSequenceBytes": 16691886,
+    "mobileSequenceBytes": 10820584
   },
   "referencePackage": {
     "files": 59,
@@ -42,25 +51,70 @@
         520
       ]
     ],
+    "measurementScope": "Local browser and local production server; no network throttling or device emulation.",
+    "recordedPlayback": [
+      {
+        "scenario": "desktop planning to upper storey",
+        "nativeImageChanges": 233,
+        "skippedNativeImages": 0,
+        "lastFrameAtMs": 5720,
+        "rafMedianMs": 17.6,
+        "rafOver50Ms": 0,
+        "finalFrame": 909
+      },
+      {
+        "scenario": "desktop upper storey to planning",
+        "nativeImageChanges": 233,
+        "skippedNativeImages": 0,
+        "lastFrameAtMs": 5250,
+        "rafMedianMs": 17.6,
+        "rafOver50Ms": 0,
+        "finalFrame": 59
+      },
+      {
+        "scenario": "mobile planning to upper storey",
+        "nativeImageChanges": 233,
+        "skippedNativeImages": 0,
+        "lastFrameAtMs": 5700,
+        "rafMedianMs": 17.6,
+        "rafOver50Ms": 0,
+        "finalFrame": 909
+      },
+      {
+        "scenario": "mobile upper storey to planning",
+        "nativeImageChanges": 233,
+        "skippedNativeImages": 0,
+        "lastFrameAtMs": 5167,
+        "rafMedianMs": 17.6,
+        "rafOver50Ms": 0,
+        "finalFrame": 59
+      },
+      {
+        "scenario": "mobile forward, reverse, forward while moving",
+        "nativeImageChanges": 226,
+        "skippedNativeImages": 0,
+        "lastFrameAtMs": 5270,
+        "rafMedianMs": 17.7,
+        "rafOver50Ms": 0,
+        "finalFrame": 505
+      }
+    ],
+    "noJavaScriptAndReducedMotion": "SSR and media-query structure reviewed; no browser emulation used",
     "chaptersReviewed": 6,
-    "scrollOpening": "passed",
-    "rapidForwardReverseDesktop": "passed",
     "rapidForwardReverseMobile": "passed",
     "responsiveChapterPreservation": "passed",
     "landscapeStaticFallback": "passed",
-    "returnFromStaticFallback": "passed",
-    "exitToProjects": "passed",
+    "returnFromStaticFallback": {
+      "beforeFrame": 909,
+      "afterFrame": 909,
+      "retestedAfterFinalResizeFix": true
+    },
+    "exitToContact": {
+      "passed": true,
+      "offscreenFrame": 1441
+    },
     "consoleErrors": 0,
-    "individualFrameFailurePoster": "verified during development before final assets were available",
-    "noJavaScriptAndReducedMotion": "SSR and media-query structure reviewed; no browser emulation used"
-  },
-  "nativePreview": {
-    "forward": "passed",
-    "reverse": "passed"
-  },
-  "whiteStudioCorrection": {
-    "scope": "partial facade visibility",
-    "unchangedPlanningPixels": true
+    "consoleScope": "Fresh production tab without the temporary measurement harness; complete planning-to-photovoltaic drive."
   },
   "overview": "sequence-overview.jpg"
 }

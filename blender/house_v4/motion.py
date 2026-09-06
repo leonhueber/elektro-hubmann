@@ -9,8 +9,8 @@ from functools import lru_cache
 from math import dist
 
 FRAME_COUNT = 1441
-STEP = 4
-REVISION = 'v4-scroll-01'
+STEP = 2
+REVISION = 'v4-scroll-02'
 POSES = {
     'planning': ((23, -27, 8.3), (4.8, 4.5, 4.3), 78),
     'opening': ((24, -32, 26), (4.8, 5, 7.8), 70),
@@ -44,8 +44,8 @@ MANIFEST = {
     'version': 4, 'revision': REVISION, 'frameCount': FRAME_COUNT,
     'assetPath': 'images/version-g/house-v4/',
     'profiles': {
-        'desktop': {'width': 1000, 'height': 1000, 'step': STEP, 'cacheFrames': 6},
-        'mobile': {'width': 720, 'height': 720, 'step': STEP, 'cacheFrames': 9},
+        'desktop': {'width': 1000, 'height': 1000, 'step': STEP, 'cacheFrames': 12},
+        'mobile': {'width': 720, 'height': 720, 'step': STEP, 'cacheFrames': 18},
     },
     'chapters': CHAPTERS,
 }
@@ -109,7 +109,8 @@ def state(p):
     eg = 1-ramp(p, .54, .57)+ramp(p, .67, .691)
     route = ramp(p, .265, .30)*(1-ramp(p, .39, .43))
     blind = ramp(p, .57, .60)*(1-ramp(p, .67, .70))
-    light = .5-.3*ramp(p, .08, .20)+.8*ramp(p, .39, .43)-.8*ramp(p, .51, .57)+.8*ramp(p, .67, .71)+.8*ramp(p, .94, .98)
+    # Keep the same warm illumination through opening, both storeys and closing.
+    light = 1.0
     pos, target, lens = camera(p)
     return {'camera': pos, 'target': target, 'lens': lens, 'og': og, 'roof': roof,
             'cut': cut, 'eg': eg, 'route': route, 'blind': blind, 'light': light}

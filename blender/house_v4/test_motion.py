@@ -5,6 +5,10 @@ from motion import camera, state, schedule, POSES, LEGS, FRAME_COUNT, STEP
 
 
 class MotionTests(unittest.TestCase):
+    def test_warm_lights_stay_on_through_the_entire_animation(self):
+        for frame in range(FRAME_COUNT):
+            self.assertEqual(state(frame/(FRAME_COUNT-1))['light'], 1.0)
+
     def test_reading_poses_and_matching_light_cameras(self):
         for p, name in [(.04, 'planning'), (.215, 'opening'), (.35, 'installation'),
                         (.47, 'lighting'), (.63, 'smarthome'), (.79, 'security'),
