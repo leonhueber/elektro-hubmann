@@ -1,0 +1,7 @@
+{
+  "preset": "image-wall",
+  "title": "Elektro Hubmann · Haus V4 · 8 Ansichten und 2 Grundrisse",
+  "showCaptions": true,
+  "minTileWidth": 340,
+  "output": "review-board.html"
+}

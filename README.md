@@ -1,6 +1,6 @@
 # Elektro Hubmann – Website-Neubau und Migration
 
-Stand: 29. August 2026
+Stand: 6. September 2026
 
 Dieses Verzeichnis enthält die belastbare Planungsgrundlage für den Neubau von
 <https://elektro-hubmann.at/> und die spätere Migration von Domain, DNS und
@@ -61,12 +61,24 @@ Der lokale Entwicklungsserver verwendet denselben Basispfad wie GitHub Pages:
     – separate Animationsszene, Kapitelkameras, Desktop-/Mobilsequenz und Web-Export.
 13. [Haus R3 – Materialien und Einrichtung](docs/13-haus-r3-materialien-und-details.md)
     – detaillierte Möbel, Textilien, Oberflächen und die höher aufgelöste Web-Ausgabe.
+14. [Haus V4 – ausgewählte Vorlage und Kamerafahrten](docs/14-haus-v4-verbindliche-vorlage-und-kamerafahrten.md)
+    – gesicherte Mockups für zwei Geschosse mit Satteldach, Detailgrad, Frontend
+    und Bewegungsplan für den nächsten Blender-Nachbau.
+15. [Haus V4 – Website-Animation](docs/15-haus-v4-website-animation.md)
+    – native Kamerafahrten, acht Ansichten in sechs Kapiteln, responsive
+    Bildfolge, Ladeverhalten und reproduzierbarer Export.
+
+Das [native V4-Blender-Modell](blender/house_v4/README.md) enthält zwei
+eingerichtete Geschosse, Satteldach und acht Prüfansichten. Die Startseite
+verwendet die separate V4-Animation mit angehobenem Dach und Obergeschoss,
+offenen Innenräumen, warmem Licht und einer durchgehenden Kamera.
 
 ## Ausgewähltes Design
 
 Die Website verwendet die reduzierte Haus-Story: Ein vorgerendertes Blender-Haus
-führt auf der Startseite scrollgesteuert durch Planung, Installation, Energie
-und Service. Frühere Designvarianten und ihre Vorschau-Assets wurden entfernt.
+führt auf der Startseite scrollgesteuert durch Planung, Installation,
+Beleuchtung, Smart Home, Sicherheit und Photovoltaik. Frühere Designvarianten
+und ihre Vorschau-Assets wurden entfernt.
 
 ## Leitentscheidung
 

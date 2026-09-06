@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200" role="img" aria-labelledby="title desc">
+<title id="title">Haus V4 – Obergeschoss</title><desc id="desc">Drei Schlafzimmer, Familienbad und dieselbe Treppe.. Schematische Entwurfsgrundlage, Eingang unten.</desc>
+<defs><pattern id="oak" width="26" height="115" patternUnits="userSpaceOnUse"><rect width="26" height="115" fill="#f1e8d9"/><path d="M0 0V115M0 114H26" stroke="#e4d8c7" stroke-width=".8"/></pattern><pattern id="tile" width="45" height="45" patternUnits="userSpaceOnUse"><rect width="45" height="45" fill="#e5e6e3"/><path d="M0 0H45V45" fill="none" stroke="#cbd0cb" stroke-width="1"/></pattern></defs>
+<rect width="1200" height="1200" fill="#fafaf7"/>
+<text x="80" y="65" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#ba1325" letter-spacing="2">ELEKTRO HUBMANN / HAUS V4</text>
+<text x="80" y="125" font-family="Arial,sans-serif" font-size="44" font-weight="700" fill="#222826">Obergeschoss</text>
+<text x="80" y="163" font-family="Arial,sans-serif" font-size="18" fill="#67706a">Drei Schlafzimmer, Familienbad und dieselbe Treppe.</text>
+<rect x="210.00" y="225.00" width="720.00" height="810.00" rx="0" fill="#4d5550" stroke="none" stroke-width="1"/>
+<rect x="232.50" y="247.50" width="675.00" height="765.00" rx="0" fill="url(#oak)" stroke="none" stroke-width="1"/>
+<rect x="693.75" y="247.50" width="213.75" height="292.50" rx="0" fill="url(#tile)" stroke="none" stroke-width="1"/>
+<rect x="551.25" y="652.50" width="11.25" height="360.00" rx="0" fill="#677169" stroke="none" stroke-width="1"/>
+<rect x="682.50" y="652.50" width="11.25" height="360.00" rx="0" fill="#677169" stroke="none" stroke-width="1"/>
+<rect x="232.50" y="641.25" width="330.00" height="11.25" rx="0" fill="#677169" stroke="none" stroke-width="1"/>
+<rect x="682.50" y="641.25" width="225.00" height="11.25" rx="0" fill="#677169" stroke="none" stroke-width="1"/>
+<rect x="232.50" y="540.00" width="273.75" height="11.25" rx="0" fill="#677169" stroke="none" stroke-width="1"/>
+<rect x="682.50" y="540.00" width="225.00" height="11.25" rx="0" fill="#677169" stroke="none" stroke-width="1"/>
+<rect x="495.00" y="247.50" width="11.25" height="292.50" rx="0" fill="#677169" stroke="none" stroke-width="1"/>
+<rect x="682.50" y="247.50" width="11.25" height="292.50" rx="0" fill="#677169" stroke="none" stroke-width="1"/>
+<rect x="549.38" y="691.88" width="15.00" height="75.00" rx="0" fill="#f1e8d9" stroke="none" stroke-width="1"/>
+<line x1="556.875" y1="765.0" x2="489.375" y2="765.0" stroke="#a3865c" stroke-width="2" stroke-dasharray=""/>
+<line x1="489.375" y1="765.0" x2="556.875" y2="697.5" stroke="#bfb6a7" stroke-width="0.8" stroke-dasharray="3 3"/>
+<rect x="680.62" y="691.88" width="15.00" height="75.00" rx="0" fill="#f1e8d9" stroke="none" stroke-width="1"/>
+<line x1="688.125" y1="765.0" x2="755.625" y2="765.0" stroke="#a3865c" stroke-width="2" stroke-dasharray=""/>
+<line x1="755.625" y1="765.0" x2="688.125" y2="697.5" stroke="#bfb6a7" stroke-width="0.8" stroke-dasharray="3 3"/>
+<rect x="406.88" y="538.12" width="75.00" height="15.00" rx="0" fill="#f1e8d9" stroke="none" stroke-width="1"/>
+<line x1="408.75" y1="545.625" x2="408.75" y2="478.125" stroke="#a3865c" stroke-width="2" stroke-dasharray=""/>
+<line x1="408.75" y1="478.125" x2="476.25" y2="545.625" stroke="#bfb6a7" stroke-width="0.8" stroke-dasharray="3 3"/>
+<rect x="704.62" y="538.12" width="75.00" height="15.00" rx="0" fill="#f1e8d9" stroke="none" stroke-width="1"/>
+<line x1="706.5" y1="545.625" x2="706.5" y2="478.125" stroke="#a3865c" stroke-width="2" stroke-dasharray=""/>
+<line x1="706.5" y1="478.125" x2="774.0" y2="545.625" stroke="#bfb6a7" stroke-width="0.8" stroke-dasharray="3 3"/>
+<rect x="285.00" y="1012.50" width="187.50" height="22.50" rx="0" fill="#f6fcfd" stroke="#384540" stroke-width="2"/>
+<line x1="285.0" y1="1023.75" x2="472.5" y2="1023.75" stroke="#90a2a0" stroke-width="1" stroke-dasharray=""/>
+<rect x="738.75" y="1012.50" width="138.75" height="22.50" rx="0" fill="#f6fcfd" stroke="#384540" stroke-width="2"/>
+<line x1="738.75" y1="1023.75" x2="877.5" y2="1023.75" stroke="#90a2a0" stroke-width="1" stroke-dasharray=""/>
+<rect x="210.00" y="772.50" width="22.50" height="127.50" rx="0" fill="#f6fcfd" stroke="#384540" stroke-width="2"/>
+<line x1="221.25" y1="900.0" x2="221.25" y2="772.5" stroke="#90a2a0" stroke-width="1" stroke-dasharray=""/>
+<rect x="210.00" y="337.50" width="22.50" height="112.50" rx="0" fill="#f6fcfd" stroke="#384540" stroke-width="2"/>
+<line x1="221.25" y1="450.0" x2="221.25" y2="337.5" stroke="#90a2a0" stroke-width="1" stroke-dasharray=""/>
+<rect x="292.50" y="225.00" width="135.00" height="22.50" rx="0" fill="#f6fcfd" stroke="#384540" stroke-width="2"/>
+<line x1="292.5" y1="236.25" x2="427.5" y2="236.25" stroke="#90a2a0" stroke-width="1" stroke-dasharray=""/>
+<rect x="735.00" y="225.00" width="127.50" height="22.50" rx="0" fill="#f6fcfd" stroke="#384540" stroke-width="2"/>
+<line x1="735.0" y1="236.25" x2="862.5" y2="236.25" stroke="#90a2a0" stroke-width="1" stroke-dasharray=""/>
+<rect x="907.50" y="825.00" width="22.50" height="112.50" rx="0" fill="#f6fcfd" stroke="#384540" stroke-width="2"/>
+<line x1="918.7500000000001" y1="937.5" x2="918.7500000000001" y2="825.0" stroke="#90a2a0" stroke-width="1" stroke-dasharray=""/>
+<rect x="907.50" y="330.00" width="22.50" height="105.00" rx="0" fill="#f6fcfd" stroke="#384540" stroke-width="2"/>
+<line x1="918.7500000000001" y1="435.0" x2="918.7500000000001" y2="330.0" stroke="#90a2a0" stroke-width="1" stroke-dasharray=""/>
+<rect x="303.00" y="799.50" width="144.00" height="165.00" rx="5" fill="#cbb593" stroke="#a79e90" stroke-width="1.1"/>
+<rect x="307.50" y="806.25" width="135.00" height="153.75" rx="8" fill="#eee9df" stroke="#a79e90" stroke-width="1.1"/>
+<rect x="315.00" y="815.25" width="52.50" height="26.25" rx="7" fill="#fffdf7" stroke="#a79e90" stroke-width="1.1"/>
+<rect x="382.50" y="815.25" width="52.50" height="26.25" rx="7" fill="#fffdf7" stroke="#a79e90" stroke-width="1.1"/>
+<rect x="309.00" y="913.50" width="132.00" height="37.50" rx="0" fill="#9d9d83" stroke="none" stroke-width="1"/>
+<rect x="258.75" y="813.75" width="37.50" height="41.25" rx="5" fill="#c6ae88" stroke="#a79e90" stroke-width="1.1"/>
+<rect x="453.75" y="813.75" width="37.50" height="41.25" rx="5" fill="#c6ae88" stroke="#a79e90" stroke-width="1.1"/>
+<rect x="251.25" y="663.75" width="243.75" height="45.00" rx="1" fill="#cdb894" stroke="#a79e90" stroke-width="1.1"/>
+<text x="386.25" y="751.5" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="600" fill="#303a33">Eltern</text>
+<rect x="708.00" y="777.00" width="87.75" height="161.25" rx="5" fill="#cbb593" stroke="#a79e90" stroke-width="1.1"/>
+<rect x="712.50" y="783.75" width="78.75" height="150.00" rx="8" fill="#eee9df" stroke="#a79e90" stroke-width="1.1"/>
+<rect x="720.00" y="792.75" width="63.75" height="26.25" rx="7" fill="#fffdf7" stroke="#a79e90" stroke-width="1.1"/>
+<rect x="714.00" y="887.25" width="75.75" height="37.50" rx="0" fill="#9d9d83" stroke="none" stroke-width="1"/>
+<rect x="851.25" y="866.25" width="41.25" height="120.00" rx="3" fill="#cdb894" stroke="#a79e90" stroke-width="1.1"/>
+<rect x="828.75" y="665.25" width="63.75" height="41.25" rx="1" fill="#cdb894" stroke="#a79e90" stroke-width="1.1"/>
+<text x="801.75" y="745.5" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="600" fill="#303a33">Kind 2</text>
+<rect x="254.25" y="324.75" width="87.75" height="161.25" rx="5" fill="#cbb593" stroke="#a79e90" stroke-width="1.1"/>
+<rect x="258.75" y="331.50" width="78.75" height="150.00" rx="8" fill="#eee9df" stroke="#a79e90" stroke-width="1.1"/>
+<rect x="266.25" y="340.50" width="63.75" height="26.25" rx="7" fill="#fffdf7" stroke="#a79e90" stroke-width="1.1"/>
+<rect x="260.25" y="435.00" width="75.75" height="37.50" rx="0" fill="#9d9d83" stroke="none" stroke-width="1"/>
+<rect x="397.50" y="258.75" width="75.00" height="41.25" rx="3" fill="#cdb894" stroke="#a79e90" stroke-width="1.1"/>
+<rect x="442.50" y="341.25" width="41.25" height="112.50" rx="1" fill="#cdb894" stroke="#a79e90" stroke-width="1.1"/>
+<text x="361.5" y="508.5" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="600" fill="#303a33">Kind 1</text>
+<rect x="712.50" y="266.25" width="165.00" height="56.25" rx="24" fill="#fafbf6" stroke="#a79e90" stroke-width="1.1"/>
+<rect x="855.00" y="414.00" width="37.50" height="105.00" rx="2" fill="#cdb894" stroke="#a79e90" stroke-width="1.1"/>
+<rect x="856.50" y="471.00" width="33.00" height="37.50" rx="8" fill="#fafbf6" stroke="#a79e90" stroke-width="1.1"/>
+<rect x="856.50" y="420.75" width="33.00" height="37.50" rx="8" fill="#fafbf6" stroke="#a79e90" stroke-width="1.1"/>
+<rect x="706.50" y="333.75" width="78.75" height="78.75" rx="2" fill="#f0f4f0" stroke="#a79e90" stroke-width="1.1"/>
+<line x1="708.0" y1="411.75" x2="783.75" y2="335.25" stroke="#c0cdc3" stroke-width="0.8" stroke-dasharray=""/>
+<rect x="837.00" y="336.75" width="48.75" height="42.75" rx="20" fill="#fafbf6" stroke="#a79e90" stroke-width="1.1"/>
+<text x="778.5" y="435.0" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" font-weight="600" fill="#303a33">Familienbad</text>
+<text x="585.0" y="607.5" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" font-weight="600" fill="#303a33">Diele / alle Zimmer direkt erreichbar</text>
+<rect x="506.25" y="247.50" width="176.25" height="285.00" rx="0" fill="#fafaf7" stroke="#8d968e" stroke-width="1.5"/>
+<rect x="513.75" y="258.75" width="161.25" height="60.00" rx="0" fill="#dacfbc" stroke="#a79e90" stroke-width="1"/>
+<line x1="513.75" y1="521.25" x2="588.75" y2="521.25" stroke="#a79e90" stroke-width="1" stroke-dasharray=""/>
+<line x1="600.0" y1="521.25" x2="675.0" y2="521.25" stroke="#a79e90" stroke-width="1" stroke-dasharray=""/>
+<line x1="513.75" y1="498.75" x2="588.75" y2="498.75" stroke="#a79e90" stroke-width="1" stroke-dasharray=""/>
+<line x1="600.0" y1="498.75" x2="675.0" y2="498.75" stroke="#a79e90" stroke-width="1" stroke-dasharray=""/>
+<line x1="513.75" y1="476.25" x2="588.75" y2="476.25" stroke="#a79e90" stroke-width="1" stroke-dasharray=""/>
+<line x1="600.0" y1="476.25" x2="675.0" y2="476.25" stroke="#a79e90" stroke-width="1" stroke-dasharray=""/>
+<line x1="513.75" y1="453.75" x2="588.75" y2="453.75" stroke="#a79e90" stroke-width="1" stroke-dasharray=""/>
+<line x1="600.0" y1="453.75" x2="675.0" y2="453.75" stroke="#a79e90" stroke-width="1" stroke-dasharray=""/>
+<line x1="513.75" y1="431.2500000000001" x2="588.75" y2="431.2500000000001" stroke="#a79e90" stroke-width="1" stroke-dasharray=""/>
+<line x1="600.0" y1="431.2500000000001" x2="675.0" y2="431.2500000000001" stroke="#a79e90" stroke-width="1" stroke-dasharray=""/>
+<line x1="513.75" y1="408.75" x2="588.75" y2="408.75" stroke="#a79e90" stroke-width="1" stroke-dasharray=""/>
+<line x1="600.0" y1="408.75" x2="675.0" y2="408.75" stroke="#a79e90" stroke-width="1" stroke-dasharray=""/>
+<line x1="513.75" y1="386.2500000000001" x2="588.75" y2="386.2500000000001" stroke="#a79e90" stroke-width="1" stroke-dasharray=""/>
+<line x1="600.0" y1="386.2500000000001" x2="675.0" y2="386.2500000000001" stroke="#a79e90" stroke-width="1" stroke-dasharray=""/>
+<line x1="513.75" y1="363.75" x2="588.75" y2="363.75" stroke="#a79e90" stroke-width="1" stroke-dasharray=""/>
+<line x1="600.0" y1="363.75" x2="675.0" y2="363.75" stroke="#a79e90" stroke-width="1" stroke-dasharray=""/>
+<line x1="513.75" y1="341.25" x2="588.75" y2="341.25" stroke="#a79e90" stroke-width="1" stroke-dasharray=""/>
+<line x1="600.0" y1="341.25" x2="675.0" y2="341.25" stroke="#a79e90" stroke-width="1" stroke-dasharray=""/>
+<line x1="513.75" y1="318.7500000000001" x2="588.75" y2="318.7500000000001" stroke="#a79e90" stroke-width="1" stroke-dasharray=""/>
+<line x1="600.0" y1="318.7500000000001" x2="675.0" y2="318.7500000000001" stroke="#a79e90" stroke-width="1" stroke-dasharray=""/>
+<line x1="594.375" y1="528.75" x2="594.375" y2="318.75" stroke="#6f7770" stroke-width="3" stroke-dasharray=""/>
+<line x1="551.25" y1="506.25" x2="551.25" y2="345.0" stroke="#bd2030" stroke-width="1.8" stroke-dasharray=""/>
+<line x1="551.25" y1="345.0" x2="543.75" y2="361.5" stroke="#bd2030" stroke-width="1.8" stroke-dasharray=""/>
+<line x1="551.25" y1="345.0" x2="558.75" y2="361.5" stroke="#bd2030" stroke-width="1.8" stroke-dasharray=""/>
+<text x="592.5" y="556.5" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#303a33">Treppe / Podest</text>
+<line x1="210" y1="187.5" x2="930.0" y2="187.5" stroke="#949c95" stroke-width="1" stroke-dasharray=""/>
+<line x1="210" y1="225.0" x2="210" y2="172.5" stroke="#949c95" stroke-width="1" stroke-dasharray=""/>
+<line x1="930.0" y1="225.0" x2="930.0" y2="172.5" stroke="#949c95" stroke-width="1" stroke-dasharray=""/>
+<text x="570.0" y="178.5" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" font-weight="400" fill="#6c756d">9,60 m</text>
+<line x1="163.5" y1="1035" x2="163.5" y2="225.0" stroke="#949c95" stroke-width="1" stroke-dasharray=""/>
+<line x1="150.0" y1="1035" x2="210" y2="1035" stroke="#949c95" stroke-width="1" stroke-dasharray=""/>
+<line x1="150.0" y1="225.0" x2="210" y2="225.0" stroke="#949c95" stroke-width="1" stroke-dasharray=""/>
+<text x="148.5" y="630.0" transform="rotate(-90 148.5 630.0)" text-anchor="middle" font-family="Arial" font-size="16" fill="#6c756d">10,80 m</text>
+<text x="633.75" y="1076.25" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#ba1325">EINGANG / GIEBELSEITE</text>
+<text x="80" y="1135" font-family="Arial,sans-serif" font-size="16" fill="#505b53">Zwei Vollgeschosse · Satteldach 35° · durchgehende Erschließung</text><text x="80" y="1165" font-family="Arial,sans-serif" font-size="13" fill="#778077">Schematische Raumorganisation. Kein Ausführungsplan; Treppe, Türen und Maße vor dem Modellbau prüfen.</text></svg>

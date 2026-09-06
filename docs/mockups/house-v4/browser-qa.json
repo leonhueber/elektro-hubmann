@@ -1,0 +1,82 @@
+{
+  "date": "2026-09-06",
+  "type": "static-image-mockups",
+  "checks": [
+    {
+      "height": 1000,
+      "loaded": true,
+      "overflow": false,
+      "view": "planung",
+      "width": 1440
+    },
+    {
+      "height": 1000,
+      "loaded": true,
+      "overflow": false,
+      "view": "oeffnung",
+      "width": 1440
+    },
+    {
+      "height": 1000,
+      "loaded": true,
+      "overflow": false,
+      "view": "installation",
+      "width": 1440
+    },
+    {
+      "height": 1000,
+      "loaded": true,
+      "overflow": false,
+      "view": "beleuchtung",
+      "width": 1440
+    },
+    {
+      "height": 1000,
+      "loaded": true,
+      "overflow": false,
+      "view": "smart-home",
+      "width": 1440
+    },
+    {
+      "height": 1000,
+      "loaded": true,
+      "overflow": false,
+      "view": "sicherheit",
+      "width": 1440
+    },
+    {
+      "height": 1000,
+      "loaded": true,
+      "overflow": false,
+      "view": "photovoltaik",
+      "width": 1440
+    },
+    {
+      "height": 1000,
+      "loaded": true,
+      "overflow": false,
+      "view": "abschluss",
+      "width": 1440
+    },
+    {
+      "height": 844,
+      "loaded": true,
+      "overflow": false,
+      "view": "smart-home",
+      "width": 390
+    },
+    {
+      "height": 844,
+      "loaded": true,
+      "overflow": false,
+      "view": "oeffnung",
+      "width": 390
+    }
+  ],
+  "notes": [
+    "Eight desktop states checked at1440x1000.",
+    "Two mobile states checked at390x844.",
+    "Floor-plan SVGs visually inspected; console and wardrobe positions refined for door clearance.",
+    "These are ImageGen concepts, not native Blender animation frames."
+  ]
+}

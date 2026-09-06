@@ -1,0 +1,66 @@
+{
+  "revision": "v4-scroll-01",
+  "checkedAtUTC": "2026-09-06T14:37:01.961264+00:00",
+  "nativeArchitectureChecksPassed": 14,
+  "nativeMotionTestsPassed": 4,
+  "frontendTestsPassed": 20,
+  "astroDiagnostics": {
+    "errors": 0,
+    "warnings": 0,
+    "hints": 0
+  },
+  "eslint": "passed",
+  "productionBuildPages": 7,
+  "assets": {
+    "nativeFrames": 189,
+    "timelinePositions": 1441,
+    "sampledPositions": 361,
+    "webFiles": 390,
+    "dimensionsAndHashes": "passed"
+  },
+  "referencePackage": {
+    "files": 59,
+    "originalMockups": 8,
+    "floorplans": 2,
+    "websiteScreenshots": 11,
+    "unchanged": true
+  },
+  "browser": {
+    "target": "Astro production preview",
+    "url": "http://127.0.0.1:4327/elektro-hubmann/",
+    "viewports": [
+      [
+        1440,
+        1000
+      ],
+      [
+        390,
+        844
+      ],
+      [
+        844,
+        520
+      ]
+    ],
+    "chaptersReviewed": 6,
+    "scrollOpening": "passed",
+    "rapidForwardReverseDesktop": "passed",
+    "rapidForwardReverseMobile": "passed",
+    "responsiveChapterPreservation": "passed",
+    "landscapeStaticFallback": "passed",
+    "returnFromStaticFallback": "passed",
+    "exitToProjects": "passed",
+    "consoleErrors": 0,
+    "individualFrameFailurePoster": "verified during development before final assets were available",
+    "noJavaScriptAndReducedMotion": "SSR and media-query structure reviewed; no browser emulation used"
+  },
+  "nativePreview": {
+    "forward": "passed",
+    "reverse": "passed"
+  },
+  "whiteStudioCorrection": {
+    "scope": "partial facade visibility",
+    "unchangedPlanningPixels": true
+  },
+  "overview": "sequence-overview.jpg"
+}

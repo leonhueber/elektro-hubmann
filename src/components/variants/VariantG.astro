@@ -12,7 +12,7 @@ import {
   shopOpeningHours,
 } from '../../config/site';
 import '../../styles/variant-g.css';
-import '../../styles/house-v3.css';
+import '../../styles/house-story.css';
 
 const baseUrl = import.meta.env.BASE_URL;
 ---
@@ -41,7 +41,7 @@ const baseUrl = import.meta.env.BASE_URL;
     // The server-rendered first scene is immediately visible. If its interactive
     // bundle cannot initialise, preserve access to all six static chapters.
     window.setTimeout(() => {
-      const story = document.querySelector('.g-house-v3');
+      const story = document.querySelector('.g-house-v4');
       if (story && story.dataset.enabled !== 'true') {
         story.dataset.fallback = 'true';
       }

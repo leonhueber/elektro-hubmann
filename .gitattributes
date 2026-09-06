@@ -1,0 +1,7 @@
+# Preserve the exact bytes covered by the selected V4 reference checksums.
+docs/mockups/house-v4/** -text
+docs/14-haus-v4-verbindliche-vorlage-und-kamerafahrten.md -text
+
+# Native-source checksums must survive Windows/Linux checkouts unchanged.
+blender/build_house_v4.py text eol=lf
+blender/house_v4/*.py text eol=lf

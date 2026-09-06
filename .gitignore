@@ -12,3 +12,6 @@ blender/debug_projection.py
 blender/validate_render.py
 docs/version-g-qa/blender/static-*.jpg
 docs/version-g-qa/blender/validation/
+docs/version-g-qa/blender-v4/iterations/
+docs/version-g-qa/blender-v4/web/benchmark/
+docs/version-g-qa/blender-v4/web/renders/

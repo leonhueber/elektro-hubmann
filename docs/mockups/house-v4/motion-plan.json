@@ -1,0 +1,424 @@
+{
+  "schemaVersion": 1,
+  "referenceRevision": "v4-reference-01",
+  "date": "2026-09-06",
+  "status": "planned_not_implemented",
+  "purpose": "Verbindliche Bildziele und erster Bewegungsentwurf für den späteren Blender-Nachbau. Keine aktive Website-Konfiguration.",
+  "handoff": "../../14-haus-v4-verbindliche-vorlage-und-kamerafahrten.md",
+  "coordinateStatus": "unresolved_until_native_model_and_visual_match",
+  "camera": {
+    "projection": "perspective",
+    "initialLensMm": 70,
+    "lensStatus": "starting_estimate_only",
+    "worldPosition": null,
+    "targetPosition": null,
+    "rollDegrees": 0,
+    "translation": "continuous_collision_free_path",
+    "target": "separate_continuous_look_target",
+    "speedProfile": "6*t^5-15*t^4+10*t^3 applied to arc-length progress of a complete travel leg",
+    "constraints": [
+      "No independent XYZ easing or arbitrary quaternion interpolation between isolated poses.",
+      "Zero velocity and acceleration at holds; pass internal waypoints without a stop.",
+      "Plan position and target together; preserve horizon and avoid focal-length pumping.",
+      "Dolly outside walls, roof and floor slabs; test the full viewing frustum and silhouette margins.",
+      "Lighting pose uses exactly the installation camera; closing pose exactly the planning camera.",
+      "Desktop and mobile share scene state and timeline; framing is composed per profile."
+    ]
+  },
+  "poses": [
+    {
+      "id": "planung",
+      "image": "states/01-planung.png",
+      "websiteReference": "website-mockups/01-planung-desktop.png",
+      "chapterIndex": 0,
+      "scope": "Geschlossenes Haus, vorne rechts; neutrale Studiobeleuchtung.",
+      "sameCameraAs": null,
+      "cameraWorldPosition": null,
+      "cameraTargetPosition": null
+    },
+    {
+      "id": "oeffnung",
+      "image": "states/02-oeffnung.png",
+      "websiteReference": "website-mockups/02-oeffnung-desktop.png",
+      "chapterIndex": 1,
+      "scope": "EG unten, OG mit Bodenplatte und Satteldach getrennt angehoben.",
+      "sameCameraAs": null,
+      "cameraWorldPosition": null,
+      "cameraTargetPosition": null
+    },
+    {
+      "id": "installation",
+      "image": "states/03-installation.png",
+      "websiteReference": "website-mockups/03-installation-desktop.png",
+      "chapterIndex": 1,
+      "scope": "Offenes EG; HWR rechts vorne, Wohnen/Essen links, Küche hinten.",
+      "sameCameraAs": null,
+      "cameraWorldPosition": null,
+      "cameraTargetPosition": null
+    },
+    {
+      "id": "beleuchtung",
+      "image": "states/04-beleuchtung.png",
+      "websiteReference": "website-mockups/04-beleuchtung-desktop.png",
+      "chapterIndex": 2,
+      "scope": "Unveränderte EG-Geometrie; warmes Licht ohne rote Leitungsakzente.",
+      "sameCameraAs": "installation",
+      "cameraWorldPosition": null,
+      "cameraTargetPosition": null
+    },
+    {
+      "id": "smart-home",
+      "image": "states/05-smart-home.png",
+      "websiteReference": "website-mockups/05-smart-home-desktop.png",
+      "chapterIndex": 3,
+      "scope": "Offenes OG mit drei Schlafzimmern und Familienbad; teilweise geschlossene Beschattung.",
+      "sameCameraAs": null,
+      "cameraWorldPosition": null,
+      "cameraTargetPosition": null
+    },
+    {
+      "id": "sicherheit",
+      "image": "states/06-sicherheit.png",
+      "websiteReference": "website-mockups/06-sicherheit-desktop.png",
+      "chapterIndex": 4,
+      "scope": "Nahansicht des Eichen-Eingangs; Türstation rechts. Fenstermaße aus 01.",
+      "sameCameraAs": null,
+      "cameraWorldPosition": null,
+      "cameraTargetPosition": null
+    },
+    {
+      "id": "photovoltaik",
+      "image": "states/07-photovoltaik.png",
+      "websiteReference": "website-mockups/07-photovoltaik-desktop.png",
+      "chapterIndex": 5,
+      "scope": "Erhöhte Perspektive auf das geschlossene Haus; zehn PV-Module in 2 × 5.",
+      "sameCameraAs": null,
+      "cameraWorldPosition": null,
+      "cameraTargetPosition": null
+    },
+    {
+      "id": "abschluss",
+      "image": "states/08-abschluss.png",
+      "websiteReference": "website-mockups/08-abschluss-desktop.png",
+      "chapterIndex": 5,
+      "scope": "Exakt die Außenkamera von 01; warmes Innen- und Eingangslicht.",
+      "sameCameraAs": "planung",
+      "cameraWorldPosition": null,
+      "cameraTargetPosition": null
+    }
+  ],
+  "intermediatePoses": [
+    {
+      "id": "roof-lift-intermediate",
+      "purpose": "Roof lifted, upper storey remains seated.",
+      "coordinates": null
+    },
+    {
+      "id": "smart-home-pre-scene",
+      "sameCameraAs": "smart-home",
+      "purpose": "Upper-storey framing before blind/light actuation.",
+      "coordinates": null
+    },
+    {
+      "id": "closed-wide-intermediate",
+      "purpose": "House reassembled and enough clearance for the entrance dolly.",
+      "coordinates": null
+    }
+  ],
+  "navigation": [
+    {
+      "chapterIndex": 0,
+      "pose": "planung",
+      "progress": 0.04
+    },
+    {
+      "chapterIndex": 1,
+      "pose": "installation",
+      "progress": 0.35
+    },
+    {
+      "chapterIndex": 2,
+      "pose": "beleuchtung",
+      "progress": 0.47
+    },
+    {
+      "chapterIndex": 3,
+      "pose": "smart-home",
+      "progress": 0.63
+    },
+    {
+      "chapterIndex": 4,
+      "pose": "sicherheit",
+      "progress": 0.79
+    },
+    {
+      "chapterIndex": 5,
+      "pose": "photovoltaik",
+      "progress": 0.91
+    }
+  ],
+  "timingStatus": "initial_test_values_adjust_after_preview",
+  "timeline": [
+    {
+      "id": "segment-01",
+      "start": 0,
+      "end": 0.08,
+      "kind": "hold",
+      "from": "planung",
+      "to": "planung",
+      "chapterIndex": 0,
+      "action": "Haus geschlossen; Kamera und Szene ruhen."
+    },
+    {
+      "id": "segment-02",
+      "start": 0.08,
+      "end": 0.14,
+      "kind": "move",
+      "from": "planung",
+      "to": "roof-lift-intermediate",
+      "chapterIndex": 1,
+      "action": "Dach anheben, Kamera etwas zurück und höher; sicheren Bildrand erhalten."
+    },
+    {
+      "id": "segment-03",
+      "start": 0.14,
+      "end": 0.2,
+      "kind": "move",
+      "from": "roof-lift-intermediate",
+      "to": "oeffnung",
+      "chapterIndex": 1,
+      "action": "OG samt Bodenplatte anheben; Explosionsansicht erreichen."
+    },
+    {
+      "id": "segment-04",
+      "start": 0.2,
+      "end": 0.23,
+      "kind": "hold",
+      "from": "oeffnung",
+      "to": "oeffnung",
+      "chapterIndex": 1,
+      "action": "Beide eingerichteten Etagen und Dach lesbar halten."
+    },
+    {
+      "id": "segment-05",
+      "start": 0.23,
+      "end": 0.3,
+      "kind": "move",
+      "from": "oeffnung",
+      "to": "installation",
+      "chapterIndex": 1,
+      "action": "Außerhalb der Geometrie zum EG absenken; OG und Dach aus dem Sichtkegel führen."
+    },
+    {
+      "id": "segment-06",
+      "start": 0.3,
+      "end": 0.39,
+      "kind": "hold",
+      "from": "installation",
+      "to": "installation",
+      "chapterIndex": 1,
+      "action": "Verteilung, Netzwerk und Einrichtung lesen."
+    },
+    {
+      "id": "segment-07",
+      "start": 0.39,
+      "end": 0.43,
+      "kind": "scene-change",
+      "from": "installation",
+      "to": "beleuchtung",
+      "chapterIndex": 2,
+      "action": "Kamera fix; rote Routen ausblenden, warmes Arbeits-/Wohnlicht einblenden."
+    },
+    {
+      "id": "segment-08",
+      "start": 0.43,
+      "end": 0.51,
+      "kind": "hold",
+      "from": "beleuchtung",
+      "to": "beleuchtung",
+      "chapterIndex": 2,
+      "action": "Warme Lichtwirkung bei unverändertem EG-Ausschnitt lesen."
+    },
+    {
+      "id": "segment-09",
+      "start": 0.51,
+      "end": 0.57,
+      "kind": "move",
+      "from": "beleuchtung",
+      "to": "smart-home-pre-scene",
+      "chapterIndex": 3,
+      "action": "Erst zurückziehen, dann außen zum offenen OG steigen; keine Decken durchfahren."
+    },
+    {
+      "id": "segment-10",
+      "start": 0.57,
+      "end": 0.6,
+      "kind": "scene-change",
+      "from": "smart-home-pre-scene",
+      "to": "smart-home",
+      "chapterIndex": 3,
+      "action": "Kamera fix; Beschattung und Lichtszene ändern."
+    },
+    {
+      "id": "segment-11",
+      "start": 0.6,
+      "end": 0.67,
+      "kind": "hold",
+      "from": "smart-home",
+      "to": "smart-home",
+      "chapterIndex": 3,
+      "action": "Schlafzimmer, Taster und Beschattung lesen."
+    },
+    {
+      "id": "segment-12",
+      "start": 0.67,
+      "end": 0.71,
+      "kind": "move",
+      "from": "smart-home",
+      "to": "closed-wide-intermediate",
+      "chapterIndex": 4,
+      "action": "Außerhalb des Hauses zurückfahren; OG und Dach in korrekter Reihenfolge schließen."
+    },
+    {
+      "id": "segment-13",
+      "start": 0.71,
+      "end": 0.76,
+      "kind": "move",
+      "from": "closed-wide-intermediate",
+      "to": "sicherheit",
+      "chapterIndex": 4,
+      "action": "Ruhiger Dolly zum Eingang; Türstation früh im Bild führen."
+    },
+    {
+      "id": "segment-14",
+      "start": 0.76,
+      "end": 0.82,
+      "kind": "hold",
+      "from": "sicherheit",
+      "to": "sicherheit",
+      "chapterIndex": 4,
+      "action": "Videosprechanlage und Materialdetails lesen."
+    },
+    {
+      "id": "segment-15",
+      "start": 0.82,
+      "end": 0.88,
+      "kind": "move",
+      "from": "sicherheit",
+      "to": "photovoltaik",
+      "chapterIndex": 5,
+      "action": "Zurückziehen und in flachem Bogen zur Dachfläche steigen."
+    },
+    {
+      "id": "segment-16",
+      "start": 0.88,
+      "end": 0.94,
+      "kind": "hold",
+      "from": "photovoltaik",
+      "to": "photovoltaik",
+      "chapterIndex": 5,
+      "action": "PV-Anordnung und Dachdetails lesen."
+    },
+    {
+      "id": "segment-17",
+      "start": 0.94,
+      "end": 0.98,
+      "kind": "move",
+      "from": "photovoltaik",
+      "to": "abschluss",
+      "chapterIndex": 5,
+      "action": "Zur exakten Kamera von Planung zurück; warmes Licht einblenden."
+    },
+    {
+      "id": "segment-18",
+      "start": 0.98,
+      "end": 1,
+      "kind": "hold",
+      "from": "abschluss",
+      "to": "abschluss",
+      "chapterIndex": 5,
+      "action": "Ruhiger Abschluss vor dem nächsten Website-Bereich."
+    }
+  ],
+  "preview": {
+    "status": "not_rendered",
+    "timelinePositionCount": 1441,
+    "frameStart": 1,
+    "frameEnd": 1441,
+    "fps": 60,
+    "durationSeconds": 24,
+    "note": "Inclusive timeline sampling: 1440 intervals over 24 seconds. Sampling, duration and resolution are initial test values, not final delivery budgets.",
+    "profiles": {
+      "desktop": {
+        "frameStep": 2,
+        "initialFinalRenderSize": [
+          1600,
+          1600
+        ],
+        "initialScrollHeightSvh": 900,
+        "decodedCacheFrames": 6
+      },
+      "mobile": {
+        "frameStep": 3,
+        "initialFinalRenderSize": [
+          900,
+          900
+        ],
+        "initialScrollHeightSvh": 750,
+        "decodedCacheFrames": 9
+      }
+    },
+    "samplingRules": [
+      "Render inexpensive full-route previews before high-quality final images.",
+      "Reuse identical hold images via aliases; render real intermediate motion frames.",
+      "Inspect edge displacement in the actual website; increase sampling where visible steps persist.",
+      "Only finalize resolution, compression and frame counts after a forward/reverse scroll preview."
+    ]
+  },
+  "frontend": {
+    "chapterCount": 6,
+    "visualPoseCount": 8,
+    "uiRenderedAs": "HTML/CSS, never baked into model images",
+    "player": "bounded demand-loaded image sequence",
+    "progressMapping": "direct, monotonic and reversible; discard stale pending frame requests",
+    "textSynchronization": "chapter text and annotations follow the displayed frame",
+    "staticFallbacks": [
+      "prefers-reduced-motion",
+      "no JavaScript",
+      "loading error"
+    ],
+    "referenceViewports": {
+      "desktop": [
+        1440,
+        1000
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    },
+    "mobileReferences": [
+      "website-mockups/02-oeffnung-mobile.png",
+      "website-mockups/05-smart-home-mobile.png"
+    ]
+  },
+  "visualAcceptance": {
+    "status": "pending_native_model_and_player",
+    "comparisons": [
+      "01-planung",
+      "03-installation",
+      "05-smart-home",
+      "06-sicherheit"
+    ],
+    "cameraChecks": [
+      "opening-to-EG",
+      "EG-to-OG",
+      "entrance-to-roof",
+      "slow-forward",
+      "normal-forward",
+      "fast-reverse",
+      "mobile-framing"
+    ],
+    "required": "Same house identity, arrangement, material detail and frontend impression as selected images; coherent 3D geometry; no jumps, slab crossings, roll or flicker."
+  }
+}

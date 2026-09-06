@@ -1,0 +1,52 @@
+{
+  "version": 4,
+  "revision": "v4-scroll-01",
+  "frameCount": 1441,
+  "assetPath": "images/version-g/house-v4/",
+  "profiles": {
+    "desktop": {
+      "width": 1000,
+      "height": 1000,
+      "step": 4,
+      "cacheFrames": 6
+    },
+    "mobile": {
+      "width": 720,
+      "height": 720,
+      "step": 4,
+      "cacheFrames": 9
+    }
+  },
+  "chapters": [
+    {
+      "id": "planning",
+      "start": 0,
+      "rest": 0.04
+    },
+    {
+      "id": "installation",
+      "start": 0.08,
+      "rest": 0.35
+    },
+    {
+      "id": "lighting",
+      "start": 0.39,
+      "rest": 0.47
+    },
+    {
+      "id": "smarthome",
+      "start": 0.51,
+      "rest": 0.63
+    },
+    {
+      "id": "security",
+      "start": 0.67,
+      "rest": 0.79
+    },
+    {
+      "id": "energy",
+      "start": 0.82,
+      "rest": 0.91
+    }
+  ]
+}

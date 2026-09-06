@@ -1,0 +1,98 @@
+[
+  {
+    "id": "planung",
+    "index": 1,
+    "title": "Planung · Geschlossenes Haus · zwei Vollgeschosse und Satteldach",
+    "src": "states/01-planung.png",
+    "href": "website.html#planung",
+    "prompt": "C:\\Users\\hueberl\\Private_Projects\\elektro-bubmann\\docs\\mockups\\house-v4\\prompts\\01-planung.txt",
+    "route": "builtin-imagegen",
+    "showCaptions": true
+  },
+  {
+    "id": "oeffnung",
+    "index": 2,
+    "title": "Öffnung · Übergang · Dach und Obergeschoss heben sich getrennt",
+    "src": "states/02-oeffnung.png",
+    "href": "website.html#oeffnung",
+    "prompt": "C:\\Users\\hueberl\\Private_Projects\\elektro-bubmann\\docs\\mockups\\house-v4\\prompts\\02-oeffnung.txt",
+    "route": "builtin-imagegen",
+    "showCaptions": true
+  },
+  {
+    "id": "installation",
+    "index": 3,
+    "title": "Installation · Erdgeschoss · HWR mit Verteilung und Netzwerk",
+    "src": "states/03-installation.png",
+    "href": "website.html#installation",
+    "prompt": "C:\\Users\\hueberl\\Private_Projects\\elektro-bubmann\\docs\\mockups\\house-v4\\prompts\\03-installation.txt",
+    "route": "builtin-imagegen",
+    "showCaptions": true
+  },
+  {
+    "id": "beleuchtung",
+    "index": 4,
+    "title": "Beleuchtung · Erdgeschoss · warme Lichtwirkung in denselben Räumen",
+    "src": "states/04-beleuchtung.png",
+    "href": "website.html#beleuchtung",
+    "prompt": "C:\\Users\\hueberl\\Private_Projects\\elektro-bubmann\\docs\\mockups\\house-v4\\prompts\\04-beleuchtung.txt",
+    "route": "builtin-imagegen",
+    "showCaptions": true
+  },
+  {
+    "id": "smart-home",
+    "index": 5,
+    "title": "Smart Home · Obergeschoss · Schlafzimmer, Taster und Beschattung",
+    "src": "states/05-smart-home.png",
+    "href": "website.html#smart-home",
+    "prompt": "C:\\Users\\hueberl\\Private_Projects\\elektro-bubmann\\docs\\mockups\\house-v4\\prompts\\05-smart-home.txt",
+    "route": "builtin-imagegen",
+    "showCaptions": true
+  },
+  {
+    "id": "sicherheit",
+    "index": 6,
+    "title": "Sicherheit · Eingang · Detail der Videosprechanlage",
+    "src": "states/06-sicherheit.png",
+    "href": "website.html#sicherheit",
+    "prompt": "C:\\Users\\hueberl\\Private_Projects\\elektro-bubmann\\docs\\mockups\\house-v4\\prompts\\06-sicherheit.txt",
+    "route": "builtin-imagegen",
+    "showCaptions": true
+  },
+  {
+    "id": "photovoltaik",
+    "index": 7,
+    "title": "Photovoltaik · Satteldach · dieselben zehn Module aus erhöhter Perspektive",
+    "src": "states/07-photovoltaik.png",
+    "href": "website.html#photovoltaik",
+    "prompt": "C:\\Users\\hueberl\\Private_Projects\\elektro-bubmann\\docs\\mockups\\house-v4\\prompts\\07-photovoltaik.txt",
+    "route": "builtin-imagegen",
+    "showCaptions": true
+  },
+  {
+    "id": "abschluss",
+    "index": 8,
+    "title": "Abschluss · Geschlossenes Haus · warmes Innen- und Eingangslicht",
+    "src": "states/08-abschluss.png",
+    "href": "website.html#abschluss",
+    "prompt": "C:\\Users\\hueberl\\Private_Projects\\elektro-bubmann\\docs\\mockups\\house-v4\\prompts\\08-abschluss.txt",
+    "route": "builtin-imagegen",
+    "showCaptions": true
+  },
+  {
+    "id": "eg",
+    "index": 9,
+    "title": "Erdgeschoss · schematischer Grundriss",
+    "src": "09-grundriss-eg.svg",
+    "href": "09-grundriss-eg.svg",
+    "route": "svg-diagram"
+  },
+  {
+    "id": "og",
+    "index": 10,
+    "title": "Obergeschoss · schematischer Grundriss",
+    "src": "10-grundriss-og.svg",
+    "href": "10-grundriss-og.svg",
+    "route": "svg-diagram"
+  }
+]

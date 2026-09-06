@@ -1,6 +1,20 @@
 # Elektro Hubmann – Blender House Story
 
-## Aktuelles Modell: V3 / R3
+## Aktuelles Modell: V4
+
+Die [ausgewählten V4-Mockups und Vorgaben](../docs/14-haus-v4-verbindliche-vorlage-und-kamerafahrten.md)
+sind als `v4-reference-01` gesichert: zwei Vollgeschosse, Satteldach, detaillierte
+Einrichtung und durchgängige Kamerafahrten. Das native V4-Modell liegt in
+`assets/3d/elektro-hubmann-house-v4.blend`. Acht Ansichten lassen sich in Blender
+über die Seitenleiste **V4 Haus** kontrollieren. Die separate Animationsdatei
+`assets/3d/elektro-hubmann-house-v4-web.blend` enthält die durchgehende Kamera
+und alle reversiblen Bewegungen für die Website.
+
+[Modellumfang und Bedienung](house_v4/README.md) ·
+[V4-Prüfbilder](../docs/version-g-qa/blender-v4/)
+· [Animation und Web-Export](../docs/15-haus-v4-website-animation.md)
+
+## Vorheriges Modell: V3 / R3
 
 Das vollständige eingeschossige R3-Haus ist als neue Szene in
 `assets/3d/elektro-hubmann-house-v3-r3.blend` aufgebaut. Es enthält Eltern- und
@@ -19,7 +33,7 @@ The first V3 visual design is paused following review. See the
 [new design proposal](../docs/11-hausmodell-v3-gestalterischer-neustart.md)
 before continuing modelling. The commands below describe the existing draft.
 
-V3 is the current independent scene. It contains the complete two-storey
+V3 is an earlier independent scene. It contains the complete two-storey
 house, an animated roof and facade, electrical and network installations,
 lighting, a moving blind, security devices and a photovoltaic installation.
 The optional storage and wallbox collection is modelled but hidden pending

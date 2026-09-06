@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="de">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>V4 · Native Bewegungsprüfung</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f6f5f3;color:#242526;font:15px system-ui,sans-serif}main{max-width:1060px;margin:auto;padding:24px}h1{font-size:22px;margin:0 0 8px}p{color:#626467;line-height:1.5}nav,.controls{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}button,select,input[type=number]{border:1px solid #d6d4d0;border-radius:5px;background:white;padding:10px;color:inherit;font:inherit}button{cursor:pointer}button[aria-pressed=true]{background:#ba172a;color:white;border-color:#ba172a}figure{margin:0;display:grid;place-items:center;background:white;min-height:300px}img{display:block;width:min(100%,720px);height:auto;aspect-ratio:1;object-fit:contain}input[type=range]{width:100%;accent-color:#ba172a}output{font-variant-numeric:tabular-nums}a{color:#a51a2a}label{display:flex;align-items:center;gap:8px}
+</style>
+<main>
+<h1>V4 · Native Bewegungsprüfung</h1>
+<p>Kleine Cycles-Vorschau der durchgehenden Blender-Kamera. Die Website erhält den separaten Export mit 1000 px / 720 px. Die acht Ruheansichten gehören zu sechs Leistungs-Kapiteln.</p>
+<nav aria-label="Prüfansicht">
+<button data-progress=".04">Planung</button><button data-progress=".215">Öffnung</button><button data-progress=".35">Erdgeschoss</button><button data-progress=".47">Licht</button><button data-progress=".63">Obergeschoss</button><button data-progress=".79">Eingang</button><button data-progress=".91">PV</button><button data-progress=".99">Abschluss</button>
+</nav>
+<figure><img id="frame" alt="Native V4-Animation aus Blender" width="360" height="360"></figure>
+<div class="controls">
+<button id="play">Vorwärts abspielen</button><button id="reverse">Rückwärts abspielen</button><button id="pause">Pause</button>
+<label>Tempo <select id="speed"><option value="48">Langsam · 48 s</option><option value="24" selected>Normal · 24 s</option><option value="12">Schnell · 12 s</option></select></label>
+<label>Position <input id="position" type="number" min="0" max="100" step=".1" value="0"></label>
+<output id="status" aria-live="off"></output>
+</div>
+<label>Scroll-Fortschritt<input id="scrub" type="range" min="0" max="1440" step="4" value="0"></label>
+<p><a href="../compare.html">Modell und ausgewählte Vorlage vergleichen</a> · <a href="motion-samples.json">Native Kamerapositionen</a></p>
+</main>
+<script type="module">
+const {aliases}=await fetch('./frame-schedule.json').then(r=>r.json());
+const frame=document.querySelector('#frame'),scrub=document.querySelector('#scrub'),position=document.querySelector('#position'),status=document.querySelector('#status');
+let value=0,playing=0,last=0,request=0;
+function show(v){
+ value=Math.max(0,Math.min(1440,v));const index=1+Math.round(value/4)*4,source=aliases[index]??index;
+ scrub.value=String(index-1);position.value=((index-1)/14.4).toFixed(1);status.value=`Frame ${index} / 1441`;
+ const url=`preview/frame-${String(source).padStart(4,'0')}.png`;
+ if(frame.getAttribute('src')!==url)frame.src=url;
+ document.querySelectorAll('[data-progress]').forEach(b=>b.setAttribute('aria-pressed',String(Math.abs(Number(b.dataset.progress)*1440-value)<5)));
+}
+function tick(time){if(!playing)return;const delta=last?Math.min(80,time-last):0;last=time;show(value+playing*delta*1.44/Number(document.querySelector('#speed').value));if((playing>0&&value===1440)||(playing<0&&value===0)){playing=0;return}request=requestAnimationFrame(tick)}
+function start(direction){cancelAnimationFrame(request);if(direction===1&&value>=1440)value=0;if(direction===-1&&value<=0)value=1440;playing=direction;last=0;request=requestAnimationFrame(tick)}
+document.querySelector('#play').onclick=()=>start(1);document.querySelector('#reverse').onclick=()=>start(-1);document.querySelector('#pause').onclick=()=>{playing=0;cancelAnimationFrame(request)};
+scrub.oninput=()=>{playing=0;show(Number(scrub.value))};position.oninput=()=>{playing=0;show(Number(position.value)*14.4)};
+document.querySelectorAll('[data-progress]').forEach(b=>b.onclick=()=>{playing=0;show(Number(b.dataset.progress)*1440)});
+show(0);
+</script>
+</html>

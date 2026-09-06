@@ -1,0 +1,114 @@
+{
+  "reference": "v4-reference-01",
+  "modelRevision": "v4-build-02",
+  "generatedAtUTC": "2026-09-06T06:17:13.261113+00:00",
+  "renderEngine": "Blender 5.2.1 Cycles",
+  "renderSamples": 40,
+  "animationStatus": "reference_views_only",
+  "nativeChecksPassed": 14,
+  "model": {
+    "path": "assets/3d/elektro-hubmann-house-v4.blend",
+    "bytes": 23897463,
+    "sha256": "44d780f9f8da5ec1f6625fed8317feafbee24ecd3836d1c48dd71dc54d2319a4"
+  },
+  "sources": [
+    {
+      "path": "blender/build_house_v4.py",
+      "bytes": 10661,
+      "sha256": "d85a4a8f8970dffb5cd305646260f8097154d958db2f148a53a9dcdbd8053d34"
+    },
+    {
+      "path": "blender/house_v4/__init__.py",
+      "bytes": 72,
+      "sha256": "e1fcedc12c504acc6ab00fdda5f981517a5e728dc6eafe0d8f6b15569935049f"
+    },
+    {
+      "path": "blender/house_v4/architecture.py",
+      "bytes": 17347,
+      "sha256": "e63b09cfc62de46a8a4765e581fda7780d5435e88e880aa8f042f567245bfbff"
+    },
+    {
+      "path": "blender/house_v4/core.py",
+      "bytes": 11160,
+      "sha256": "6f618676993f2adfc69bbd87191e405bf95a13386fbe33096282a361634a8f3a"
+    },
+    {
+      "path": "blender/house_v4/furniture.py",
+      "bytes": 13684,
+      "sha256": "98ce8d01e6e7ed5f1748ce7e3ed6705012bf0a14909db2ac1950a0a2853da076"
+    },
+    {
+      "path": "blender/house_v4/rooms.py",
+      "bytes": 16293,
+      "sha256": "67e37ff03c88fc645c9a5832f177c292bf2db434e8a2a6cc189fb8ca5eee18d6"
+    },
+    {
+      "path": "blender/house_v4/ui.py",
+      "bytes": 1993,
+      "sha256": "e8c597978fcfae908fa9119ea8bef0a96f9e11f8ca4adfdf15d30cba7e2d9376"
+    },
+    {
+      "path": "blender/house_v4/validate.py",
+      "bytes": 4633,
+      "sha256": "8727e35a477be9306e774bd8c45b687468e918e1b1a9576aca636bc52524cf3b"
+    }
+  ],
+  "views": [
+    {
+      "path": "docs/version-g-qa/blender-v4/01-planung.png",
+      "bytes": 1015477,
+      "sha256": "c7e3f411053aeb0d305d2252614de752fe04a3635588b110ad7eb052e7ea3f6c",
+      "width": 1200,
+      "height": 1200
+    },
+    {
+      "path": "docs/version-g-qa/blender-v4/02-oeffnung.png",
+      "bytes": 1069776,
+      "sha256": "33d97f50ddf47328ed45120b169da0df90c434ae45ea8bfa5947e08d6006295f",
+      "width": 1200,
+      "height": 1200
+    },
+    {
+      "path": "docs/version-g-qa/blender-v4/03-installation.png",
+      "bytes": 1234149,
+      "sha256": "a71b209a84cfab48a3924e45959cc55dfbea613ccf574f7c49be0154c10475d8",
+      "width": 1200,
+      "height": 1200
+    },
+    {
+      "path": "docs/version-g-qa/blender-v4/04-beleuchtung.png",
+      "bytes": 1245883,
+      "sha256": "377aba3fe9efaf2a5ca76803427517f9f3d99ae7c43a1512f09ce9f86ef3165c",
+      "width": 1200,
+      "height": 1200
+    },
+    {
+      "path": "docs/version-g-qa/blender-v4/05-smart-home.png",
+      "bytes": 1091704,
+      "sha256": "e44ab673a1ebce261e29e10ce0a9d343e08e39279eaa6fc8e5d3ea4025276043",
+      "width": 1200,
+      "height": 1200
+    },
+    {
+      "path": "docs/version-g-qa/blender-v4/06-sicherheit.png",
+      "bytes": 1478747,
+      "sha256": "8bc2cdb4b91c7cf59fb76603e14d4092f6e8625604259fc48ccfbe09516e694b",
+      "width": 1200,
+      "height": 1200
+    },
+    {
+      "path": "docs/version-g-qa/blender-v4/07-photovoltaik.png",
+      "bytes": 947682,
+      "sha256": "c264ba21d07a85ae395bc73992dd5ad9ac510e30d1249ccf99f32f9b8c543a29",
+      "width": 1200,
+      "height": 1200
+    },
+    {
+      "path": "docs/version-g-qa/blender-v4/08-abschluss.png",
+      "bytes": 1036836,
+      "sha256": "48d354a7ad73ee1e4cb01d5b7ad9e96dbe34f3438c5a33bced40a1f06adee28a",
+      "width": 1200,
+      "height": 1200
+    }
+  ]
+}

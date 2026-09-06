@@ -1,10 +1,8 @@
 import type { CSSProperties } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { VERSION_G_STORY_CHAPTERS as chapters } from '../../../config/version-g-story-assets';
-import annotations from '../../../config/house-v3-annotations.json';
 import {
   FrameQueue,
-  annotationsVisible,
   chapterAt,
   chapterProgress,
   frameAt,
@@ -12,8 +10,9 @@ import {
   houseManifest,
   posterUrl,
   progressAtFrame,
+  sourceFrame,
   type HouseProfile,
-} from '../../../lib/house-v3';
+} from '../../../lib/house-story';
 
 export default function HouseStory({ baseUrl }: { baseUrl: string }) {
   const root = useRef<HTMLElement>(null);
@@ -36,26 +35,35 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
     let queue: FrameQueue<ImageBitmap> | undefined;
     let disposed = false;
     let raf = 0;
+    let staticRaf = 0;
     let target = 0;
+    let shownProgress = 0;
     let currentChapter = 0;
     let fallbackGeneration = 0;
     let lastFallbackFrame = -1;
+    let resizeProgress: number | undefined;
+    let staticProgress: number | undefined;
     let trigger:
-      | { kill(): void; progress: number; start: number; end: number }
+      | {
+          kill(): void;
+          refresh(): void;
+          progress: number;
+          start: number;
+          end: number;
+        }
       | undefined;
     const fallbackController = new AbortController();
     const display = (image: ImageBitmap, progress: number) => {
-      surface.width = image.width;
-      surface.height = image.height;
+      shownProgress = progress;
+      if (surface.width !== image.width || surface.height !== image.height) {
+        surface.width = image.width;
+        surface.height = image.height;
+      }
       context.fillStyle = '#fff';
       context.fillRect(0, 0, surface.width, surface.height);
       context.drawImage(image, 0, 0);
       wrapper.dataset.frame = String(frameAt(progress, profile));
       wrapper.style.setProperty('--g-story-progress', `${progress * 100}%`);
-      wrapper.style.setProperty(
-        '--g-annotation-opacity',
-        annotationsVisible(progress) ? '1' : '0',
-      );
       const nextChapter = chapterAt(progress);
       if (nextChapter !== currentChapter) {
         currentChapter = nextChapter;
@@ -69,11 +77,45 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
         throw new Error(`House asset unavailable: ${response.status}`);
       return createImageBitmap(await response.blob());
     };
+    const staticChapters = () => [
+      ...(wrapper
+        .closest('#leistungen')
+        ?.querySelectorAll<HTMLElement>('.g-static-chapter') ?? []),
+    ];
+    const headerHeight = () =>
+      document.querySelector('.g-header-shell')?.getBoundingClientRect()
+        .height ?? 0;
+    const rememberStaticChapter = () => {
+      if (!reduced.matches && !short.matches) return;
+      const sections = staticChapters();
+      const index = sections.findIndex(
+        (section) =>
+          section.getBoundingClientRect().bottom > headerHeight() + 32,
+      );
+      staticProgress =
+        index >= 0 && sections[0]!.getBoundingClientRect().top < innerHeight
+          ? chapterProgress(index)
+          : undefined;
+    };
+    const showStaticChapter = (progress: number) => {
+      cancelAnimationFrame(staticRaf);
+      staticRaf = requestAnimationFrame(() => {
+        if (disposed) return;
+        const section = staticChapters()[chapterAt(progress)];
+        if (section)
+          window.scrollTo({
+            top: scrollY + section.getBoundingClientRect().top - headerHeight(),
+            behavior: 'instant',
+          });
+      });
+    };
     const fail = () => {
       wrapper.dataset.fallback = 'true';
       queue?.dispose();
       trigger?.kill();
       setReady(false);
+      if (shownProgress > 0 && shownProgress < 1)
+        showStaticChapter(shownProgress);
     };
     const fallback = async (frame: number) => {
       if (frame === lastFallbackFrame) return;
@@ -113,15 +155,28 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
           void fallback(frame);
         },
         {
-          // Keep the larger desktop renders near the previous decoded-memory budget.
-          capacity: profile === 'mobile' ? 14 : 12,
+          capacity: houseManifest.profiles[profile].cacheFrames,
           concurrency: 3,
           step: houseManifest.profiles[profile].step,
           count: houseManifest.frameCount,
+          resolveFrame: (frame) => sourceFrame(outputProfile, frame),
         },
       );
     };
     const update = (progress: number) => {
+      if (disposed || reduced.matches || short.matches) return;
+      // Resize and ScrollTrigger callbacks can precede the media-query event.
+      // Hold the displayed pose until the new profile has refreshed its bounds.
+      if ((media.matches ? 'mobile' : 'desktop') !== profile) {
+        if (
+          trigger &&
+          window.scrollY >= trigger.start &&
+          window.scrollY <= trigger.end
+        ) {
+          resizeProgress ??= shownProgress;
+        }
+        return;
+      }
       target = progress;
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() =>
@@ -129,17 +184,39 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
       );
     };
     const onProfile = () => {
+      if (wrapper.dataset.fallback === 'true') return;
+      if (
+        trigger &&
+        window.scrollY >= trigger.start &&
+        window.scrollY <= trigger.end
+      ) {
+        resizeProgress ??= shownProgress;
+      }
       profile = media.matches ? 'mobile' : 'desktop';
       if (!reduced.matches && !short.matches) {
         resetQueue();
-        update(target);
+        if (trigger) trigger.refresh();
+        else update(target);
       }
     };
     const onMotion = () => {
+      if (wrapper.dataset.fallback === 'true') return;
       if (reduced.matches || short.matches) {
+        const wasInStory = !!trigger && shownProgress > 0 && shownProgress < 1;
+        resizeProgress = undefined;
+        fallbackGeneration++;
         queue?.dispose();
         queue = undefined;
+        trigger?.kill();
+        trigger = undefined;
+        cancelAnimationFrame(raf);
+        if (wasInStory) {
+          staticProgress = shownProgress;
+          showStaticChapter(shownProgress);
+        }
       } else if (!trigger) {
+        resizeProgress = staticProgress;
+        staticProgress = undefined;
         void setup();
       } else {
         resetQueue();
@@ -150,6 +227,7 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
       try {
         if (reduced.matches || short.matches) {
           wrapper.dataset.enabled = 'true';
+          rememberStaticChapter();
           return;
         }
         const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
@@ -159,7 +237,8 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
         if (disposed || wrapper.dataset.fallback === 'true') return;
         gsap.registerPlugin(ScrollTrigger);
         wrapper.dataset.enabled = 'true';
-        if (!reduced.matches && !short.matches) resetQueue();
+        if (reduced.matches || short.matches) return;
+        resetQueue();
         trigger = ScrollTrigger.create({
           trigger: wrapper,
           start: () =>
@@ -167,7 +246,19 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
           end: 'bottom bottom',
           invalidateOnRefresh: true,
           onUpdate: ({ progress }) => update(progress),
-          onRefresh: ({ progress }) => update(progress),
+          onRefresh: ({ progress, start, end }) => {
+            if (resizeProgress !== undefined) {
+              const preserved = resizeProgress;
+              resizeProgress = undefined;
+              window.scrollTo({
+                top: start + (end - start) * preserved,
+                behavior: 'instant',
+              });
+              update(preserved);
+            } else {
+              update(progress);
+            }
+          },
         });
         jump.current = (index) => {
           if (!trigger) return;
@@ -186,29 +277,32 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
     media.addEventListener('change', onProfile);
     reduced.addEventListener('change', onMotion);
     short.addEventListener('change', onMotion);
+    window.addEventListener('scroll', rememberStaticChapter, { passive: true });
     void setup();
     return () => {
       disposed = true;
       cancelAnimationFrame(raf);
+      cancelAnimationFrame(staticRaf);
       fallbackController.abort();
       queue?.dispose();
       trigger?.kill();
       media.removeEventListener('change', onProfile);
       reduced.removeEventListener('change', onMotion);
       short.removeEventListener('change', onMotion);
+      window.removeEventListener('scroll', rememberStaticChapter);
     };
   }, [baseUrl]);
   return (
     <section
       ref={root}
-      className="g-story g-house-v3"
-      data-model="r3"
+      className="g-story g-house-v4"
+      data-model={houseManifest.revision}
       aria-label="Elektrotechnik im Haus entdecken"
       data-state={chapters[activeIndex]!.id}
       style={
         {
-          '--g-story-height': '900svh',
-          '--g-story-height-mobile': '750svh',
+          '--g-story-height': '1200svh',
+          '--g-story-height-mobile': '1000svh',
           '--g-story-chapter-count': chapters.length,
         } as CSSProperties
       }
@@ -234,63 +328,6 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
             width={houseManifest.profiles.desktop.width}
             height={houseManifest.profiles.desktop.height}
           />
-          {(['desktop', 'mobile'] as const).map((profile) => {
-            const config = houseManifest.profiles[profile];
-            const annotationScale =
-              config.width / (profile === 'mobile' ? 640 : 960);
-            const labels = annotations[profile][chapters[activeIndex]!.id];
-            return (
-              <svg
-                key={profile}
-                className={`g-house-annotations g-house-annotations--${profile}`}
-                viewBox={`0 0 ${config.width} ${config.height}`}
-                aria-hidden="true"
-              >
-                {(profile === 'mobile' ? labels.slice(0, 1) : labels).map(
-                  (projected) => {
-                    const label = {
-                      ...projected,
-                      x: projected.x / annotationScale,
-                      y: projected.y / annotationScale,
-                      labelX: projected.labelX / annotationScale,
-                      labelY: projected.labelY / annotationScale,
-                    };
-                    const width =
-                      label.text.length * (profile === 'mobile' ? 14 : 11) + 28;
-                    return (
-                      <g
-                        key={label.text}
-                        transform={`scale(${annotationScale})`}
-                      >
-                        <line
-                          x1={label.x}
-                          y1={label.y}
-                          x2={label.labelX}
-                          y2={label.labelY}
-                        />
-                        <circle cx={label.x} cy={label.y} r="4" />
-                        <rect
-                          x={label.labelX - width / 2}
-                          y={label.labelY - 18}
-                          width={width}
-                          height="36"
-                          rx="3"
-                        />
-                        <text
-                          x={label.labelX}
-                          y={label.labelY}
-                          dy=".35em"
-                          textAnchor="middle"
-                        >
-                          {label.text}
-                        </text>
-                      </g>
-                    );
-                  },
-                )}
-              </svg>
-            );
-          })}
         </div>
         <div className="g-story-copy-stack">
           {chapters.map((chapter, index) => (

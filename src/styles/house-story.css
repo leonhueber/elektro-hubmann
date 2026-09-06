@@ -1,0 +1,144 @@
+/* The native square V4 renders keep the complete house visible at every stop. */
+.g-house-v4 .g-story-visual {
+  inset: 1% max(142px, 11%) 1% 31%;
+}
+.g-house-poster,
+.g-house-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.g-house-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.g-house-poster.is-hidden {
+  visibility: hidden;
+}
+.g-house-canvas {
+  visibility: hidden;
+}
+.g-house-canvas.is-ready {
+  visibility: visible;
+}
+.g-house-v4 .g-story-copy-stack {
+  width: min(445px, 32vw);
+}
+.g-house-v4 .g-story-copy h2 {
+  font-size: clamp(2.65rem, 4.05vw, 4.3rem);
+}
+.g-house-v4 .g-story-copy.is-active {
+  transition: none;
+}
+.g-house-v4 .g-progress {
+  width: 103px;
+  right: 18px;
+}
+.g-house-v4 .g-progress li {
+  color: #707278;
+}
+.g-house-v4 .g-progress li.is-active {
+  color: #161719;
+}
+.g-house-components {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin: 0 0 25px;
+  padding: 0;
+  list-style: none;
+}
+.g-house-components li {
+  border-left: 2px solid var(--g-red);
+  padding-left: 9px;
+  font-size: 0.72rem;
+  color: #565960;
+}
+.g-static-visual picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.g-anchor-section:has(.g-house-v4[data-fallback='true']) .g-static-story {
+  display: block;
+}
+.g-house-v4[data-fallback='true'] {
+  display: none;
+}
+@media (max-width: 860px) {
+  .g-house-v4 .g-story-visual {
+    inset: 48px 5px 47% 5px;
+  }
+  .g-house-v4 .g-story-copy-stack {
+    inset: 55% 20px 0;
+    width: auto;
+  }
+  .g-house-v4 .g-story-copy {
+    padding-top: 5px;
+  }
+  .g-house-v4 .g-story-copy h2 {
+    font-size: clamp(1.9rem, 7.3vw, 2.7rem);
+    margin-bottom: 12px;
+  }
+  .g-house-v4 .g-story-description {
+    margin-bottom: 12px;
+  }
+  .g-house-components {
+    gap: 6px 12px;
+    margin-bottom: 16px;
+  }
+  .g-house-components li {
+    font-size: 0.65rem;
+  }
+  .g-house-v4 .g-progress {
+    top: 6px;
+    right: 20px;
+    left: 20px;
+    width: auto;
+  }
+  .g-house-v4 .g-progress li {
+    height: 44px;
+  }
+  .g-house-v4 .g-progress ol {
+    border: 0;
+  }
+  .g-house-v4 .g-progress li::before {
+    top: 20px;
+  }
+  .g-house-v4 .g-progress li button {
+    border-top: 1px solid #d6d7da;
+    margin-top: 22px;
+    height: 22px;
+  }
+  .g-house-v4 .g-progress li button::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+}
+@media (max-width: 860px) and (max-height: 720px) {
+  .g-house-v4 .g-story-visual {
+    inset: 44px 12px 54%;
+  }
+  .g-house-v4 .g-story-copy-stack {
+    inset: 50% 20px 0;
+  }
+  .g-house-v4 .g-story-copy h2 {
+    font-size: 1.8rem;
+  }
+  .g-house-v4 .g-house-components {
+    display: none;
+  }
+}
+@media (max-height: 580px), (prefers-reduced-motion: reduce) {
+  .g-house-v4 {
+    display: none;
+  }
+  .g-static-story {
+    display: block;
+  }
+}

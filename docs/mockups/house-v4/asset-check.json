@@ -1,0 +1,69 @@
+{
+  "images": [
+    {
+      "file": "01-planung.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 1564250
+    },
+    {
+      "file": "02-oeffnung.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 1503156
+    },
+    {
+      "file": "03-installation.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 1941746
+    },
+    {
+      "file": "04-beleuchtung.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 2012773
+    },
+    {
+      "file": "05-smart-home.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 1981294
+    },
+    {
+      "file": "06-sicherheit.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 2724034
+    },
+    {
+      "file": "07-photovoltaik.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 1742950
+    },
+    {
+      "file": "08-abschluss.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "bytes": 1712291
+    }
+  ],
+  "count": 8
+}

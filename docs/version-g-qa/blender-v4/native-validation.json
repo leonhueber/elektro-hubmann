@@ -1,0 +1,86 @@
+{
+  "reference": "v4-reference-01",
+  "scene": "V4 | Reference house.001",
+  "checks": [
+    {
+      "check": "Independent V4 scene",
+      "passed": true
+    },
+    {
+      "check": "Three independently movable assemblies",
+      "passed": true
+    },
+    {
+      "check": "Ten separate modules inside the roof, parented to it",
+      "passed": true
+    },
+    {
+      "check": "Parents | double oak bed belongs to OG",
+      "passed": true
+    },
+    {
+      "check": "Child front | oak single bed belongs to OG",
+      "passed": true
+    },
+    {
+      "check": "Child rear | oak single bed belongs to OG",
+      "passed": true
+    },
+    {
+      "check": "Two nine-riser stair flights",
+      "passed": true
+    },
+    {
+      "check": "Upper slab leaves real U-stair void",
+      "passed": true
+    },
+    {
+      "check": "Eight perspective target cameras",
+      "passed": true
+    },
+    {
+      "check": "Every mesh has a native material",
+      "passed": true
+    },
+    {
+      "check": "Reference images and oak texture packed",
+      "passed": true
+    },
+    {
+      "check": "Videosprechanlage modelled",
+      "passed": true
+    },
+    {
+      "check": "Podest, terrace and both pots have real ground contact",
+      "passed": true
+    },
+    {
+      "check": "OG ceiling belongs to lifting roof and meets the room walls",
+      "passed": true
+    }
+  ],
+  "allPassed": true,
+  "objects": 3531,
+  "meshes": 2125,
+  "vertices": 421171,
+  "rooms": [
+    "EG",
+    "EG / OG staircase",
+    "EG | Guest WC",
+    "EG | HWR / Electrical",
+    "EG | Kitchen",
+    "EG | Living / Dining",
+    "EG | Office",
+    "Entrance",
+    "OG",
+    "OG | Child front",
+    "OG | Child rear",
+    "OG | Family bathroom",
+    "OG | Landing",
+    "OG | Parents",
+    "Photovoltaic",
+    "Roof"
+  ],
+  "packedImages": 9,
+  "animationStatus": "reference_views_only"
+}

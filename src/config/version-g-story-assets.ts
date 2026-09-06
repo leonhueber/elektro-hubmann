@@ -1,4 +1,4 @@
-import { houseManifest } from '../lib/house-v3';
+import { houseManifest } from '../lib/house-story';
 export type VersionGStoryState =
   | 'planning'
   | 'installation'
@@ -31,7 +31,7 @@ const copy: Record<
       'Wir planen Elektrotechnik für Neubau, Sanierung und Gewerbe – abgestimmt auf Ihr Gebäude und Ihren Alltag.',
     cta: 'Projekt besprechen',
     hint: 'Scrollen und das Haus entdecken',
-    alt: 'Eingeschossiges Wohnhaus mit Flachdach und Photovoltaik als Anschauungsmodell für die Elektroplanung.',
+    alt: 'Zweigeschossiges Wohnhaus mit Satteldach, Photovoltaik und großen Fenstern als Anschauungsmodell für die Elektroplanung.',
     components: ['Gebäudeplanung', 'Anschlüsse'],
   },
   installation: {
@@ -41,7 +41,7 @@ const copy: Record<
       'Von der Verteilung bis zur Steckdose: Wir installieren Elektrotechnik und strukturierte Netzwerke sauber und vorausschauend.',
     cta: 'Installation anfragen',
     hint: 'Weiter zur Beleuchtung',
-    alt: 'Nahansicht des Technikraums im geöffneten Wohnhaus mit Elektroverteilung, Netzwerkschrank und getrennten Strom- und Datenwegen.',
+    alt: 'Geöffnetes Erdgeschoss mit Wohnküche, Essbereich, Büro, Gäste-WC und Technikraum; Elektroverteilung, Netzwerk und Leitungswege sind sichtbar.',
     components: ['Elektroverteilung', 'Strom & Netzwerk'],
   },
   lighting: {
@@ -61,7 +61,7 @@ const copy: Record<
       'Mit vernetzter Gebäudesteuerung stimmen Sie Licht und Beschattung auf Ihren Alltag ab – einfach und komfortabel.',
     cta: 'Smart Home besprechen',
     hint: 'Weiter zur Sicherheit',
-    alt: 'Smart-Home-Ansicht mit KNX-Steuerung und abgesenkter Beschattung am Schlafzimmerfenster.',
+    alt: 'Geöffnetes Obergeschoss mit Elternschlafzimmer, zwei Kinderzimmern und Familienbad; die Beschattung am Schlafzimmerfenster ist abgesenkt.',
     components: ['KNX-Steuerung', 'Licht & Beschattung'],
   },
   security: {
@@ -81,7 +81,7 @@ const copy: Record<
       'Wir planen und installieren Ihre Photovoltaikanlage – vom Dachmodul über den Wechselrichter bis zum Anschluss im Haus.',
     cta: 'Photovoltaik anfragen',
     hint: 'Weiter zu unseren Projekten',
-    alt: 'Erhöhte Ansicht des Wohnhauses mit acht Photovoltaikmodulen auf dem wieder aufgesetzten Flachdach.',
+    alt: 'Erhöhte Ansicht des zweigeschossigen Wohnhauses mit zehn Photovoltaikmodulen in zwei Reihen auf dem Satteldach.',
     components: ['PV-Module', 'Wechselrichter'],
   },
 };
