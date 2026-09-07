@@ -38,8 +38,8 @@ describe('shared Blender timeline', () => {
     }
   });
   it('preserves the project base path', () => {
-    expect(frameUrl('/elektro-hubmann/', 'mobile', 1)).toMatch(
-      /^\/elektro-hubmann\/images\/version-g\/[^/]+\/mobile\/frame-\d{4}\.webp\?v=v4-scroll-\d+$/,
+    expect(frameUrl('/elektro-hubmann/', 'mobile', 1)).toBe(
+      `/elektro-hubmann/${houseManifest.assetPath}mobile/frame-0001.webp?v=${houseManifest.revision}`,
     );
   });
   it('resolves long reading holds to a single exported image without alias chains', () => {

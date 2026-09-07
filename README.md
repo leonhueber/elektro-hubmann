@@ -67,6 +67,9 @@ Der lokale Entwicklungsserver verwendet denselben Basispfad wie GitHub Pages:
 15. [Haus V4 – Website-Animation](docs/15-haus-v4-website-animation.md)
     – native Kamerafahrten, acht Ansichten in sechs Kapiteln, responsive
     Bildfolge, Ladeverhalten und reproduzierbarer Export.
+16. [Haus V4 – Balkon und Außendetails](docs/16-haus-v4-aussendetails.md)
+    – neueste Blender-Modellrevision: Variante B mit Metallgeländer,
+    Holzfenstern, größerer Terrasse und detaillierter Fassade.
 
 Das [native V4-Blender-Modell](blender/house_v4/README.md) enthält zwei
 eingerichtete Geschosse, Satteldach und acht Prüfansichten. Die Startseite

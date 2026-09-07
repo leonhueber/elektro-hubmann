@@ -41,9 +41,10 @@ const baseUrl = import.meta.env.BASE_URL;
     // The server-rendered first scene is immediately visible. If its interactive
     // bundle cannot initialise, preserve access to all six static chapters.
     window.setTimeout(() => {
-      const story = document.querySelector('.g-house-v4');
-      if (story && story.dataset.enabled !== 'true') {
-        story.dataset.fallback = 'true';
+      const section = document.getElementById('leistungen');
+      const story = section?.querySelector('.g-house-v4');
+      if (section && (!story || story.dataset.enabled !== 'true')) {
+        section.dataset.fallback = 'true';
       }
     }, 6000);
   </script>

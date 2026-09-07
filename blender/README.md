@@ -2,6 +2,14 @@
 
 ## Aktuelles Modell: V4
 
+Die neueste Modellrevision ist **V4 Außenrevision 01**: Variante B mit
+Metallgeländer, Balkon, Fensterrahmen in Holzoptik, Terrasse und Fassadendetails.
+Sie liegt als `assets/3d/elektro-hubmann-house-v4-exterior-r1.blend` und als
+separate `elektro-hubmann-house-v4-exterior-r1-web.blend` vor.
+[Änderungen und Reproduktion](../docs/16-haus-v4-aussendetails.md) ·
+[Vorher, Mockup und Renderings](../docs/version-g-qa/blender-v4-exterior-r1/review.html).
+Die Website-Bildfolge verwendet noch den bisherigen V4-Export.
+
 Die [ausgewählten V4-Mockups und Vorgaben](../docs/14-haus-v4-verbindliche-vorlage-und-kamerafahrten.md)
 sind als `v4-reference-01` gesichert: zwei Vollgeschosse, Satteldach, detaillierte
 Einrichtung und durchgängige Kamerafahrten. Das native V4-Modell liegt in

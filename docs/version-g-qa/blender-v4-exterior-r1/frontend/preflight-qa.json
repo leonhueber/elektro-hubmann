@@ -1,0 +1,66 @@
+{
+  "checkedAt": "2026-09-07T00:38:16+00:00",
+  "revision": "v4-scroll-02-exterior-01",
+  "nativeAnimationSha256": "d28e7c317354912268a92013b493b465696825d684f6ec22ef423de7c1d54f40",
+  "visuallyReviewedNativeFrames": {
+    "1": "c95694c645c189a54348066a87580a69b86ac86f0d24008545402851b16913b8",
+    "217": "3c1fa16103556683bcf5d4117a2d2765d8071d18c4be8fd4f10432c776b074d3",
+    "433": "c02ff9f12259d0bae813c8ac28d6eb0ee70393925dd3710a93a9268aac4becf0",
+    "815": "1f641efb6f5e616b23e6b2057543aabef2614c03b4419536ed0897ad4e1f0f9e",
+    "865": "4c8259e520b86dd432fb5edd1c04915d4f1bb4b5d149554e8ac6c11fff137ea9",
+    "1097": "ba698b9a36552bd234e9e34fccde70cb9639f43cdb38796ee4e3ac9a72e35676",
+    "1269": "a79849db0821a87c38b847535af55f630add086e610d2621219aba24613ea7f3"
+  },
+  "webpProofSizes": {
+    "desktop": {
+      "1": 74484,
+      "217": 61746,
+      "433": 96898,
+      "815": 73560,
+      "865": 78482,
+      "1097": 95592,
+      "1269": 64600
+    },
+    "mobile": {
+      "1": 35396,
+      "217": 30074,
+      "433": 49492,
+      "815": 38164,
+      "865": 38556,
+      "1097": 45830,
+      "1269": 31552
+    }
+  },
+  "checks": {
+    "nativeModelValidation": "passed",
+    "incompleteExportLeavesManifestUnchanged": "passed",
+    "frontendTests": {
+      "files": 2,
+      "passed": 25
+    },
+    "astroCheck": {
+      "files": 20,
+      "errors": 0,
+      "warnings": 0
+    },
+    "eslintChangedSources": "passed",
+    "productionBuild": "passed",
+    "productionHydration": "passed",
+    "developmentHydrationAfterCacheRefresh": "passed",
+    "developmentChapterJump": {
+      "frame": 909,
+      "fallback": false,
+      "chapter": "Smart Home"
+    },
+    "existingAssetDecode": {
+      "desktop": 373,
+      "mobile": 373,
+      "errors": 0
+    }
+  },
+  "scope": "Preflight and seven native control views; complete new sequence render/export/build is still running.",
+  "liveStatus": "pipeline-status.json",
+  "notes": [
+    "One production-preview session entered fallback while the dist directory was rebuilt; full new-sequence browser playback remains to be checked after rendering."
+  ]
+}

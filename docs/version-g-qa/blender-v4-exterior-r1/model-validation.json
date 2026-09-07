@@ -1,0 +1,60 @@
+{
+  "revision": "v4-exterior-01",
+  "file": "C:\\Users\\hueberl\\Private_Projects\\elektro-bubmann\\assets\\3d\\elektro-hubmann-house-v4-exterior-r1.blend",
+  "variant": "B",
+  "allPassed": true,
+  "checks": [
+    {
+      "check": "Balcony slab follows upper storey",
+      "passed": true
+    },
+    {
+      "check": "Usable 4.5 by 1.9 m balcony",
+      "passed": true
+    },
+    {
+      "check": "Full-height balcony access with 7 cm threshold",
+      "passed": true
+    },
+    {
+      "check": "Old window parapet removed from mesh",
+      "passed": true
+    },
+    {
+      "check": "Two grounded balcony supports",
+      "passed": true
+    },
+    {
+      "check": "Balcony railing top at least 1.1 m above finished deck",
+      "passed": true
+    },
+    {
+      "check": "Ten PV modules retained",
+      "passed": true
+    },
+    {
+      "check": "Three original beds retained",
+      "passed": true
+    },
+    {
+      "check": "Eighteen native stair risers retained",
+      "passed": true
+    },
+    {
+      "check": "Entrance camera and bell retained",
+      "passed": true
+    },
+    {
+      "check": "Timber window profiles on all elevations",
+      "passed": true
+    },
+    {
+      "check": "Every new mesh has a material",
+      "passed": true
+    }
+  ],
+  "motionSamples": [],
+  "objects": 4088,
+  "addedObjects": 579,
+  "vertices": 464603
+}

@@ -1,0 +1,178 @@
+{
+  "revision": "v4-exterior-01",
+  "file": "C:\\Users\\hueberl\\Private_Projects\\elektro-bubmann\\assets\\3d\\elektro-hubmann-house-v4-exterior-r1-web.blend",
+  "variant": "B",
+  "allPassed": true,
+  "checks": [
+    {
+      "check": "Balcony slab follows upper storey",
+      "passed": true
+    },
+    {
+      "check": "Usable 4.5 by 1.9 m balcony",
+      "passed": true
+    },
+    {
+      "check": "Full-height balcony access with 7 cm threshold",
+      "passed": true
+    },
+    {
+      "check": "Old window parapet removed from mesh",
+      "passed": true
+    },
+    {
+      "check": "Two grounded balcony supports",
+      "passed": true
+    },
+    {
+      "check": "Balcony railing top at least 1.1 m above finished deck",
+      "passed": true
+    },
+    {
+      "check": "Ten PV modules retained",
+      "passed": true
+    },
+    {
+      "check": "Three original beds retained",
+      "passed": true
+    },
+    {
+      "check": "Eighteen native stair risers retained",
+      "passed": true
+    },
+    {
+      "check": "Entrance camera and bell retained",
+      "passed": true
+    },
+    {
+      "check": "Timber window profiles on all elevations",
+      "passed": true
+    },
+    {
+      "check": "Every new mesh has a material",
+      "passed": true
+    },
+    {
+      "check": "Existing continuous camera has native animation",
+      "passed": true
+    },
+    {
+      "check": "Balcony follows OG at frame 1",
+      "passed": true
+    },
+    {
+      "check": "Balcony follows OG at frame 289",
+      "passed": true
+    },
+    {
+      "check": "Balcony follows OG at frame 505",
+      "passed": true
+    },
+    {
+      "check": "Balcony follows OG at frame 909",
+      "passed": true
+    },
+    {
+      "check": "Balcony follows OG at frame 1139",
+      "passed": true
+    },
+    {
+      "check": "Balcony follows OG at frame 1311",
+      "passed": true
+    },
+    {
+      "check": "Balcony follows OG at frame 1441",
+      "passed": true
+    },
+    {
+      "check": "EG support columns hidden in open interior",
+      "passed": true
+    },
+    {
+      "check": "Ground terrace hidden in isolated OG view",
+      "passed": true
+    }
+  ],
+  "motionSamples": [
+    {
+      "frame": 1,
+      "ogZ": 3.0,
+      "balconyZ": 2.8949999809265137,
+      "camera": [
+        23.0,
+        -27.0,
+        8.300000190734863
+      ],
+      "balconyGlassHidden": null
+    },
+    {
+      "frame": 289,
+      "ogZ": 7.0,
+      "balconyZ": 6.894999980926514,
+      "camera": [
+        24.0,
+        -32.0,
+        26.0
+      ],
+      "balconyGlassHidden": null
+    },
+    {
+      "frame": 505,
+      "ogZ": 30.0,
+      "balconyZ": 29.895000457763672,
+      "camera": [
+        15.600000381469727,
+        -26.600000381469727,
+        40.150001525878906
+      ],
+      "balconyGlassHidden": null
+    },
+    {
+      "frame": 909,
+      "ogZ": 3.0,
+      "balconyZ": 2.8949999809265137,
+      "camera": [
+        15.600000381469727,
+        -26.600000381469727,
+        43.150001525878906
+      ],
+      "balconyGlassHidden": null
+    },
+    {
+      "frame": 1139,
+      "ogZ": 3.0,
+      "balconyZ": 2.8949999809265137,
+      "camera": [
+        7.699999809265137,
+        -8.699999809265137,
+        3.4000000953674316
+      ],
+      "balconyGlassHidden": null
+    },
+    {
+      "frame": 1311,
+      "ogZ": 3.0,
+      "balconyZ": 2.8949999809265137,
+      "camera": [
+        23.0,
+        -23.0,
+        25.0
+      ],
+      "balconyGlassHidden": null
+    },
+    {
+      "frame": 1441,
+      "ogZ": 3.0,
+      "balconyZ": 2.8949999809265137,
+      "camera": [
+        23.0,
+        -27.0,
+        8.300000190734863
+      ],
+      "balconyGlassHidden": null
+    }
+  ],
+  "objects": 4090,
+  "addedObjects": 579,
+  "vertices": 464603
+}

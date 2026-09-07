@@ -1,5 +1,12 @@
 # Haus V4 – natives Blender-Modell
 
+**Neueste Modellrevision: Außenrevision 01.** Balkon mit Metallgeländer,
+Fensterrahmen in Holzoptik, Vordach, größere Terrasse und Fassadendetails liegen
+in `assets/3d/elektro-hubmann-house-v4-exterior-r1.blend`. Die entsprechend
+ergänzte neueste Animationsszene trägt den Zusatz `-web.blend`.
+[Änderungen, Prüfung und Reproduktion](../../docs/16-haus-v4-aussendetails.md).
+Die folgenden Angaben beschreiben die erhaltene V4-Grundlage.
+
 Die Szene in `assets/3d/elektro-hubmann-house-v4.blend` baut die ausgewählte
 Referenz `v4-reference-01` als zusammenhängendes Haus nach. Sie wurde in
 Blender 5.2.1 über dessen sichtbare Python-Konsole aufgebaut und mit Cycles

@@ -70,9 +70,11 @@
   width: 100%;
   height: 100%;
 }
+.g-anchor-section[data-fallback='true'] .g-static-story,
 .g-anchor-section:has(.g-house-v4[data-fallback='true']) .g-static-story {
   display: block;
 }
+.g-anchor-section[data-fallback='true'] .g-house-v4,
 .g-house-v4[data-fallback='true'] {
   display: none;
 }

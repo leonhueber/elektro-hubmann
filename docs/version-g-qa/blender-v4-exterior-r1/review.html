@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="de">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haus V4 · Balkon und Holzfenster</title>
+<style>
+*{box-sizing:border-box}body{margin:0;color:#202824;background:#f6f7f5;font:15px/1.5 system-ui,sans-serif}header{padding:24px 32px 16px}h1{font-size:25px;margin:0 0 6px;font-weight:600}p{margin:0;color:#606a64}.controls{display:flex;flex-wrap:wrap;gap:12px;padding:4px 32px 20px}label{display:flex;align-items:center;gap:8px}select{font:inherit;padding:9px 13px;background:white;border:1px solid #d8ddd8;border-radius:7px}select:focus-visible,a:focus-visible{outline:3px solid #709880;outline-offset:3px}.pair{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#ddd}figure{margin:0;background:white;min-width:0}figcaption{padding:12px 24px;border-top:1px solid #e5e8e5;font-size:13px;display:flex;justify-content:space-between;gap:15px}img{display:block;width:100%;aspect-ratio:1;object-fit:contain}a{color:#304f3d}footer{padding:22px 32px;color:#68726b;font-size:13px}.links{display:flex;flex-wrap:wrap;gap:18px;margin-top:12px}@media(max-width:750px){header,.controls,footer{padding-left:16px;padding-right:16px}.pair{grid-template-columns:1fr}label{flex-wrap:wrap}}
+</style>
+<header><h1>Haus V4 · Balkon und Holzfenster</h1><p>Variante B: Metallgeländer, Fenster in Eichenholzoptik und mehr Tiefe an der Fassade.</p></header>
+<nav class="controls" aria-label="Vergleich und Modellansichten">
+<label>Vergleich <select id="reference"><option value="00-before.png">Bisheriges Modell</option><option value="../../mockups/house-v4-exterior-r1/02-b-holzfenster.png">Ausgewähltes Mockup B</option><option value="../../mockups/house-v4-exterior-r1/01-varianten.png">Mockup-Varianten A / B</option></select></label>
+<label>Neue Blender-Szene <select id="view"><option value="plan.png">Außenansicht</option><option value="detail.png">Balkon und Eingang</option><option value="rear.png">Rückseite und Seitenfassade</option><option value="web-0289.png">Dach und OG angehoben</option><option value="web-0505.png">Offenes Erdgeschoss</option><option value="web-0909.png">Offenes Obergeschoss</option><option value="web-1139.png">Eingang / Sicherheit</option><option value="web-1311.png">Dach / Photovoltaik</option></select></label>
+</nav>
+<main class="pair">
+<figure><figcaption><strong id="ref-label">Bisheriges Modell</strong><span>Referenz</span></figcaption><a id="ref-link" href="00-before.png"><img id="ref" src="00-before.png" alt="Bisheriges V4-Modell ohne Balkon"></a></figure>
+<figure><figcaption><strong id="model-label">Außenansicht</strong><span>Blender · Cycles</span></figcaption><a id="model-link" href="plan.png"><img id="model" src="plan.png" alt="Neue native Blender-Außenansicht mit Balkon und Holzfenstern"></a></figure>
+</main>
+<footer><p>Native Architektur- und Animationsdateien sind gespeichert. Die Website-Bildfolge verwendet weiterhin die bisherige V4-Ausgabe.</p>
+<div class="links"><a href="../../../assets/3d/elektro-hubmann-house-v4-exterior-r1.blend">Blender-Modell</a><a href="../../../assets/3d/elektro-hubmann-house-v4-exterior-r1-web.blend">Blender-Animation</a><a href="../../16-haus-v4-aussendetails.md">Änderungen und Reproduktion</a><a href="model-validation.json">Modellprüfung</a><a href="web-validation.json">Animationsprüfung</a></div></footer>
+<script>
+for(const [selector,prefix] of [['reference','ref'],['view','model']]){const select=document.getElementById(selector);select.addEventListener('change',()=>{const label=select.selectedOptions[0].textContent;document.getElementById(prefix).src=select.value;document.getElementById(prefix).alt=label;document.getElementById(prefix+'-link').href=select.value;document.getElementById(prefix==='ref'?'ref-label':'model-label').textContent=label;});}
+</script>
+</html>
