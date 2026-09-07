@@ -4,6 +4,46 @@ export { manifest as houseManifest };
 export type HouseProfile = keyof typeof manifest.profiles;
 export const clampProgress = (value: number) =>
   Number.isFinite(value) ? Math.min(1, Math.max(0, value)) : 0;
+
+// Keep the native animation intact; shorten only the stationary EG sequence.
+// Distances use the original scroll length so camera travel keeps its pace.
+const scrollTiming = [
+  { timeline: 0, distance: 0 },
+  { timeline: 0.3, distance: 0.3 },
+  { timeline: 0.39, distance: 0.325 },
+  { timeline: 0.43, distance: 0.34 },
+  { timeline: 0.51, distance: 0.345 },
+  { timeline: 1, distance: 0.835 },
+] as const;
+export const houseScrollLength = scrollTiming.at(-1)!.distance;
+
+function mapTiming(
+  value: number,
+  from: 'timeline' | 'distance',
+  to: 'timeline' | 'distance',
+) {
+  const end = scrollTiming.findIndex((point) => point[from] >= value);
+  if (end <= 0) return end === 0 ? 0 : scrollTiming.at(-1)![to];
+  const a = scrollTiming[end - 1]!;
+  const b = scrollTiming[end]!;
+  return a[to] + ((value - a[from]) / (b[from] - a[from])) * (b[to] - a[to]);
+}
+
+export function timelineProgressAtScroll(progress: number) {
+  return mapTiming(
+    clampProgress(progress) * houseScrollLength,
+    'distance',
+    'timeline',
+  );
+}
+
+export function scrollProgressAtTimeline(progress: number) {
+  return (
+    mapTiming(clampProgress(progress), 'timeline', 'distance') /
+    houseScrollLength
+  );
+}
+
 export function chapterAt(progress: number) {
   const p = clampProgress(progress);
   return Math.max(

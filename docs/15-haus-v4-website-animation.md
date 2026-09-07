@@ -75,7 +75,15 @@ aus Blender; der Browser überblendet keine isolierten Ansichten.
   Bilder außerhalb des benötigten Bereichs freigegeben.
 - Revisionskennungen an Bild-URLs erlauben die Wiederverwendung bereits
   geladener Dateien, ohne nach einem Update alte Beleuchtungsbilder zu zeigen.
-- Scroll-Strecke: 1200 svh am Desktop, 1000 svh mobil; längere Lese- und Fahrstrecken für die acht Ansichten.
+- Die stehende EG-Sequenz zwischen 30 und 51 % der nativen Zeitleiste benötigt
+  nur noch 4,5 statt 21 % der ursprünglichen Scroll-Strecke. Die Lesepause
+  beträgt 2,5 %, das Ausblenden der Leitungsdarstellung 1,5 % und der letzte
+  Stillstand vor Smart Home 0,5 %. Damit entfällt der Leerlauf des entfernten
+  Beleuchtungskapitels. Die übrigen Kamerafahrten behalten ihre Scroll-Länge.
+- Die Story-Höhe verkürzt sich entsprechend von 1200 auf 1018,5 svh am Desktop
+  und von 1000 auf 851,5 svh mobil. Native Bilder und ihre Zuordnung bleiben
+  unverändert. Eine umkehrbare Zuordnung zwischen Scroll- und Animationsposition
+  hält Kapitelbuttons, Fortschrittsanzeige, Zurückscrollen und Größenwechsel synchron.
 
 Der Player nähert seine Position zeitbasiert mit einer Zeitkonstante von 100 ms
 der aktuellen Scroll-Position an. Die Kamera nutzt weiterhin ausschließlich echte

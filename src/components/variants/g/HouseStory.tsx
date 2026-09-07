@@ -9,9 +9,12 @@ import {
   frameAt,
   frameUrl,
   houseManifest,
+  houseScrollLength,
   posterUrl,
   progressAtFrame,
   sourceFrame,
+  scrollProgressAtTimeline,
+  timelineProgressAtScroll,
   type HouseProfile,
 } from '../../../lib/house-story';
 
@@ -68,7 +71,10 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
         drawnImage = image;
       }
       wrapper.dataset.frame = String(frameAt(progress, profile));
-      wrapper.style.setProperty('--g-story-progress', `${progress * 100}%`);
+      wrapper.style.setProperty(
+        '--g-story-progress',
+        `${scrollProgressAtTimeline(progress) * 100}%`,
+      );
       const nextChapter = chapterAt(progress);
       if (nextChapter !== currentChapter) {
         currentChapter = nextChapter;
@@ -215,7 +221,7 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
         void setup();
       } else {
         resetQueue();
-        update(trigger?.progress ?? 0);
+        update(timelineProgressAtScroll(trigger?.progress ?? 0));
       }
     };
     const setup = async () => {
@@ -240,18 +246,20 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
             `top ${document.querySelector('.g-header-shell')?.getBoundingClientRect().height ?? 0}px`,
           end: 'bottom bottom',
           invalidateOnRefresh: true,
-          onUpdate: ({ progress }) => update(progress),
+          onUpdate: ({ progress }) =>
+            update(timelineProgressAtScroll(progress)),
           onRefresh: ({ progress, start, end }) => {
             if (resizeProgress !== undefined) {
               const preserved = resizeProgress;
               resizeProgress = undefined;
               window.scrollTo({
-                top: start + (end - start) * preserved,
+                top:
+                  start + (end - start) * scrollProgressAtTimeline(preserved),
                 behavior: 'instant',
               });
               update(preserved, true);
             } else {
-              update(progress);
+              update(timelineProgressAtScroll(progress));
             }
           },
         });
@@ -260,14 +268,16 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
           window.scrollTo({
             top:
               trigger.start +
-              (trigger.end - trigger.start) * chapterProgress(index),
+              (trigger.end - trigger.start) *
+                scrollProgressAtTimeline(chapterProgress(index)),
             behavior: reduced.matches ? 'auto' : 'smooth',
           });
         };
         // onRefresh may have restored a chapter by scrolling. The trigger's
         // progress still describes the pre-restoration position until its next
         // update; do not replace the restored playhead with that stale value.
-        if (initialPosition) update(trigger.progress, true);
+        if (initialPosition)
+          update(timelineProgressAtScroll(trigger.progress), true);
       } catch {
         if (!disposed) fail();
       }
@@ -316,8 +326,8 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
       data-state={chapters[activeIndex]!.id}
       style={
         {
-          '--g-story-height': '1200svh',
-          '--g-story-height-mobile': '1000svh',
+          '--g-story-height': `${100 + 1100 * houseScrollLength}svh`,
+          '--g-story-height-mobile': `${100 + 900 * houseScrollLength}svh`,
           '--g-story-chapter-count': chapters.length,
         } as CSSProperties
       }

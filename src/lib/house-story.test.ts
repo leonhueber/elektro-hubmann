@@ -9,8 +9,11 @@ import {
   frameAt,
   frameUrl,
   houseManifest,
+  houseScrollLength,
   progressAtFrame,
   sourceFrame,
+  scrollProgressAtTimeline,
+  timelineProgressAtScroll,
 } from './house-story';
 
 describe('shared Blender timeline', () => {
@@ -52,6 +55,52 @@ describe('shared Blender timeline', () => {
         expect(sourceFrame(profile, source)).toBe(source);
         expect((source - 1) % step).toBe(0);
       }
+    }
+  });
+});
+
+describe('installation scroll pacing', () => {
+  const distance = (a: number, b: number) =>
+    (scrollProgressAtTimeline(b) - scrollProgressAtTimeline(a)) *
+    houseScrollLength;
+
+  it('removes the obsolete lighting hold while retaining a short installation reading pause', () => {
+    expect(distance(0.3, 0.51)).toBeCloseTo(0.045);
+    expect(distance(0.3, 0.39)).toBeGreaterThan(0.02);
+    expect(distance(0.43, 0.51)).toBeLessThan(0.01);
+    // Camera travel before and after the EG standstill keeps its original length.
+    expect(distance(0.08, 0.3)).toBeCloseTo(0.22);
+    expect(distance(0.51, 0.67)).toBeCloseTo(0.16);
+    expect(distance(0.67, 1)).toBeCloseTo(0.33);
+  });
+
+  it('preserves every native position through scrolling, reversal and resize restoration', () => {
+    let previous = -1;
+    for (let frame = 1; frame <= houseManifest.frameCount; frame++) {
+      const native = progressAtFrame(frame);
+      const scroll = scrollProgressAtTimeline(native);
+      expect(scroll).toBeGreaterThan(previous);
+      expect(timelineProgressAtScroll(scroll)).toBeCloseTo(native, 12);
+      previous = scroll;
+    }
+  });
+
+  it('lands every chapter button on the intended native rest frame', () => {
+    houseManifest.chapters.forEach((_, index) => {
+      const rest = chapterProgress(index);
+      const restored = timelineProgressAtScroll(scrollProgressAtTimeline(rest));
+      expect(chapterAt(restored)).toBe(index);
+      expect(frameAt(restored)).toBe(frameAt(rest));
+    });
+  });
+
+  it('clamps scroll endpoints without losing the opening or closing image', () => {
+    for (const map of [scrollProgressAtTimeline, timelineProgressAtScroll]) {
+      expect(map(-1)).toBe(0);
+      expect(map(NaN)).toBe(0);
+      expect(map(0)).toBe(0);
+      expect(map(1)).toBe(1);
+      expect(map(2)).toBe(1);
     }
   });
 });
