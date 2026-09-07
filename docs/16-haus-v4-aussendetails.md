@@ -50,9 +50,10 @@ Der vollständige Neurender der freigegebenen Variante B wurde am 7. September 2
 als lokaler Hintergrundprozess gestartet. Aktueller Zustand und abgeschlossene
 Schritte stehen in `version-g-qa/blender-v4-exterior-r1/frontend/pipeline-status.json`;
 der Fortschritt je Bild steht in `render-progress.json` im selben Verzeichnis.
-Die [Render-Vorschau](version-g-qa/blender-v4-exterior-r1/frontend/index.html) zeigt
-sieben geprüfte Kontrollpositionen. Mit dem lokalen HTTP-Server auf Port 4323 zeigt
-sie auch den laufenden Fortschritt.
+Sieben geprüfte Kontrollpositionen liegen unter
+`version-g-qa/blender-v4-exterior-r1/frontend/proof-webp/`. Die gesonderte
+Render-Vorschauseite wurde entfernt; die Ausgabe gehört in die bestehende Haussektion
+der Website.
 
 - Cycles, 1.200 × 1.200 px, bis 64 Samples, adaptiver Schwellwert 0,04,
   mindestens 8 Samples, Denoising, fester Zufallsseed, 12 CPU-Threads.
@@ -62,7 +63,7 @@ sie auch den laufenden Fortschritt.
 - Alle 373 unterschiedlichen Kamerabilder werden nativ gerendert. Die 721
   Abspielpositionen und bestehenden Standbild-Aliase bleiben erhalten.
 - WebP in 1.200 px für Desktop und 720 px für Mobil, Qualität 90, einschließlich
-  der sechs Kapitelposter. Der Cache bleibt auf 12 beziehungsweise 18 Bilder begrenzt.
+  der fünf Kapitelposter. Der Cache bleibt auf 12 beziehungsweise 18 Bilder begrenzt.
 - SHA-256 und vollständige Bildprüfung vor der Aktivierung. Unterbrechungen können
   fortgesetzt werden; nur nachweislich passende Bilder werden wiederverwendet.
 

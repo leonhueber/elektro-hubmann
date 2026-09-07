@@ -35,7 +35,6 @@ LEGS = [
 CHAPTERS = [
     {'id': 'planning', 'start': 0, 'rest': .04},
     {'id': 'installation', 'start': .08, 'rest': .35},
-    {'id': 'lighting', 'start': .39, 'rest': .47},
     {'id': 'smarthome', 'start': .51, 'rest': .63},
     {'id': 'security', 'start': .67, 'rest': .79},
     {'id': 'energy', 'start': .82, 'rest': .91},

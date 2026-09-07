@@ -1,11 +1,6 @@
 import { houseManifest } from '../lib/house-story';
 export type VersionGStoryState =
-  | 'planning'
-  | 'installation'
-  | 'lighting'
-  | 'smarthome'
-  | 'security'
-  | 'energy';
+  'planning' | 'installation' | 'smarthome' | 'security' | 'energy';
 export type VersionGStoryAsset = {
   src: string;
   alt: string;
@@ -40,29 +35,21 @@ const copy: Record<
     description:
       'Von der Verteilung bis zur Steckdose: Wir installieren Elektrotechnik und strukturierte Netzwerke sauber und vorausschauend.',
     cta: 'Installation anfragen',
-    hint: 'Weiter zur Beleuchtung',
+    hint: 'Weiter zum Smart Home',
     alt: 'Geöffnetes Erdgeschoss mit Wohnküche, Essbereich, Büro, Gäste-WC und Technikraum; Elektroverteilung, Netzwerk und Leitungswege sind sichtbar.',
     components: ['Elektroverteilung', 'Strom & Netzwerk'],
-  },
-  lighting: {
-    label: 'Beleuchtung',
-    title: ['Licht macht', 'Räume lebendig.'],
-    description:
-      'Gezieltes Arbeitslicht, eine angenehme Wohnatmosphäre und Licht am Eingang: Wir planen die passende Beleuchtung.',
-    cta: 'Lichtplanung besprechen',
-    hint: 'Weiter zum Smart Home',
-    alt: 'Geöffnetes Haus mit warm beleuchtetem Wohnbereich, Esstisch, Arbeitsplatz und Eingang.',
-    components: ['Wohnraumlicht', 'Arbeits- & Außenlicht'],
   },
   smarthome: {
     label: 'Smart Home',
     title: ['Ein Tastendruck.', 'Alles passt.'],
     description:
-      'Mit vernetzter Gebäudesteuerung stimmen Sie Licht und Beschattung auf Ihren Alltag ab – einfach und komfortabel.',
+      'Licht, Beschattung und Raumtemperatur passend zu Ihrem Alltag: Mit vernetzter Gebäudesteuerung schaffen Sie Komfort auf Knopfdruck.',
     cta: 'Smart Home besprechen',
     hint: 'Weiter zur Sicherheit',
-    alt: 'Geöffnetes Obergeschoss mit Elternschlafzimmer, zwei Kinderzimmern und Familienbad; die Beschattung am Schlafzimmerfenster ist abgesenkt.',
-    components: ['KNX-Steuerung', 'Licht & Beschattung'],
+    alt: houseManifest.revision.endsWith('-smart-01')
+      ? 'Nahansicht des Elternschlafzimmers mit Raumregler neben dem Eichenschrank und verstellbaren Lamellen vor der Holz-Balkontür; das Stabgeländer und die Balkonmöbel bleiben sichtbar.'
+      : 'Geöffnetes Obergeschoss mit Elternschlafzimmer, zwei Kinderzimmern und Familienbad; die Beschattung am Schlafzimmerfenster ist abgesenkt.',
+    components: ['KNX-Raumsteuerung', 'Beschattung & Raumklima'],
   },
   security: {
     label: 'Sicherheit',

@@ -46,15 +46,23 @@ def identity():
             'settings': SETTINGS, 'frames': schedule()[0]}
 
 
+def validate_native():
+    from house_v4 import exterior
+    exterior.validate()
+
+
+def render_threads():
+    return SETTINGS['threads']
+
+
 def render(args):
     import bpy
-    from house_v4 import exterior
     if Path(bpy.data.filepath).resolve() != ANIMATION.resolve():
         raise RuntimeError('Load the approved exterior web animation explicitly.')
     scene = bpy.context.scene
     if scene.get('web_revision') != REVISION or scene.get('exterior_variant') != 'B':
         raise RuntimeError('The loaded model is not the approved B animation.')
-    exterior.validate()
+    validate_native()
     scene.camera = bpy.data.objects['V4 | Continuous scroll camera']
     scene.render.engine = SETTINGS['engine']
     scene.cycles.samples = SETTINGS['samples']
@@ -65,7 +73,7 @@ def render(args):
     scene.cycles.use_animated_seed = False
     scene.cycles.seed = 0
     scene.render.use_persistent_data = True
-    scene.render.threads_mode, scene.render.threads = 'FIXED', SETTINGS['threads']
+    scene.render.threads_mode, scene.render.threads = 'FIXED', render_threads()
     scene.render.resolution_x = scene.render.resolution_y = SETTINGS['size']
     scene.render.resolution_percentage = 100
     scene.render.image_settings.file_format = 'PNG'
@@ -99,6 +107,7 @@ def render(args):
         if args.resume and record and destination.exists() and sha(destination) == record['sha256']:
             continue
         scene.frame_set(frame)
+        scene.render.threads = render_threads()
         # The native world already separates camera rays from illumination.
         # Render its white background in Cycles for every frame so the denoiser
         # also resolves subpixel railing edges and transparency transitions.
@@ -110,7 +119,8 @@ def render(args):
         bpy.ops.render.render(write_still=True)
         temporary.replace(destination)
         progress['completed'][str(frame)] = {'sha256': sha(destination),
-            'seconds': round(time.perf_counter()-start, 2), 'bytes': destination.stat().st_size}
+            'seconds': round(time.perf_counter()-start, 2), 'bytes': destination.stat().st_size,
+            'threads': scene.render.threads}
         write_json(progress_path, progress)
         print('EXTERIOR_FRONTEND_FRAME', frame, progress['completed'][str(frame)]['seconds'],
               len(progress['completed']), '/', len(job['frames']), flush=True)

@@ -17,7 +17,7 @@ describe('shared Blender timeline', () => {
   it('uses the designed unequal chapter boundaries, including opening and closing', () => {
     expect(
       [0, 0.079, 0.08, 0.389, 0.39, 0.51, 0.67, 0.82, 1].map(chapterAt),
-    ).toEqual([0, 0, 1, 1, 2, 3, 4, 5, 5]);
+    ).toEqual([0, 0, 1, 1, 1, 2, 3, 4, 4]);
     houseManifest.chapters.forEach((_, index) =>
       expect(chapterAt(chapterProgress(index))).toBe(index),
     );
@@ -140,7 +140,7 @@ describe('frame loading during scrubbing', () => {
     queue.dispose();
     expect(target.close).toHaveBeenCalledOnce();
   });
-  it('recovers when a fast reversal stops on an already cancelled decode', async () => {
+  it('keeps an in-flight decode useful through a fast reversal', async () => {
     let first!: (image: Bitmap) => void;
     let far!: (image: Bitmap) => void;
     let firstLoads = 0;
@@ -171,8 +171,8 @@ describe('frame loading during scrubbing', () => {
     const stale = bitmap();
     first(stale);
     for (let i = 0; i < 8; i++) await settle();
-    expect(firstLoads).toBe(2);
-    expect(stale.close).toHaveBeenCalledOnce();
+    expect(firstLoads).toBe(1);
+    expect(stale.close).not.toHaveBeenCalled();
     expect(display.mock.lastCall?.[1]).toBe(1);
     expect(error).not.toHaveBeenCalled();
     queue.dispose();
@@ -238,7 +238,7 @@ describe('frame loading during scrubbing', () => {
   });
 });
 
-describe('buffered scroll playback', () => {
+describe('responsive native scroll playback', () => {
   const profile = 'desktop';
   const step = houseManifest.profiles[profile].step;
   const createQueue = (
@@ -277,50 +277,39 @@ describe('buffered scroll playback', () => {
     queue.dispose();
   });
 
-  it('visits every native motion image after a large scroll jump, in both directions', async () => {
-    const display = vi.fn();
-    const queue = createQueue(async () => bitmap(), display);
-    const playback = new ScrollPlayback(queue, profile);
-    playback.seek(0.08);
-    await settle();
-    playback.follow(0.3);
-    let time = 0;
-    for (let i = 0; i < 900; i++) {
-      const running = playback.tick((time += 1000 / 60));
+  it('catches up within one second at 30, 60 and 120 Hz without a native-frame backlog', async () => {
+    for (const hz of [30, 60, 120]) {
+      const display = vi.fn();
+      const queue = createQueue(async () => bitmap(), display);
+      const playback = new ScrollPlayback(queue, profile);
+      playback.seek(0.08);
       await settle();
-      if (!running) break;
+      playback.follow(0.91);
+      for (let i = 0; i < hz; i++) {
+        playback.tick(((i + 1) * 1000) / hz);
+        await settle();
+      }
+      expect(
+        Math.abs(display.mock.lastCall![1] - frameAt(0.91)),
+      ).toBeLessThanOrEqual(step);
+      const forward = display.mock.calls.map((call) => call[1] as number);
+      expect(forward).toEqual([...forward].sort((a, b) => a - b));
+      display.mockClear();
+      playback.follow(0.08);
+      for (let i = 0; i < hz; i++) {
+        playback.tick(1000 + ((i + 1) * 1000) / hz);
+        await settle();
+      }
+      expect(
+        Math.abs(display.mock.lastCall![1] - frameAt(0.08)),
+      ).toBeLessThanOrEqual(step);
+      const backward = display.mock.calls.map((call) => call[1] as number);
+      expect(backward).toEqual([...backward].sort((a, b) => b - a));
+      queue.dispose();
     }
-    const expected = [
-      ...new Set(
-        Array.from(
-          { length: (frameAt(0.3) - frameAt(0.08)) / step + 1 },
-          (_, i) => sourceFrame(profile, frameAt(0.08) + i * step),
-        ),
-      ),
-    ];
-    expect([
-      ...new Set(
-        display.mock.calls.map((call) => sourceFrame(profile, call[1])),
-      ),
-    ]).toEqual(expected);
-    expect(display.mock.lastCall?.[1]).toBe(frameAt(0.3));
-    display.mockClear();
-    playback.follow(0.08);
-    for (let i = 0; i < 900; i++) {
-      const running = playback.tick((time += 1000 / 60));
-      await settle();
-      if (!running) break;
-    }
-    expect([
-      ...new Set(
-        display.mock.calls.map((call) => sourceFrame(profile, call[1])),
-      ),
-    ]).toEqual(expected.slice(0, -1).reverse());
-    expect(display.mock.lastCall?.[1]).toBe(frameAt(0.08));
-    queue.dispose();
   });
 
-  it('waits for a delayed frame instead of cancelling it or jumping ahead', async () => {
+  it('does not wait for an obsolete missing frame or display its late decode', async () => {
     const start = frameAt(0.12);
     const blocked = sourceFrame(profile, start + step);
     let finish!: (image: Bitmap) => void;
@@ -339,21 +328,57 @@ describe('buffered scroll playback', () => {
     playback.seek(progressAtFrame(start));
     await settle();
     playback.follow(0.3);
-    for (let i = 0; i < 60; i++) {
-      playback.tick(i * 16);
+    for (let i = 0; i < 70; i++) {
+      playback.tick((i * 1000) / 60);
       await settle();
     }
-    expect(display.mock.lastCall?.[1]).toBe(start);
+    expect(display.mock.lastCall?.[1]).toBe(frameAt(0.3));
     expect(signal.aborted).toBe(false);
-    finish(bitmap());
+    const late = bitmap();
+    finish(late);
     await settle();
-    expect(display.mock.lastCall?.[1]).toBe(start + step);
-    playback.follow(progressAtFrame(start));
-    for (let i = 60; i < 160; i++) {
-      playback.tick(i * 16);
-      await settle();
-    }
-    expect(display.mock.lastCall?.[1]).toBe(start);
+    expect(display.mock.lastCall?.[1]).toBe(frameAt(0.3));
+    expect(late.close).toHaveBeenCalledOnce();
+    queue.dispose();
+  });
+
+  it('stops requesting animation ticks once time settles, even if downloads are pending', async () => {
+    const queue = createQueue(() => new Promise<Bitmap>(() => {}));
+    const request = vi.spyOn(queue, 'request');
+    const playback = new ScrollPlayback(queue, profile);
+    playback.seek(0);
+    playback.follow(0.63);
+    let running = true;
+    for (let i = 0; i < 90 && running; i++)
+      running = playback.tick((i * 1000) / 60);
+    expect(running).toBe(false);
+    expect(request).toHaveBeenLastCalledWith(frameAt(0.63));
+    queue.dispose();
+  });
+
+  it('uses decoded intermediate poses without being pulled backward by a late image', async () => {
+    const loads = new Map<number, (image: Bitmap) => void>();
+    const display = vi.fn();
+    const queue = new FrameQueue<Bitmap>(
+      (frame) => new Promise((resolve) => loads.set(frame, resolve)),
+      display,
+      vi.fn(),
+      { capacity: 5, concurrency: 3, step: 1, count: 7 },
+    );
+    queue.request(1);
+    loads.get(1)!(bitmap());
+    await settle();
+    queue.request(5);
+    loads.get(3)!(bitmap());
+    await settle();
+    expect(display.mock.lastCall?.[1]).toBe(3);
+    const late = bitmap();
+    loads.get(2)!(late);
+    await settle();
+    expect(display.mock.lastCall?.[1]).toBe(3);
+    loads.get(5)!(bitmap());
+    await settle();
+    expect(display.mock.calls.map((call) => call[1])).toEqual([1, 3, 5]);
     queue.dispose();
   });
 });

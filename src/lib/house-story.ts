@@ -33,7 +33,7 @@ export function followScroll(
   target: number,
   deltaMs: number,
 ) {
-  const amount = -Math.expm1(-Math.max(0, Math.min(50, deltaMs)) / 150);
+  const amount = -Math.expm1(-Math.max(0, Math.min(50, deltaMs)) / 100);
   return position + (clampProgress(target) - position) * amount;
 }
 
@@ -86,6 +86,7 @@ export class FrameQueue<T extends DecodedFrame> {
   private queue: number[] = [];
   private wanted = new Set<number>();
   private target = 1;
+  private displayed: number | undefined;
   private direction = 1;
   private requested = false;
   private disposed = false;
@@ -113,14 +114,8 @@ export class FrameQueue<T extends DecodedFrame> {
     if (frame !== this.target) this.direction = Math.sign(frame - this.target);
     this.target = frame;
     const source = this.source(frame);
-    const cached = this.cache.get(source);
-    if (cached) {
-      this.cache.delete(source);
-      this.cache.set(source, cached);
-      this.display(cached, frame);
-    } else if (this.failed.has(source)) {
-      this.error(frame);
-    }
+    this.present();
+    if (this.failed.has(source)) this.error(frame);
     // Count distinct images, not aliased timeline positions. Prefetch across
     // long holds so the first camera movement is already decoded when needed.
     const ahead = this.neighbors(frame, this.direction);
@@ -137,10 +132,27 @@ export class FrameQueue<T extends DecodedFrame> {
     }
     this.wanted = wanted;
     this.queue = [...wanted];
-    for (const [frame, controller] of this.pending) {
-      if (!this.queue.includes(frame)) controller.abort();
-    }
+    // Finish the bounded in-flight batch. Repeated cancellation can starve
+    // decoding while a wheel or trackpad keeps changing the target.
     this.pump();
+  }
+  private present() {
+    // Only move toward the current scroll target. Late images cannot pull the
+    // view backward or overshoot it; an exact decoded target always wins.
+    const direction = Math.sign((this.displayed ?? this.target) - this.target);
+    const step = direction * this.options.step;
+    for (let frame = this.target; ; frame += step) {
+      const source = this.source(frame);
+      const image = this.cache.get(source);
+      if (image) {
+        this.cache.delete(source);
+        this.cache.set(source, image);
+        if (this.displayed !== frame) this.display(image, frame);
+        this.displayed = frame;
+        return;
+      }
+      if (!step || frame === this.displayed) return;
+    }
   }
   private neighbors(frame: number, direction: number) {
     const found = new Set<number>();
@@ -176,8 +188,15 @@ export class FrameQueue<T extends DecodedFrame> {
             return;
           }
           this.cache.set(frame, image);
-          if (frame === this.source(this.target))
-            this.display(image, this.target);
+          this.present();
+          if (
+            !this.wanted.has(frame) &&
+            (this.displayed === undefined ||
+              this.source(this.displayed) !== frame)
+          ) {
+            image.close();
+            this.cache.delete(frame);
+          }
           while (this.cache.size > this.options.capacity) {
             const keys = [...this.cache.keys()];
             const oldest =
@@ -212,7 +231,7 @@ export class FrameQueue<T extends DecodedFrame> {
   }
 }
 
-/** A buffered playhead: scroll chooses the destination, decoded frames set pace. */
+/** Scroll drives elapsed time, even when image downloads are still pending. */
 export class ScrollPlayback<T extends DecodedFrame> {
   private position = 0;
   private target = 0;
@@ -232,21 +251,13 @@ export class ScrollPlayback<T extends DecodedFrame> {
   tick(time: number) {
     const delta =
       this.lastTime === undefined ? 1000 / 60 : time - this.lastTime;
-    const proposed =
+    this.position =
       Math.abs(this.target - this.position) < 0.00001
         ? this.target
         : followScroll(this.position, this.target, delta);
-    const wanted = frameAt(proposed, this.profile);
-    const next = nextMotionFrame(
-      frameAt(this.position, this.profile),
-      wanted,
-      this.profile,
-    );
-    this.frames.request(next);
-    // Never run the clock past a missing frame and catch up with a visible jump.
-    if (this.frames.has(next))
-      this.position = next === wanted ? proposed : progressAtFrame(next);
-    const running = this.position !== this.target || !this.frames.has(next);
+    this.frames.request(frameAt(this.position, this.profile));
+    const running = this.position !== this.target;
+    // The decoder can present the final frame without an idle animation loop.
     this.lastTime = running ? time : undefined;
     return running;
   }

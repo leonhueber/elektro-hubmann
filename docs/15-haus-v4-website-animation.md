@@ -33,13 +33,12 @@ Für Revision 02 wurden 42 bereits vorhandene Bilder mit exakt gleichem
 Kamera-, Geometrie-, Sichtbarkeits- und Lichtzustand übernommen;
 `scroll-02-reused-frames.json` dokumentiert die Quellen und Prüfsummen.
 
-## Sechs Kapitel, acht Ansichten
+## Fünf Kapitel, durchgehende Kamerafahrt
 
 | Kapitel | Bild und Bewegung | Ruheposition |
 | --- | --- | --- |
 | Planung | Geschlossenes Haus | 4 % |
 | Installation | Dach anheben, OG anheben, Explosionsansicht, dann offenes EG | 35 % |
-| Beleuchtung | Gleiche EG-Kamera, Leitungsdarstellung aus; warmes Licht bleibt an | 47 % |
 | Smart Home | Außen zurückziehen, zum OG wechseln, Beschattung absenken | 63 % |
 | Sicherheit | Haus schließen, zum Eingang und zur Türstation fahren | 79 % |
 | Photovoltaik | Dachansicht, anschließend warme Außenansicht wie bei Planung | 91 % |
@@ -47,8 +46,12 @@ Kamera-, Geometrie-, Sichtbarkeits- und Lichtzustand übernommen;
 Die 18 Bewegungs- und Ruheabschnitte der Vorlage bleiben erhalten. Die
 Kamera folgt Bezier-Bahnen mit getrenntem Blickziel und ohne Rollen.
 Quintische Beschleunigung wirkt auf die Bogenlänge der gesamten Fahrt;
-interne Kontrollpunkte sind keine zusätzlichen Haltepunkte. Installation
-und Beleuchtung sowie Planung und Abschluss besitzen jeweils dieselbe Kamera.
+interne Kontrollpunkte sind keine zusätzlichen Haltepunkte. Planung und
+Abschluss besitzen dieselbe Kamera. Der separate Beleuchtungsschritt entfällt:
+Das Ausblenden der Leitungsdarstellung gehört zur Installation, die Leuchten
+bleiben durchgehend an. Navigation, Zähler und statische Ersatzansicht zeigen
+fünf Kapitel. Die Kapiteldefinition gilt auch für den späteren B-Export;
+native Kamerafahrt, Renderplan und laufender Rendervorgang bleiben unverändert.
 
 ## Web-Ausgabe
 
@@ -74,12 +77,16 @@ aus Blender; der Browser überblendet keine isolierten Ansichten.
   geladener Dateien, ohne nach einem Update alte Beleuchtungsbilder zu zeigen.
 - Scroll-Strecke: 1200 svh am Desktop, 1000 svh mobil; längere Lese- und Fahrstrecken für die acht Ansichten.
 
-Der Player nähert seine Position zeitbasiert mit einer Zeitkonstante von 150 ms
-der Scroll-Position an. Solange das Haus sichtbar ist, überspringt er dabei
-keine unterschiedlichen Bewegungsbilder. Auf ein noch fehlendes Bild wartet er, statt die Uhr weiterlaufen
-zu lassen und anschließend sichtbar vorzuspringen. Identische Ruhepositionen
-können direkt durchlaufen werden. Damit hängt die Fahrtdauer bei großen Sprüngen
-auch von der verfügbaren Lade- und Decodiergeschwindigkeit ab.
+Der Player nähert seine Position zeitbasiert mit einer Zeitkonstante von 100 ms
+der aktuellen Scroll-Position an. Die Kamera nutzt weiterhin ausschließlich echte
+Blender-Zwischenbilder. Bei schnellen Scrollimpulsen werden überholte Bilder nicht
+in einer Warteschlange vollständig nachgespielt: Die Abspielposition läuft nach Zeit
+weiter. Solange ein Zielbild lädt, wird die nächste verfügbare Pose auf dem Weg zum
+Ziel gezeigt. Spät eintreffende Bilder können die Bewegung weder zurückziehen noch
+über das Ziel hinausschießen. Die begrenzten laufenden Downloads werden beendet,
+statt beim nächsten Scrollereignis immer wieder abgebrochen zu werden.
+Steht die Abspielposition, endet auch die Animationsschleife; der Decoder zeigt das
+fertige Zielbild bei Ankunft selbst an.
 Verlässt ein Sprung zum Kontaktbereich die gesamte Haussektion, wird die
 Bildfolge außerhalb des sichtbaren Bereichs direkt an die Scroll-Position
 angepasst. Sie läuft dort nicht unnötig vollständig weiter.
@@ -90,7 +97,7 @@ späte Decodes werden freigegeben. Ein schneller Richtungswechsel kann auch auf
 einem zuvor abgebrochenen Frame wieder anhalten. Fehlende Einzelbilder wechseln
 zu den vollständigen statischen Leistungsabschnitten. Bei fehlendem JavaScript,
 Initialisierungsfehlern, reduzierter Bewegung oder sehr niedrigen Viewports
-bleiben alle sechs Leistungen als statische Abschnitte erreichbar.
+bleiben alle fünf Leistungen als statische Abschnitte erreichbar.
 Ein Wechsel zwischen Desktop, Hochformat und der statischen Querformatansicht
 erhält das aktuelle Kapitel.
 

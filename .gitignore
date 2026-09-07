@@ -20,3 +20,8 @@ docs/version-g-qa/blender-v4-exterior-r1/frontend/render-progress*.json
 docs/version-g-qa/blender-v4-exterior-r1/frontend/pipeline*.json
 docs/version-g-qa/blender-v4-exterior-r1/frontend/pipeline.lock
 docs/version-g-qa/blender-v4-exterior-r1/frontend/*.tmp
+docs/version-g-qa/blender-v4-smarthome-r1/frontend/renders/
+docs/version-g-qa/blender-v4-smarthome-r1/frontend/render-progress*.json
+docs/version-g-qa/blender-v4-smarthome-r1/frontend/pipeline*.json
+docs/version-g-qa/blender-v4-smarthome-r1/frontend/pipeline.lock
+docs/version-g-qa/blender-v4-smarthome-r1/frontend/*.tmp

@@ -29,11 +29,6 @@
       "rest": 0.35
     },
     {
-      "id": "lighting",
-      "start": 0.39,
-      "rest": 0.47
-    },
-    {
       "id": "smarthome",
       "start": 0.51,
       "rest": 0.63

@@ -387,7 +387,8 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
         </div>
         <nav className="g-progress" aria-label="Leistungsabschnitt wählen">
           <strong>
-            <span>{chapters[activeIndex]!.number}</span> / 06
+            <span>{chapters[activeIndex]!.number}</span> /{' '}
+            {String(chapters.length).padStart(2, '0')}
           </strong>
           <ol>
             {chapters.map((chapter, index) => (

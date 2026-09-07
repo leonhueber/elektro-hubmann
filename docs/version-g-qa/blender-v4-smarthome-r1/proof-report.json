@@ -1,0 +1,27 @@
+{
+  "revision": "v4-scroll-02-exterior-01-smart-01",
+  "nativeAnimationSha256": "d7e2edd13d0773ea7a5e27793cd7e85d7eacebcc3edf1046d4af71e90e9e675c",
+  "proof": "proof-0909.png",
+  "frame": 909,
+  "dimensions": [
+    1000,
+    1000
+  ],
+  "renderer": "Cycles",
+  "samples": 32,
+  "threads": 4,
+  "sha256": "f9c392dfd63ef762b4ebf372ef93ffd7d4b15b3027dcea53af0b584bceaf0851",
+  "visualReview": {
+    "passed": true,
+    "checks": [
+      "Parents bedroom, balcony, oak glazing and controller visible together",
+      "Controller mounted beside wardrobe on existing interior wall",
+      "Open slats preserve view through balcony glazing",
+      "Warm illumination and source furniture preserved"
+    ]
+  },
+  "fullDeliveryQuality": {
+    "size": 1200,
+    "samples": 64
+  }
+}
