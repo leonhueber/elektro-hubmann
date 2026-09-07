@@ -1,12 +1,12 @@
 {
   "version": 4,
-  "revision": "v4-scroll-02",
+  "revision": "v4-scroll-02-exterior-01-smart-01",
   "frameCount": 1441,
-  "assetPath": "images/version-g/house-v4/",
+  "assetPath": "images/version-g/house-v4-smarthome-r1/",
   "profiles": {
     "desktop": {
-      "width": 1000,
-      "height": 1000,
+      "width": 1200,
+      "height": 1200,
       "step": 2,
       "cacheFrames": 12
     },
