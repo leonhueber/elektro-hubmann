@@ -1,0 +1,27 @@
+{
+  "image": "C:\\Users\\hueberl\\Private_Projects\\elektro-bubmann\\docs\\version-g-qa\\blender-v4-continuous-r1\\frontend\\renders\\frame-0001.png",
+  "size": 1200,
+  "seconds": {
+    "rna_slices": 29.2257,
+    "foreach_get": 0.1345
+  },
+  "metrics": {
+    "rna_slices": {
+      "minimum": 0.04147,
+      "maximum": 1.0,
+      "mean": 0.872132,
+      "standardDeviation": 0.223021
+    },
+    "foreach_get": {
+      "minimum": 0.04147,
+      "maximum": 1.0,
+      "mean": 0.872132,
+      "standardDeviation": 0.223021
+    }
+  },
+  "identicalMetrics": true,
+  "imageUnchanged": true,
+  "imageSha256": "d8232157856756c8753d3ee2393e2da022c7dee8ddc6833fa519341be57630f8",
+  "renderStarted": false,
+  "speedup": 217.29
+}

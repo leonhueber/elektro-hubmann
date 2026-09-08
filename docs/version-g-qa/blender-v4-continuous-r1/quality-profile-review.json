@@ -1,0 +1,25 @@
+{
+  "nativeAnimationSha256": "ded7efb86c4d89581f223262a61bfc2c6656909157cc3ace07debc33df40255d",
+  "resolution": [
+    1200,
+    1200
+  ],
+  "referenceSamples": 96,
+  "selectedSamples": 48,
+  "selectedAdaptiveThreshold": 0.035,
+  "referenceSha256": "aea689b0498ba20a5e4c022f3c5521272cef3f828a3dc82835c6e281742c1883",
+  "selectedSha256": "86710fcd9171a1f916f338f0f3617d111e389d7bfd55af43b06337093dcc2093",
+  "meanAbsoluteRGB255": [
+    0.7585784722222222,
+    0.6416590277777777,
+    0.6538875
+  ],
+  "rmsRGB255": [
+    2.0025041614605117,
+    1.7472551887015373,
+    1.7350872536497344
+  ],
+  "visualReview": "Wood grain, blind edges, bedding and fine railing remain clear at native 1200px. No material sharpness loss observed in this frame.",
+  "selectedProfileApproved": true,
+  "fullSequenceRendered": false
+}

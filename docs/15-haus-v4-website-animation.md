@@ -4,7 +4,49 @@ Die Startseite verwendet das eingerichtete zweigeschossige V4-Haus mit
 Satteldach. Dach, Obergeschoss, Wände und Beschattung bewegen sich zusammen
 mit einer durchgehenden perspektivischen Blender-Kamera. Alle 19 Innenleuchten
 bleiben über die gesamte Animation warm und auf ihrer normalen Lichtleistung.
-Die aktive Bewegungsrevision ist `v4-scroll-02`.
+Die aktive Bildrevision steht ausschließlich in
+`src/config/house-v4-manifest.json`. Die Angaben zur ursprünglichen Ausgabe
+unten dokumentieren `v4-scroll-02`.
+
+## Kontinuierliche Fassung nach ausgewählten Mockups
+
+`continuous_model.py` erzeugt aus der unveränderten Smart-Home-B-Quelldatei
+die native `elektro-hubmann-house-v4-continuous-r1-web.blend`. Die neue
+Revision `v4-continuous-01` folgt diesen Entscheidungen:
+
+- Planung C: vollständiges Haus mit Holzfenstern und Balkon, ohne Modelltexte.
+- Installation: Erdgeschoss, Obergeschoss und Dach heben sich; schematische
+  Leitungswege werden durch beide bewohnten Ebenen gezeichnet.
+- Smart Home A: direkte seitliche Fahrt zum Schlafzimmer und Balkon;
+  30 Lamellen fahren 1,85 m auseinander und ändern ihren Winkel. Der Holzrahmen
+  bleibt sichtbar, Raumtaster und Sonnenstreifen vermitteln die Steuerung.
+- Sicherheit B ohne Lupe: die Kamera fährt an die echte Videosprechanlage
+  heran; Linse, Mikrofon, Klingel und Statusanzeige sind native Geometrie.
+- Photovoltaik: vom Modulfeld zum Stellplatz, mit Wallbox, angeschlossenem
+  Elektroauto, schematischem Energieimpuls und fortschreitender Ladeanzeige.
+
+Alle 721 exportierten Positionen unterscheiden sich. Die Kameraposen sind
+Durchfahrpunkte einer stetigen Kurve; Kapitelgrenzen und Navigationsziele
+erzeugen keine Warteabschnitte. Die kleine Hausübersicht nutzt aus Blender
+projizierte Bereiche und erscheint erst bei Detailansichten. Die Webintegration
+wird erst mit dem vollständig geprüften Export dieser Revision aktiviert.
+
+```powershell
+blender -b assets/3d/elektro-hubmann-house-v4-smarthome-r1-web.blend --python-exit-code 1 --python blender/house_v4/continuous_model.py -- --prepare
+blender -b assets/3d/elektro-hubmann-house-v4-continuous-r1-web.blend --python-exit-code 1 --python blender/house_v4/validate_continuous.py
+blender -b assets/3d/elektro-hubmann-house-v4-continuous-r1-web.blend --python-exit-code 1 --python blender/house_v4/continuous_delivery.py -- --render --preview --frames 1,397,771,1089,1369 --resume
+python blender/house_v4/deliver_continuous.py --blender "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe" --resume
+```
+
+Der letzte Befehl rendert die gesamte Folge, prüft PNG-Inhalte und Prüfsummen,
+exportiert Desktop/WebP mit 1200 px sowie Mobil/WebP mit 720 px und aktiviert
+danach das Manifest. Der Webexport verwendet Cycles mit bis zu 48 Samples,
+adaptiver Schwelle 0,035, Denoising und festem Zufallsstartwert. Ein Vergleich
+mit dem 96-Sample-Referenzbild bei denselben 1200 px bestätigte die sichtbare
+Schärfe von Lamellen, Holzmaserung und Textilien. Die native Datei behält 96
+Samples als Voreinstellung für manuelle Einzelbilder. Quellen, Einstellungen und Fortschritt sind per SHA
+gebunden. Proberender liegen getrennt und können die Website nicht aktivieren.
+Native technische Prüfung und Sichtprüfung der Bilder bleiben getrennte Gates.
 
 ## Quellen und Reproduktion
 
@@ -75,15 +117,15 @@ aus Blender; der Browser überblendet keine isolierten Ansichten.
   Bilder außerhalb des benötigten Bereichs freigegeben.
 - Revisionskennungen an Bild-URLs erlauben die Wiederverwendung bereits
   geladener Dateien, ohne nach einem Update alte Beleuchtungsbilder zu zeigen.
-- Die stehende EG-Sequenz zwischen 30 und 51 % der nativen Zeitleiste benötigt
-  nur noch 4,5 statt 21 % der ursprünglichen Scroll-Strecke. Die Lesepause
-  beträgt 2,5 %, das Ausblenden der Leitungsdarstellung 1,5 % und der letzte
-  Stillstand vor Smart Home 0,5 %. Damit entfällt der Leerlauf des entfernten
-  Beleuchtungskapitels. Die übrigen Kamerafahrten behalten ihre Scroll-Länge.
-- Die Story-Höhe verkürzt sich entsprechend von 1200 auf 1018,5 svh am Desktop
-  und von 1000 auf 851,5 svh mobil. Native Bilder und ihre Zuordnung bleiben
-  unverändert. Eine umkehrbare Zuordnung zwischen Scroll- und Animationsposition
-  hält Kapitelbuttons, Fortschrittsanzeige, Zurückscrollen und Größenwechsel synchron.
+- Der aktuelle Player entfernt sämtliche auf beiden Profilen identischen
+  aufeinanderfolgenden Bilder aus der Scroll-Strecke. Bei der bisherigen
+  Smart-Home-B-Ausgabe entfallen dadurch acht Standphasen mit zusammen 43,33 %
+  der ursprünglichen Zeitleiste; bewegte Intervalle bleiben erhalten.
+- Deren Story-Höhe beträgt dadurch 723,33 svh am Desktop und 610 svh mobil.
+  Die Glättung arbeitet ebenfalls auf der verkürzten Scroll-Strecke, damit sie
+  keine übersprungenen Stillstände nachträglich abspielt. Kapitelbuttons,
+  Zurückscrollen und Größenwechsel verwenden dieselbe Positionszuordnung.
+  Die neue kontinuierliche Bildrevision benötigt diese Kompression nicht.
 
 Der Player nähert seine Position zeitbasiert mit einer Zeitkonstante von 100 ms
 der aktuellen Scroll-Position an. Die Kamera nutzt weiterhin ausschließlich echte

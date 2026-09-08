@@ -25,3 +25,11 @@ docs/version-g-qa/blender-v4-smarthome-r1/frontend/render-progress*.json
 docs/version-g-qa/blender-v4-smarthome-r1/frontend/pipeline*.json
 docs/version-g-qa/blender-v4-smarthome-r1/frontend/pipeline.lock
 docs/version-g-qa/blender-v4-smarthome-r1/frontend/*.tmp
+docs/version-g-qa/blender-v4-continuous-r1/frontend/renders/
+docs/version-g-qa/blender-v4-continuous-r1/frontend/preview/
+docs/version-g-qa/blender-v4-continuous-r1/frontend/*progress*.json
+docs/version-g-qa/blender-v4-continuous-r1/frontend/*status*.json
+docs/version-g-qa/blender-v4-continuous-r1/frontend/.delivery.lock
+docs/version-g-qa/blender-v4-continuous-r1/frontend/*.tmp
+docs/version-g-qa/blender-v4-continuous-r1/frontend/*.pid
+docs/version-g-qa/blender-v4-continuous-r1/frontend/finalizer-state/

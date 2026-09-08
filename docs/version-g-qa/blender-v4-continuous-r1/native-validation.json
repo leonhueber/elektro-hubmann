@@ -1,0 +1,410 @@
+{
+  "revision": "v4-continuous-01",
+  "nativeAnimation": "C:\\Users\\hueberl\\Private_Projects\\elektro-bubmann\\assets\\3d\\elektro-hubmann-house-v4-continuous-r1-web.blend",
+  "nativeAnimationSha256": "ded7efb86c4d89581f223262a61bfc2c6656909157cc3ace07debc33df40255d",
+  "nativeSourceSha256": "d7e2edd13d0773ea7a5e27793cd7e85d7eacebcc3edf1046d4af71e90e9e675c",
+  "objects": 4508,
+  "sampleCount": 721,
+  "allPassed": true,
+  "visualApproval": false,
+  "scope": "Saved native states only; no renders and no Blender saves. Render quality requires visual review.",
+  "checks": [
+    {
+      "check": "Saved revision and frame range",
+      "passed": true
+    },
+    {
+      "check": "Source hash matches saved provenance",
+      "passed": true
+    },
+    {
+      "check": "Original source still matches its earlier native validation",
+      "passed": true,
+      "expected": "d7e2edd13d0773ea7a5e27793cd7e85d7eacebcc3edf1046d4af71e90e9e675c",
+      "actual": "d7e2edd13d0773ea7a5e27793cd7e85d7eacebcc3edf1046d4af71e90e9e675c"
+    },
+    {
+      "check": "Build report identifies these exact native files",
+      "passed": true
+    },
+    {
+      "check": "Three separate architectural assemblies",
+      "passed": true
+    },
+    {
+      "check": "Active native camera",
+      "passed": true
+    },
+    {
+      "check": "Thirty individually indexed slats on the upper floor",
+      "passed": true
+    },
+    {
+      "check": "Interior lights and weighted blind rail exist",
+      "passed": true,
+      "interiorLightCount": 21
+    },
+    {
+      "check": "Both native energy curves exist",
+      "passed": true
+    },
+    {
+      "check": "Eight individually controlled charge LEDs",
+      "passed": true
+    },
+    {
+      "check": "Controller and camera feedback use actual material sockets",
+      "passed": true
+    },
+    {
+      "check": "Four enabled native wheel arch differences",
+      "passed": true
+    },
+    {
+      "check": "Directional sunlight uses a 0.8 degree source",
+      "passed": true
+    },
+    {
+      "check": "Retained timber access is connected to unfaded shaders",
+      "passed": true,
+      "objects": 17
+    },
+    {
+      "check": "Bell status ring is concentric with the existing button",
+      "passed": true,
+      "ringCenter": [
+        6.829999923706055,
+        -0.043999988585710526,
+        1.2599999904632568
+      ]
+    },
+    {
+      "check": "All 721 saved native samples were inspected",
+      "passed": true,
+      "inspected": 721
+    },
+    {
+      "check": "Camera moves at every adjacent sampled position",
+      "passed": true,
+      "minimumTravelMetres": 0.015496681475877022
+    },
+    {
+      "check": "Saved camera and floors match the continuous tour",
+      "passed": true,
+      "maximumErrors": {
+        "light": 0.0,
+        "camera": 1.4572557457926955e-06,
+        "lens": 3.7986970795600428e-06,
+        "assembly": 4.716691286432706e-07
+      }
+    },
+    {
+      "check": "All interior lights stay at nominal power",
+      "passed": true
+    },
+    {
+      "check": "Ground floor stays while OG and roof lift independently",
+      "passed": true
+    },
+    {
+      "check": "All 30 slats actually move or rotate",
+      "passed": true,
+      "bottomRailTravelMetres": 1.849999949336052
+    },
+    {
+      "check": "Blind lowering has at least 1.8 metres of native travel",
+      "passed": true
+    },
+    {
+      "check": "Energy curves grow from short beginnings to full length",
+      "passed": true
+    },
+    {
+      "check": "A short solar pulse moves along the growing route",
+      "passed": true
+    },
+    {
+      "check": "Native charging display progresses from zero through eight LEDs",
+      "passed": true,
+      "observedCounts": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    {
+      "check": "Controller and camera LEDs respond through emission changes",
+      "passed": true
+    },
+    {
+      "check": "Retained balcony door stays visible throughout the tour",
+      "passed": true,
+      "hiddenFrames": []
+    },
+    {
+      "check": "Wheel arch cutters never render",
+      "passed": true,
+      "visibleFrames": []
+    },
+    {
+      "check": "Validation leaves both native files unchanged",
+      "passed": true
+    }
+  ],
+  "samples": [
+    {
+      "frame": 1,
+      "camera": [
+        25.5,
+        -30.5,
+        12.0
+      ],
+      "assemblies": {
+        "EG": 0.0,
+        "OG": 3.0,
+        "Roof": 6.0
+      },
+      "chargeLEDs": 0,
+      "energyEnds": {
+        "Tour | solar route": 0.0010000000474974513,
+        "Tour | solar pulse": 0.0010000000474974513
+      }
+    },
+    {
+      "frame": 397,
+      "camera": [
+        23.086938858032227,
+        -28.560516357421875,
+        25.0
+      ],
+      "assemblies": {
+        "EG": 0.0,
+        "OG": 7.0,
+        "Roof": 14.0
+      },
+      "chargeLEDs": 0,
+      "energyEnds": {
+        "Tour | solar route": 0.0010000000474974513,
+        "Tour | solar pulse": 0.0010000000474974513
+      }
+    },
+    {
+      "frame": 627,
+      "camera": [
+        13.285796165466309,
+        -10.572274208068848,
+        13.063993453979492
+      ],
+      "assemblies": {
+        "EG": 0.0,
+        "OG": 3.0,
+        "Roof": 14.0
+      },
+      "chargeLEDs": 0,
+      "energyEnds": {
+        "Tour | solar route": 0.0010000000474974513,
+        "Tour | solar pulse": 0.0010000000474974513
+      }
+    },
+    {
+      "frame": 771,
+      "camera": [
+        11.383976936340332,
+        -5.5908050537109375,
+        10.477344512939453
+      ],
+      "assemblies": {
+        "EG": 0.0,
+        "OG": 3.0,
+        "Roof": 14.0
+      },
+      "chargeLEDs": 0,
+      "energyEnds": {
+        "Tour | solar route": 0.0010000000474974513,
+        "Tour | solar pulse": 0.0010000000474974513
+      }
+    },
+    {
+      "frame": 793,
+      "camera": [
+        11.121015548706055,
+        -5.332669258117676,
+        10.27050495147705
+      ],
+      "assemblies": {
+        "EG": 0.0,
+        "OG": 3.0,
+        "Roof": 14.0
+      },
+      "chargeLEDs": 0,
+      "energyEnds": {
+        "Tour | solar route": 0.0010000000474974513,
+        "Tour | solar pulse": 0.0010000000474974513
+      }
+    },
+    {
+      "frame": 1089,
+      "camera": [
+        7.189629077911377,
+        -2.8415703773498535,
+        1.875207781791687
+      ],
+      "assemblies": {
+        "EG": 0.0,
+        "OG": 3.0,
+        "Roof": 6.0
+      },
+      "chargeLEDs": 0,
+      "energyEnds": {
+        "Tour | solar route": 0.0010000000474974513,
+        "Tour | solar pulse": 0.0010000000474974513
+      }
+    },
+    {
+      "frame": 1225,
+      "camera": [
+        19.45351791381836,
+        -13.0,
+        14.82628345489502
+      ],
+      "assemblies": {
+        "EG": 0.0,
+        "OG": 3.0,
+        "Roof": 6.0
+      },
+      "chargeLEDs": 0,
+      "energyEnds": {
+        "Tour | solar route": 0.0010000000474974513,
+        "Tour | solar pulse": 0.0010000000474974513
+      }
+    },
+    {
+      "frame": 1369,
+      "camera": [
+        19.0,
+        -7.0,
+        7.0
+      ],
+      "assemblies": {
+        "EG": 0.0,
+        "OG": 3.0,
+        "Roof": 6.0
+      },
+      "chargeLEDs": 5,
+      "energyEnds": {
+        "Tour | solar route": 0.790123462677002,
+        "Tour | solar pulse": 0.790123462677002
+      }
+    },
+    {
+      "frame": 1441,
+      "camera": [
+        17.0,
+        -5.0,
+        4.599999904632568
+      ],
+      "assemblies": {
+        "EG": 0.0,
+        "OG": 3.0,
+        "Roof": 6.0
+      },
+      "chargeLEDs": 8,
+      "energyEnds": {
+        "Tour | solar route": 1.0,
+        "Tour | solar pulse": 1.0
+      }
+    }
+  ],
+  "interiorLights": {
+    "Kitchen | task lighting": {
+      "minimumWatts": 65.0,
+      "maximumWatts": 65.0
+    },
+    "Living | floor lamp | warm pool": {
+      "minimumWatts": 30.0,
+      "maximumWatts": 30.0
+    },
+    "Dining | warm pendant pool": {
+      "minimumWatts": 70.0,
+      "maximumWatts": 70.0
+    },
+    "Office | task lamp | warm pool": {
+      "minimumWatts": 12.0,
+      "maximumWatts": 12.0
+    },
+    "Parents | bedside lamp | warm pool": {
+      "minimumWatts": 12.0,
+      "maximumWatts": 12.0
+    },
+    "Parents | bedside lamp | warm pool.001": {
+      "minimumWatts": 12.0,
+      "maximumWatts": 12.0
+    },
+    "Child front | bedside lamp | warm pool": {
+      "minimumWatts": 12.0,
+      "maximumWatts": 12.0
+    },
+    "Child rear | bedside lamp | warm pool": {
+      "minimumWatts": 12.0,
+      "maximumWatts": 12.0
+    },
+    "Entrance | warm downlight": {
+      "minimumWatts": 28.0,
+      "maximumWatts": 28.0
+    },
+    "EG | Living ceiling light": {
+      "minimumWatts": 110.0,
+      "maximumWatts": 110.0
+    },
+    "EG | Hall ceiling light": {
+      "minimumWatts": 65.0,
+      "maximumWatts": 65.0
+    },
+    "EG | Utility ceiling light": {
+      "minimumWatts": 75.0,
+      "maximumWatts": 75.0
+    },
+    "EG | Guest WC ceiling light": {
+      "minimumWatts": 40.0,
+      "maximumWatts": 40.0
+    },
+    "EG | Office ceiling light": {
+      "minimumWatts": 90.0,
+      "maximumWatts": 90.0
+    },
+    "OG | Parents ceiling light": {
+      "minimumWatts": 140.0,
+      "maximumWatts": 140.0
+    },
+    "OG | Child front ceiling light": {
+      "minimumWatts": 100.0,
+      "maximumWatts": 100.0
+    },
+    "OG | Child rear ceiling light": {
+      "minimumWatts": 100.0,
+      "maximumWatts": 100.0
+    },
+    "OG | Bathroom ceiling light": {
+      "minimumWatts": 100.0,
+      "maximumWatts": 100.0
+    },
+    "OG | Landing ceiling light": {
+      "minimumWatts": 65.0,
+      "maximumWatts": 65.0
+    },
+    "Exterior | canopy warm pool": {
+      "minimumWatts": 12.0,
+      "maximumWatts": 12.0
+    },
+    "Exterior | canopy warm pool.001": {
+      "minimumWatts": 12.0,
+      "maximumWatts": 12.0
+    }
+  }
+}

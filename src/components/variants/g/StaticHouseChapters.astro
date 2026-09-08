@@ -4,6 +4,8 @@ import {
   versionGStoryAssetUrl,
 } from '../../../config/version-g-story-assets';
 import { houseManifest, posterUrl } from '../../../lib/house-story';
+import { CONTINUOUS_HOUSE_REVISION } from '../../../config/house-orientation';
+import HouseOrientation from './HouseOrientation';
 
 interface Props {
   baseUrl: string;
@@ -14,28 +16,33 @@ const chapters = VERSION_G_STORY_CHAPTERS;
 
 <section
   class="g-static-story"
+  data-continuous={houseManifest.revision === CONTINUOUS_HOUSE_REVISION ||
+    undefined}
   aria-label="Leistungen von der Planung bis zu integrierten Energiesystemen"
 >
   {
     chapters.map((chapter, index) => (
       <section class="g-static-chapter" id={`g-${chapter.id}`}>
-        <div class="g-static-visual">
-          <picture>
-            <source
-              media="(max-width: 860px)"
-              srcset={posterUrl(baseUrl, 'mobile', index)}
-              width={houseManifest.profiles.mobile.width}
-              height={houseManifest.profiles.mobile.height}
-            />
-            <img
-              src={versionGStoryAssetUrl(baseUrl, chapter.asset)}
-              width={chapter.asset.width}
-              height={chapter.asset.height}
-              alt={chapter.asset.alt}
-              loading={chapter.id === 'planning' ? 'eager' : 'lazy'}
-              decoding="async"
-            />
-          </picture>
+        <div class="g-static-scene">
+          <div class="g-static-visual">
+            <picture>
+              <source
+                media="(max-width: 860px)"
+                srcset={posterUrl(baseUrl, 'mobile', index)}
+                width={houseManifest.profiles.mobile.width}
+                height={houseManifest.profiles.mobile.height}
+              />
+              <img
+                src={versionGStoryAssetUrl(baseUrl, chapter.asset)}
+                width={chapter.asset.width}
+                height={chapter.asset.height}
+                alt={chapter.asset.alt}
+                loading={chapter.id === 'planning' ? 'eager' : 'lazy'}
+                decoding="async"
+              />
+            </picture>
+          </div>
+          <HouseOrientation baseUrl={baseUrl} chapter={chapter.id} />
         </div>
         <article class="g-story-copy is-active">
           <p class="g-eyebrow">

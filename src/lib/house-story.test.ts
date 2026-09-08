@@ -10,6 +10,7 @@ import {
   frameUrl,
   houseManifest,
   houseScrollLength,
+  createScrollTimeline,
   progressAtFrame,
   sourceFrame,
   scrollProgressAtTimeline,
@@ -17,13 +18,12 @@ import {
 } from './house-story';
 
 describe('shared Blender timeline', () => {
-  it('uses the designed unequal chapter boundaries, including opening and closing', () => {
-    expect(
-      [0, 0.079, 0.08, 0.389, 0.39, 0.51, 0.67, 0.82, 1].map(chapterAt),
-    ).toEqual([0, 0, 1, 1, 1, 2, 3, 4, 4]);
-    houseManifest.chapters.forEach((_, index) =>
-      expect(chapterAt(chapterProgress(index))).toBe(index),
-    );
+  it('uses native chapter boundaries without requiring stationary reading poses', () => {
+    houseManifest.chapters.forEach((chapter, index) => {
+      expect(chapterAt(chapter.start)).toBe(index);
+      expect(chapterAt(chapterProgress(index))).toBe(index);
+      if (index > 0) expect(chapterAt(chapter.start - 0.00001)).toBe(index - 1);
+    });
   });
   it('clamps edges and maps to exported frames in both render profiles', () => {
     expect(frameAt(-1)).toBe(1);
@@ -47,8 +47,6 @@ describe('shared Blender timeline', () => {
   });
   it('resolves long reading holds to a single exported image without alias chains', () => {
     for (const profile of ['desktop', 'mobile'] as const) {
-      expect(sourceFrame(profile, 57)).toBe(1);
-      expect(sourceFrame(profile, 113)).toBe(1);
       const step = houseManifest.profiles[profile].step;
       for (let frame = 1; frame <= 1441; frame += step) {
         const source = sourceFrame(profile, frame);
@@ -59,29 +57,49 @@ describe('shared Blender timeline', () => {
   });
 });
 
-describe('installation scroll pacing', () => {
+describe('continuous scroll pacing', () => {
   const distance = (a: number, b: number) =>
     (scrollProgressAtTimeline(b) - scrollProgressAtTimeline(a)) *
     houseScrollLength;
 
-  it('removes the obsolete lighting hold while retaining a short installation reading pause', () => {
-    expect(distance(0.3, 0.51)).toBeCloseTo(0.045);
-    expect(distance(0.3, 0.39)).toBeGreaterThan(0.02);
-    expect(distance(0.43, 0.51)).toBeLessThan(0.01);
-    // Camera travel before and after the EG standstill keeps its original length.
-    expect(distance(0.08, 0.3)).toBeCloseTo(0.22);
-    expect(distance(0.51, 0.67)).toBeCloseTo(0.16);
-    expect(distance(0.67, 1)).toBeCloseTo(0.33);
+  it('removes every consecutive duplicate hold without shortening a movement transition', () => {
+    const step = houseManifest.profiles.desktop.step;
+    const continuous = houseManifest.revision.startsWith('v4-continuous-');
+    for (let frame = 1; frame < houseManifest.frameCount; frame += step) {
+      const same = (['desktop', 'mobile'] as const).every(
+        (profile) =>
+          sourceFrame(profile, frame) === sourceFrame(profile, frame + step),
+      );
+      expect(
+        distance(progressAtFrame(frame), progressAtFrame(frame + step)),
+      ).toBeCloseTo(
+        same && !continuous ? 0 : step / (houseManifest.frameCount - 1),
+        12,
+      );
+    }
+    if (continuous) expect(houseScrollLength).toBe(1);
+    else expect(houseScrollLength).toBeLessThan(0.6);
   });
 
-  it('preserves every native position through scrolling, reversal and resize restoration', () => {
+  it('preserves the visible image through scrolling, reversal and resize restoration', () => {
     let previous = -1;
     for (let frame = 1; frame <= houseManifest.frameCount; frame++) {
       const native = progressAtFrame(frame);
       const scroll = scrollProgressAtTimeline(native);
-      expect(scroll).toBeGreaterThan(previous);
-      expect(timelineProgressAtScroll(scroll)).toBeCloseTo(native, 12);
+      expect(scroll).toBeGreaterThanOrEqual(previous);
+      const restored = timelineProgressAtScroll(scroll);
+      for (const profile of ['desktop', 'mobile'] as const) {
+        expect(sourceFrame(profile, frameAt(restored, profile))).toBe(
+          sourceFrame(profile, frameAt(native, profile)),
+        );
+      }
       previous = scroll;
+    }
+    for (let index = 1000; index >= 0; index--) {
+      const scroll = index / 1000;
+      expect(
+        scrollProgressAtTimeline(timelineProgressAtScroll(scroll)),
+      ).toBeCloseTo(scroll, 12);
     }
   });
 
@@ -90,17 +108,73 @@ describe('installation scroll pacing', () => {
       const rest = chapterProgress(index);
       const restored = timelineProgressAtScroll(scrollProgressAtTimeline(rest));
       expect(chapterAt(restored)).toBe(index);
-      expect(frameAt(restored)).toBe(frameAt(rest));
+      for (const profile of ['desktop', 'mobile'] as const) {
+        expect(sourceFrame(profile, frameAt(restored, profile))).toBe(
+          sourceFrame(profile, frameAt(rest, profile)),
+        );
+      }
     });
   });
 
   it('clamps scroll endpoints without losing the opening or closing image', () => {
     for (const map of [scrollProgressAtTimeline, timelineProgressAtScroll]) {
-      expect(map(-1)).toBe(0);
-      expect(map(NaN)).toBe(0);
-      expect(map(0)).toBe(0);
+      expect(map(-1)).toBe(map(0));
+      expect(map(NaN)).toBe(map(0));
       expect(map(1)).toBe(1);
       expect(map(2)).toBe(1);
+    }
+    expect(sourceFrame('desktop', frameAt(timelineProgressAtScroll(0)))).toBe(
+      sourceFrame('desktop', 1),
+    );
+    expect(sourceFrame('desktop', frameAt(timelineProgressAtScroll(1)))).toBe(
+      sourceFrame('desktop', houseManifest.frameCount),
+    );
+  });
+
+  it('jumps to the end of an identical pose and then interpolates only the next moving interval', () => {
+    const sources = [1, 1, 1, 4, 5, 5, 5, 8, 9, 9, 9];
+    const map = createScrollTimeline(
+      sources.length,
+      1,
+      (a, b) => sources[a - 1] === sources[b - 1],
+    );
+    expect(map.length).toBe(0.4);
+    expect(map.toTimeline(0)).toBe(0.2);
+    expect(map.toTimeline(0.5)).toBe(0.6);
+    expect(map.toTimeline(0.525)).toBeCloseTo(0.61);
+    expect(map.toScroll(0.4)).toBe(0.5);
+    expect(map.toScroll(0.5)).toBe(0.5);
+    expect(map.toScroll(0.6)).toBe(0.5);
+    expect(
+      [0, 0.25, 0.5, 0.75, 1].map(
+        (p) => sources[Math.round(map.toTimeline(p) * 10)],
+      ),
+    ).toEqual([1, 4, 5, 8, 9]);
+  });
+
+  it('retains returning images and is an exact identity when every frame moves', () => {
+    const returned = [1, 1, 3, 1, 1];
+    const returning = createScrollTimeline(
+      5,
+      1,
+      (a, b) => returned[a - 1] === returned[b - 1],
+    );
+    expect(returning.length).toBe(0.5);
+    expect(returning.toTimeline(0.5)).toBe(0.5);
+    const continuous = createScrollTimeline(1441, 2, () => false);
+    expect(continuous.length).toBe(1);
+    for (let index = 0; index <= 1000; index++) {
+      expect(continuous.toTimeline(index / 1000)).toBeCloseTo(index / 1000, 12);
+      expect(continuous.toScroll(index / 1000)).toBeCloseTo(index / 1000, 12);
+    }
+  });
+
+  it('handles a completely static or single-frame sequence without a division by zero', () => {
+    for (const count of [1, 11]) {
+      const map = createScrollTimeline(count, 1, () => true);
+      expect(map.length).toBe(0);
+      expect(map.toTimeline(0.5)).toBe(0);
+      expect(map.toScroll(0.5)).toBe(0);
     }
   });
 });
@@ -338,9 +412,9 @@ describe('responsive native scroll playback', () => {
         playback.tick(((i + 1) * 1000) / hz);
         await settle();
       }
-      expect(
-        Math.abs(display.mock.lastCall![1] - frameAt(0.91)),
-      ).toBeLessThanOrEqual(step);
+      expect(sourceFrame(profile, display.mock.lastCall![1])).toBe(
+        sourceFrame(profile, frameAt(0.91)),
+      );
       const forward = display.mock.calls.map((call) => call[1] as number);
       expect(forward).toEqual([...forward].sort((a, b) => a - b));
       display.mockClear();
@@ -381,12 +455,16 @@ describe('responsive native scroll playback', () => {
       playback.tick((i * 1000) / 60);
       await settle();
     }
-    expect(display.mock.lastCall?.[1]).toBe(frameAt(0.3));
+    expect(sourceFrame(profile, display.mock.lastCall![1])).toBe(
+      sourceFrame(profile, frameAt(0.3)),
+    );
     expect(signal.aborted).toBe(false);
     const late = bitmap();
     finish(late);
     await settle();
-    expect(display.mock.lastCall?.[1]).toBe(frameAt(0.3));
+    expect(sourceFrame(profile, display.mock.lastCall![1])).toBe(
+      sourceFrame(profile, frameAt(0.3)),
+    );
     expect(late.close).toHaveBeenCalledOnce();
     queue.dispose();
   });
@@ -401,7 +479,21 @@ describe('responsive native scroll playback', () => {
     for (let i = 0; i < 90 && running; i++)
       running = playback.tick((i * 1000) / 60);
     expect(running).toBe(false);
-    expect(request).toHaveBeenLastCalledWith(frameAt(0.63));
+    expect(sourceFrame(profile, request.mock.lastCall![0])).toBe(
+      sourceFrame(profile, frameAt(0.63)),
+    );
+    queue.dispose();
+  });
+
+  it('smooths across a collapsed installation hold in scroll space without waiting inside it', () => {
+    const queue = createQueue(() => new Promise<Bitmap>(() => {}));
+    const request = vi.spyOn(queue, 'request');
+    const playback = new ScrollPlayback(queue, profile);
+    playback.seek(0.35);
+    const initial = sourceFrame(profile, request.mock.lastCall![0]);
+    playback.follow(0.395);
+    playback.tick(0);
+    expect(sourceFrame(profile, request.mock.lastCall![0])).not.toBe(initial);
     queue.dispose();
   });
 

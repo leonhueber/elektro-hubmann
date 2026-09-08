@@ -1,4 +1,5 @@
 import { houseManifest } from '../lib/house-story';
+import { CONTINUOUS_HOUSE_REVISION } from './house-orientation';
 export type VersionGStoryState =
   'planning' | 'installation' | 'smarthome' | 'security' | 'energy';
 export type VersionGStoryAsset = {
@@ -72,6 +73,29 @@ const copy: Record<
     components: ['PV-Module', 'Wechselrichter'],
   },
 };
+if (houseManifest.revision === CONTINUOUS_HOUSE_REVISION) {
+  copy.planning.alt =
+    'Detailliertes Wohnhaus mit Holztüren und Holzfenstern, Balkon, Photovoltaik und einem angeschlossenen Elektroauto am Stellplatz.';
+  copy.installation.alt =
+    'Das Haus öffnet sich in drei angehobene Ebenen; die groben Leitungswege durch die Geschosse werden sichtbar.';
+  copy.smarthome.description =
+    'Ein Tastendruck, spürbar mehr Komfort: Die Jalousie im Schlafzimmer fährt herunter und lenkt das Tageslicht. Wir vernetzen Beschattung, Licht und Raumtemperatur für Ihren Alltag.';
+  copy.smarthome.alt =
+    'Direkte Nahansicht des Schlafzimmers mit Raumtaster neben dem Eichenschrank und abgesenkter Außenjalousie vor der Holz-Balkontür. Die Lamellen filtern das Tageslicht, die Raumbeleuchtung bleibt eingeschaltet.';
+  copy.smarthome.components = ['Raumsteuerung', 'Automatische Beschattung'];
+  copy.security.alt =
+    'Nahansicht des Hauseingangs mit sichtbarer Kamera, Videosprechanlage und Türzugang.';
+  copy.security.components = [
+    'Kamera & Videosprechanlage',
+    'Zutrittskontrolle',
+  ];
+  copy.energy.title = ['Vom eigenen Dach', 'direkt ins Auto.'];
+  copy.energy.description =
+    'Photovoltaik, Haus und Wallbox gemeinsam geplant: Nutzen Sie Ihren Solarstrom auch zum Laden Ihres Elektroautos – mit einer Ladeleistung, die sich an den verfügbaren Überschuss anpasst.';
+  copy.energy.alt =
+    'Photovoltaik auf dem Hausdach, Wallbox am Stellplatz und ein per Ladekabel verbundenes Elektroauto. Eine schematische Energielinie verbindet das Dach mit der Ladestation; die Wallbox zeigt den Ladevorgang an.';
+  copy.energy.components = ['Photovoltaik', 'Wallbox & Überschussladen'];
+}
 export const VERSION_G_STORY_CHAPTERS = houseManifest.chapters.map(
   (chapter, index) => {
     const id = chapter.id as VersionGStoryState;

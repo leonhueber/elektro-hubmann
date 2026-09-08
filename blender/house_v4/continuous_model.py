@@ -1,0 +1,522 @@
+"""Build a detailed, continuously animated sibling of the existing native B house.
+
+Run with the existing smarthome-r1-web.blend and --prepare. Sources are never
+overwritten. New devices, EV and parking bay are native Blender geometry.
+"""
+import argparse
+import hashlib
+import json
+import math
+import re
+import sys
+from pathlib import Path
+import bpy
+from mathutils import Vector
+from bpy_extras.object_utils import world_to_camera_view
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT/'blender'))
+from house_v4 import core as c
+from house_v4.continuous_motion import REVISION, FRAME_COUNT, STEP, CHAPTERS, state, schedule
+from house_v4.web import key, fade_group
+
+SOURCE = ROOT/'assets/3d/elektro-hubmann-house-v4-smarthome-r1-web.blend'
+DEST = ROOT/'assets/3d/elektro-hubmann-house-v4-continuous-r1-web.blend'
+OUT = ROOT/'docs/version-g-qa/blender-v4-continuous-r1'
+NEW = []
+
+
+def write_json(path, value):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, indent=2)+'\n', encoding='utf-8')
+
+
+def materials():
+    c.M.clear()
+    for mat in bpy.data.materials:
+        name = mat.name.removeprefix('V4 | ')
+        if mat.name.startswith('V4 | ') and ' | ' not in name:
+            c.M.setdefault(re.sub(r'\.\d{3}$', '', name), mat)
+    c.material('tour silver lacquer', (.36, .40, .42), .24, .72)
+    shader = c.M['tour silver lacquer'].node_tree.nodes.get('Principled BSDF')
+    shader.inputs['Coat Weight'].default_value = .65
+    shader.inputs['Coat Roughness'].default_value = .15
+    c.material('tour rubber', (.012, .015, .017), .72, .05, .0004)
+    c.material('tour car glass', (.015, .027, .035), .13, .42)
+    c.material('tour pavement', (.37, .385, .37), .82, 0, .0015)
+    c.material('tour route', (.48, .01, .025), .4, .15)
+    c.material('tour blue lens', (.011, .037, .07), .09, .45)
+    for name, color in [('tour status', (.06, .6, .38)), ('tour led', (.7, .75, .8)), ('tour tail', (.6, .012, .025))]:
+        mat = c.material(name, color, .24)
+        shader = mat.node_tree.nodes.get('Principled BSDF')
+        shader.inputs['Emission Color'].default_value = (*color, 1)
+        shader.inputs['Emission Strength'].default_value = 1.7
+    c.M['tour tail'].node_tree.nodes.get('Principled BSDF').inputs['Emission Strength'].default_value=.12
+    for name in ['tour controller feedback','tour camera feedback']:
+        mat=c.M['tour status'].copy();mat.name='V4 | '+name;c.M[name]=mat
+    for name, strength in [('tour solar path', .25), ('tour solar pulse', 3.)]:
+        mat = c.material(name, (.9, .33, .045), .35, .1)
+        shader = mat.node_tree.nodes.get('Principled BSDF')
+        shader.inputs['Emission Color'].default_value = (.9, .33, .045, 1)
+        shader.inputs['Emission Strength'].default_value = strength
+    for mat in bpy.data.materials:
+        if mat.name.startswith('V4 | plaster'):
+            for node in mat.node_tree.nodes:
+                if node.type == 'BUMP':
+                    node.inputs['Distance'].default_value = min(node.inputs['Distance'].default_value, .0015)
+        if mat.name.startswith('V4 | pv') and 'grid' not in mat.name:
+            shader = mat.node_tree.nodes.get('Principled BSDF')
+            if shader:
+                shader.inputs['Roughness'].default_value = .29
+                shader.inputs['Metallic'].default_value = .15
+                shader.inputs['Specular IOR Level'].default_value = .3
+
+
+def smooth_curve(name, coords, radius, mat, parent=None):
+    curve = bpy.data.curves.new(name, 'CURVE')
+    curve.dimensions = '3D'
+    curve.resolution_u = 20
+    curve.bevel_depth, curve.bevel_resolution = radius, 5
+    spline = curve.splines.new('BEZIER')
+    spline.bezier_points.add(len(coords)-1)
+    for point, co in zip(spline.bezier_points, coords):
+        point.co = co
+        point.handle_left_type = point.handle_right_type = 'AUTO'
+    return c.register(bpy.data.objects.new(name, curve), mat, parent)
+
+
+def shape_loft(name, sections, mat, parent):
+    """Smooth automotive shoulder profile, longitudinal axis Y."""
+    verts = []
+    for y, width, bottom, top in sections:
+        height = top-bottom
+        verts.extend([(0, y, bottom), (-width*.78, y, bottom),
+                      (-width, y, bottom+.20*height), (-width, y, bottom+.68*height),
+                      (-width*.78, y, top), (0, y, top),
+                      (width*.78, y, top), (width, y, bottom+.68*height),
+                      (width, y, bottom+.20*height), (width*.78, y, bottom)])
+    ring = 10
+    faces = [tuple(reversed(range(ring)))]
+    faces += [(j*ring+i, j*ring+(i+1)%ring, (j+1)*ring+(i+1)%ring, (j+1)*ring+i)
+              for j in range(len(sections)-1) for i in range(ring)]
+    faces.append(tuple((len(sections)-1)*ring+i for i in range(ring)))
+    obj = c.mesh(name, verts, faces, mat, parent, smooth=True)
+    sub = obj.modifiers.new('Coachwork surface continuity', 'SUBSURF')
+    sub.levels = sub.render_levels = 2
+    return obj
+
+
+def ev_and_wallbox():
+    c.collection('V4 | Continuous 10 Energy', None, 'Exterior | EV bay')
+    before = set(bpy.context.scene.objects)
+    # Thin individual pavers retain material scale beside the existing house.
+    for ix in range(7):
+        for iy in range(12):
+            c.box('Tour | bay paver', (9.78+(ix+.5)*.56, .10+(iy+.5)*.57, -.13),
+                  (.552, .562, .10), 'tour pavement', .004)
+    c.box('Tour | bay outer kerb', (13.80, 3.52, -.08), (.10, 6.90, .18), 'stone', .009)
+    wall = c.empty('Tour | wallbox', (9.665, 2.3, 1.35))
+    wall['mounting_height_m'] = 1.35
+    c.box('Tour | wallbox mounting gasket', (.028, 0, 0), (.052, .274, .43), 'tour rubber', .024, wall)
+    c.box('Tour | wallbox metal shell', (.10, 0, 0), (.16, .32, .48), 'charcoal', .035, wall)
+    c.box('Tour | wallbox face seal', (.182, 0, 0), (.008, .291, .445), 'black', .023, wall)
+    c.box('Tour | wallbox satin face', (.189, 0, 0), (.012, .277, .429), 'charcoal', .024, wall)
+    c.box('Tour | charge status diffuser', (.199, 0, .078), (.004, .132, .009), 'charcoal', .002, wall)
+    for i in range(8):
+        lamp=c.box('Tour | charging progress LED', (.202, -.059+i*.017, .078),
+                   (.004, .012, .009), 'tour status', .002, wall)
+        lamp['charge_segment']=i
+    c.box('Tour | reader glass', (.2, 0, -.005), (.004, .096, .082), 'tour car glass', .005, wall)
+    for y in [-.12, .12]:
+        for z in [-.19, .19]:
+            c.cylinder('Tour | wallbox fixing', (.199, y, z), .004, .005, 'steel', wall, (0, math.pi/2, 0), 16)
+    for i in range(7):
+        c.box('Tour | lower ventilation slot', (.202, -.063+i*.021, -.146),
+              (.002, .009, .018), 'black', .002, wall)
+    c.cylinder('Tour | cable gland', (.13, 0, -.262), .023, .06, 'tour rubber', wall)
+    # Inverter lives inside the original front-right HWR, not upstairs.
+    c.collection('V4 | EG 25 Continuous energy plant', bpy.data.objects['V4 | EG assembly'], 'EG | HWR')
+    inverter = c.box('Tour | solar inverter', (9.25, 2.72, 1.40), (.18, .45, .61), 'white appliance', .035)
+    inverter['continuous_group'] = 'eg'
+    c.box('Tour | inverter face', (9.15, 2.72, 1.40), (.01, .395, .54), 'ceramic', .025)['continuous_group'] = 'eg'
+    for i in range(10):
+        c.box('Tour | inverter heat sink', (9.34, 2.53+i*.039, 1.4), (.06, .012, .5), 'steel', .003)['continuous_group'] = 'eg'
+    c.box('Tour | inverter status', (9.139, 2.72, 1.39), (.004, .072, .012), 'tour status', .002)['continuous_group'] = 'eg'
+    # Native custom compact hatchback. No external or unlicensed vehicle model.
+    c.collection('V4 | Continuous 10 Energy', None, 'Exterior | EV bay')
+    car = c.empty('Tour | electric hatchback', (11.5, 3.5, -.10))
+    car['vehicle_length_m'], car['vehicle_width_m'] = 4.4, 1.8
+    body=shape_loft('Tour | formed silver body',
+               [(-2.2,.50,.35,.61),(-2.12,.79,.27,.78),(-1.82,.9,.24,.9),
+                (-1.35,.91,.25,.97),(-.45,.91,.25,.99),(.75,.9,.25,.95),
+                (1.40,.87,.27,.88),(1.94,.80,.3,.76),(2.2,.57,.37,.63)],
+               'tour silver lacquer', car)
+    shape_loft('Tour | curved panoramic cabin',
+               [(-1.64,.56,.81,1.02),(-1.15,.70,.89,1.46),(-.70,.71,.91,1.55),
+                (.28,.70,.9,1.52),(.62,.66,.88,1.4),(1.12,.54,.86,1.01)],
+               'tour car glass', car)
+    c.soft('Tour | roof panel', (0,-.31,1.48), (1.22,1.16,.07), 'tour silver lacquer', car, exponent=.42)
+    for side in [-1,1]:
+        # Window boundaries, two door seams, side sill and flush handles.
+        smooth_curve('Tour | window surround', [(side*.69,-1.29,1.1),(side*.72,-.90,1.46),
+                     (side*.70,.28,1.46),(side*.61,.96,1.03)], .016,'tour silver lacquer',car)
+        c.rod('Tour | window B pillar',(side*.727,-.29,.99),(side*.697,-.29,1.50),.036,'charcoal',car)
+        smooth_curve('Tour | beltline',[(side*.87,-1.75,.90),(side*.94,-.8,.94),
+                     (side*.935,.65,.91),(side*.85,1.61,.80)],.008,'steel',car)
+        for y in [-.67,.50]:
+            c.box('Tour | flush door pull',(side*.918,y,.88),(.027,.16,.027),'charcoal',.011,car)
+            smooth_curve('Tour | door shutline',[(side*.911,y+.37,.92),(side*.92,y+.40,.51),
+                         (side*.88,y+.34,.32)],.003,'black',car)
+        c.box('Tour | side sill',(side*.84,0,.28),(.13,2.55,.09),'charcoal',.026,car)
+        c.rod('Tour | mirror stalk',(side*.72,.79,1.05),(side*.99,.72,1.08),.025,'charcoal',car)
+        c.soft('Tour | mirror housing',(side*1.01,.72,1.09),(.20,.27,.13),'tour silver lacquer',car,exponent=.48)
+        c.box('Tour | mirror glass',(side*1.015,.582,1.09),(.148,.008,.085),'steel',.025,car)
+        for y in [-1.39,1.37]:
+            # Axles along X. Lathed tyre shoulders with separate rim, five spokes.
+            tyre = c.lathe('Tour | rounded tyre',(side*.77,y,.365),
+                          [(.21,-.14),(.31,-.14),(.355,-.10),(.367,-.05),(.367,.05),(.355,.10),(.31,.14),(.21,.14)],
+                          'tour rubber',car,segments=64)
+            tyre.rotation_euler.y=math.pi/2
+            c.cylinder('Tour | alloy rim',(side*.908,y,.365),.239,.024,'steel',car,(0,math.pi/2,0),64)
+            c.cylinder('Tour | brake cavity',(side*.924,y,.365),.206,.025,'charcoal',car,(0,math.pi/2,0),48)
+            for angle in [i*math.tau/5 for i in range(5)]:
+                c.rod('Tour | forged wheel spoke',(side*.945,y+.048*math.sin(angle),.365+.048*math.cos(angle)),
+                      (side*.945,y+.20*math.sin(angle+.11),.365+.20*math.cos(angle+.11)),.027,'steel',car)
+            c.cylinder('Tour | hub cap',(side*.955,y,.365),.055,.014,'steel',car,(0,math.pi/2,0),32)
+            for angle in [i*math.tau/40 for i in range(40)]:
+                yy,zz=y+.364*math.sin(angle),.365+.364*math.cos(angle)
+                c.rod('Tour | tread siping',(side*.70,yy,zz),(side*.84,yy,zz),.0025,'black',car)
+            cutter=c.cylinder('Tour | wheel arch cutter',(side*.85,y,.365),.401,.65,'black',car,(0,math.pi/2,0),64)
+            cutter.modifiers.clear()
+            cut=body.modifiers.new('Real wheel arch','BOOLEAN')
+            cut.operation='DIFFERENCE';cut.solver='EXACT';cut.object=cutter
+            cutter.hide_render=True
+            cutter['continuous_group']='never'
+        c.soft('Tour | front light',(side*.59,2.075,.69),(.39,.075,.085),'tour led',car,exponent=.35)
+        c.soft('Tour | rear light',(side*.58,-2.06,.76),(.42,.06,.077),'tour tail',car,exponent=.36)
+    c.box('Tour | front intake',(0,2.159,.46),(1.08,.055,.10),'charcoal',.035,car)
+    c.box('Tour | front plate',(0,2.20,.58),(.42,.014,.082),'ceramic',.012,car)
+    c.box('Tour | rear plate',(0,-2.151,.55),(.42,.014,.082),'ceramic',.012,car)
+    c.soft('Tour | roof antenna',(0,-.85,1.61),(.055,.16,.085),'charcoal',car,exponent=.65)
+    # Visible charging port on the house-facing side.
+    c.box('Tour | charge port recess',(-.897,-1.2,.83),(.045,.19,.17),'black',.025,car)
+    c.box('Tour | open charge flap',(-.995,-1.31,.83),(.14,.024,.18),'tour silver lacquer',.022,car,angle=.45)
+    c.cylinder('Tour | plugged connector',(-.96,-1.2,.83),.046,.15,'charcoal',car,(0,math.pi/2,0),40)
+    for j in range(5):
+        c.cylinder('Tour | connector grip ring',(-1.02-j*.014,-1.2,.83),.044,.007,'tour rubber',car,(0,math.pi/2,0),40)
+    smooth_curve('Tour | charging cable',
+                 [(9.8,2.3,1.09),(9.92,2.3,.54),(10.12,2.30,.08),(10.30,2.3,.20),(10.39,2.3,.55),(10.425,2.3,.73)],
+                 .018,'tour rubber')
+    # Explicitly schematic, dimensioned path laid just outside the real surface.
+    # The path follows the roof slope, then the east wall and charging cable.
+    fade_group('energy')
+    points=[(6.2,4.2,8.66),(7.7,4.2,7.61),(9.79,4.2,6.16),
+            (9.89,4.2,5.70),(9.89,4.2,1.35),(9.89,2.3,1.35),
+            (9.94,2.3,1.09),(10.03,2.3,.54),(10.20,2.3,.10),
+            (10.35,2.3,.24),(10.44,2.3,.55),(10.46,2.3,.73)]
+    for name,radius,mat in [('solar route',.017,'tour solar path'),('solar pulse',.030,'tour solar pulse')]:
+        path=smooth_curve('Tour | '+name,points,radius,mat)
+        for point in path.data.splines[0].bezier_points:
+            point.handle_left_type=point.handle_right_type='VECTOR'
+        path['continuous_group']='energy'
+        path['energy_path']=name
+    NEW.extend(o for o in bpy.context.scene.objects if o not in before)
+    return wall,car
+
+
+def retain_balcony_access():
+    """Keep the selected timber door and blind hardware visible in the cutaway."""
+    copies={}
+    for obj in bpy.context.scene.objects:
+        if not (obj.name.startswith('OG | balcony door') or
+                obj.name.startswith('Exterior | balcony door') or
+                obj.name.startswith('Smart A | blind headrail')):
+            continue
+        obj['continuous_group']='always'
+        obj['cutaway_upper']=False
+        for slot in obj.material_slots:
+            original=slot.material
+            if not original:
+                continue
+            if original.name not in copies:
+                mat=original.copy()
+                mat.name=original.name+' | retained balcony'
+                for mix in list(mat.node_tree.nodes):
+                    if mix.type!='MIX_SHADER' or not mix.inputs[0].links:
+                        continue
+                    control=mix.inputs[0].links[0].from_node
+                    if control.type=='GROUP' and control.node_tree.name.startswith('V4 web visibility | '):
+                        shader=mix.inputs[2].links[0].from_socket
+                        for link in list(mix.outputs[0].links):
+                            mat.node_tree.links.new(shader,link.to_socket)
+                        mat.node_tree.nodes.remove(mix)
+                copies[original.name]=mat
+            slot.link='OBJECT';slot.material=copies[original.name]
+
+
+def details_and_routes():
+    scene=bpy.context.scene
+    before=set(scene.objects)
+    og=bpy.data.objects['V4 | OG assembly']
+    c.collection('V4 | OG 26 Continuous shading',og,'OG | Parents')
+    old=sorted((o for o in scene.objects if o.get('smart_blind')),key=lambda o:o.name)
+    for i in range(15):
+        duplicate=old[i].copy()
+        duplicate.data=old[i].data.copy()
+        duplicate.name=f'Tour | blind lamella {i+15:02d}'
+        duplicate.animation_data_clear()
+        c.COL.objects.link(duplicate)
+    slats=old+[o for o in c.COL.objects if o.get('smart_blind')]
+    # Avoid double inclusion if a Blender collection is reused.
+    slats=list(dict.fromkeys(slats))
+    assert len(slats)==30,len(slats)
+    for i,o in enumerate(slats):
+        o['continuous_blind_index']=i
+        o['smart_blind']=True
+        o['continuous_group']='blind'
+    for x in [.99,3.51]:
+        c.box('Tour | full height blind guide',(x,-.009,1.28),(.027,.032,2.40),'charcoal',.004)['continuous_group']='always'
+    lower=c.box('Tour | blind weighted lower rail',(2.25,.005,2.03),(2.49,.08,.046),'charcoal',.008)
+    lower['continuous_group']='blind'
+    feedback=c.box('Tour | controller scene indicator',(4.17,5.046,1.188),(.104,.002,.006),'tour controller feedback',.001)
+    feedback['continuous_group']='controller'
+    for obj in scene.objects:
+        if obj.name.startswith('Smart A | blind guide'):
+            obj.hide_render=True
+            obj['continuous_group']='never'
+        if obj.type=='FONT' and '21 degree' in obj.name:
+            obj.data.body='Szene'
+            obj.data.size=.027
+    # A real optical lens surface and a physical bell ring, not a magnifier UI.
+    c.collection('V4 | EG 26 Continuous entrance details',bpy.data.objects['V4 | EG assembly'],'EG | Entrance')
+    c.cylinder('Tour | camera coated lens',(6.83,-.063,1.49),.021,.002,'tour blue lens',rotation=(math.pi/2,0,0),vertices=64)
+    for r in [.025,.0275]:
+        points=[(6.83+r*math.cos(i*math.tau/64),-.062,1.49+r*math.sin(i*math.tau/64)) for i in range(64)]
+        c.tube('Tour | camera focus bezel',points,.001,'steel',cyclic=True)
+    for x in [6.783,6.877]:
+        for z in [1.22,1.54]:
+            c.cylinder('Tour | intercom face screw',(x,-.043,z),.003,.003,'steel',rotation=(math.pi/2,0,0),vertices=16)
+    for i in range(5):
+        c.box('Tour | intercom microphone slot',(6.808+i*.011,-.040,1.365),(.005,.003,.009),'black',.001)
+    ring=c.tube('Tour | camera status ring',[(6.83+.023*math.cos(i*math.tau/64),-.044,1.26+.023*math.sin(i*math.tau/64)) for i in range(64)],.0018,'tour status',cyclic=True)
+    c.cylinder('Tour | camera activity LED',(6.86,-.061,1.528),.0028,.002,'tour camera feedback',rotation=(math.pi/2,0,0),vertices=20)
+    # Coarse, deliberately schematic routes span the two lifted inhabited levels.
+    for level,parent,z in [('EG',bpy.data.objects['V4 | EG assembly'],.18),('OG',og,.18)]:
+        c.collection('V4 | '+level+' 27 Continuous wiring',parent,level+' | Routes')
+        routes=[[(7.12,2.85,z),(6.0,2.85,z),(6.,5.3,z),(1.0,5.3,z),(1.0,2.2,z)],
+                [(6.,5.3,z),(6.,8.9,z),(8.9,8.9,z)],[(6.,5.3,z),(6.,1.0,z),(8.9,1.0,z)]]
+        for i,points in enumerate(routes):
+            route=c.tube(f'Tour | {level} schematic wiring {i}',points,.016,'tour route')
+            route['installation_route']=True
+            route['continuous_group']='route'
+    NEW.extend(o for o in scene.objects if o not in before)
+    return slats,lower,ring
+
+
+def visibility_for(obj):
+    if obj.get('continuous_group'):
+        return obj['continuous_group']
+    if obj.get('smarthome_revision'):
+        return 'controller'
+    if obj.get('smart_blind'):
+        return 'blind'
+    if obj.get('installation_route'):
+        return 'route'
+    if obj.get('og_stairwell_context'):
+        return 'context'
+    eg=any(col.name.startswith('V4 | EG ') and col.name!='V4 | EG 04 U stair' for col in obj.users_collection)
+    if obj.get('cutaway_upper'):
+        return 'eg_cut' if eg else 'cut'
+    return 'eg' if eg else None
+
+
+def attach_fades(objects):
+    copied={}
+    for obj in objects:
+        group=visibility_for(obj)
+        if group not in ['eg','route','controller','blind','energy'] or obj.type not in ['MESH','CURVE','FONT']:
+            continue
+        groupname='smarthome A devices' if group=='controller' else group
+        fade=bpy.data.node_groups.get('V4 web visibility | '+groupname)
+        if not fade:
+            continue
+        for slot in obj.material_slots:
+            original=slot.material
+            if not original:
+                continue
+            # Copied original slats already have their native blind visibility.
+            if any(n.type=='GROUP' and n.node_tree==fade for n in original.node_tree.nodes):
+                continue
+            ident=(original.name,group)
+            if ident not in copied:
+                material=original.copy()
+                material.name=original.name+' | continuous '+group
+                tree=material.node_tree
+                output=next(n for n in tree.nodes if n.type=='OUTPUT_MATERIAL')
+                prior=output.inputs['Surface'].links[0].from_socket
+                transparent=tree.nodes.new('ShaderNodeBsdfTransparent')
+                mix=tree.nodes.new('ShaderNodeMixShader')
+                control=tree.nodes.new('ShaderNodeGroup');control.node_tree=fade
+                tree.links.new(control.outputs[0],mix.inputs[0])
+                tree.links.new(transparent.outputs[0],mix.inputs[1])
+                tree.links.new(prior,mix.inputs[2])
+                tree.links.new(mix.outputs[0],output.inputs['Surface'])
+                copied[ident]=material
+            slot.link='OBJECT'
+            slot.material=copied[ident]
+
+
+def orient_bounds(scene,points):
+    pts=[world_to_camera_view(scene,scene.camera,Vector(p)) for p in points]
+    xs=[p.x for p in pts];ys=[1-p.y for p in pts]
+    margin=.012
+    x=max(0,min(xs)-margin);y=max(0,min(ys)-margin)
+    return {'x':round(x,6),'y':round(y,6),'width':round(min(1,max(xs)+margin)-x,6),'height':round(min(1,max(ys)+margin)-y,6)}
+
+
+def prepare():
+    if Path(bpy.data.filepath).resolve()!=SOURCE.resolve():
+        raise RuntimeError('Load the unchanged native smarthome-r1-web source.')
+    scene=bpy.context.scene
+    scene.frame_set(1)
+    materials()
+    wall,car=ev_and_wallbox()
+    slats,lower,ring=details_and_routes()
+    retain_balcony_access()
+    attach_fades(NEW)
+    # A fixed, physical directional key makes blind shadows visible.
+    c.collection('V4 | Continuous 90 Daylight')
+    sun_data=bpy.data.lights.new('Tour | directional daylight','SUN')
+    sun_data.energy=1.05
+    sun_data.angle=math.radians(.8)
+    sun=c.register(bpy.data.objects.new(sun_data.name,sun_data))
+    sun.rotation_euler=Vector((-.25,1,-.62)).to_track_quat('-Z','Y').to_euler()
+    for obj in scene.objects:
+        obj.animation_data_clear()
+        if obj.type in ['CAMERA','LIGHT']:
+            obj.data.animation_data_clear()
+        obj.hide_set(False)
+    for group in bpy.data.node_groups:
+        group.animation_data_clear()
+    scene.animation_data_clear()
+    cam=bpy.data.objects['V4 | Continuous scroll camera']
+    target=bpy.data.objects['V4 | Continuous look target']
+    cam.rotation_mode='QUATERNION'
+    scene.camera=cam
+    cam.data.clip_start=.04
+    cam.data.clip_end=250
+    scene.render.film_transparent=False
+    for marker in scene.timeline_markers:
+        marker.camera=None
+    groups={}
+    for group in bpy.data.node_groups:
+        if group.name.startswith('V4 web visibility | '):
+            value=next((n.outputs[0] for n in group.nodes if n.type=='VALUE'),None)
+            if value:
+                groups[group.name.split(' | ',1)[1]]=value
+    objects=[(o,visibility_for(o)) for o in scene.objects]
+    lights=[(o,o.get('nominal_watts',20)) for o in scene.objects if o.get('interior_light')]
+    routes=[o for o in scene.objects if o.get('installation_route') and o.type=='CURVE']
+    energy_paths=[o for o in scene.objects if o.get('energy_path')]
+    charge_lamps=[o for o in scene.objects if 'charge_segment' in o]
+    hidden={}
+    records=[]
+    for frame in range(1,FRAME_COUNT+1,STEP):
+        s=state((frame-1)/(FRAME_COUNT-1))
+        key(cam,'location',frame,s['camera'])
+        key(cam,'rotation_quaternion',frame,(Vector(s['target'])-Vector(s['camera'])).to_track_quat('-Z','Y'))
+        key(cam.data,'lens',frame,s['lens'])
+        key(target,'location',frame,s['target'])
+        for name,prop in [('OG','og'),('Roof','roof')]:
+            key(bpy.data.objects['V4 | '+name+' assembly'],'location',frame,(0,0,s[prop]))
+        vis={'cut':s['cut'],'eg':s['eg'],'eg_cut':s['eg']*s['cut'],'route':s['route'],
+             'context':1-s['eg'],'blind':s['blind'],'controller':s['controller'],'never':0,'energy':s['energy']}
+        for name,socket in groups.items():
+            key(socket,'default_value',frame,vis['controller' if name=='smarthome A devices' else name])
+        for obj,group in objects:
+            invisible=group is not None and vis.get(group,1)<.002
+            if hidden.get(obj.name)!=invisible:
+                key(obj,'hide_render',frame,invisible)
+                key(obj,'hide_viewport',frame,invisible)
+                hidden[obj.name]=invisible
+        for i,obj in enumerate(slats):
+            key(obj,'location',frame,(2.25,.025,2.44-i*.014-(i/29)*s['blind_drop']))
+            key(obj,'rotation_euler',frame,(s['tilt'],0,0))
+        key(lower,'location',frame,(2.25,.025,2.44-29*.014-s['blind_drop']-.03))
+        for route in routes:
+            key(route.data,'bevel_factor_end',frame,max(.001,s['route_trace']))
+        for path in energy_paths:
+            end=max(.001,s['energy_flow'])
+            key(path.data,'bevel_factor_end',frame,end)
+            key(path.data,'bevel_factor_start',frame,max(0,end-.14) if path['energy_path']=='solar pulse' else 0.)
+        for lamp in charge_lamps:
+            visible=s['charge']*8>lamp['charge_segment']
+            key(lamp,'hide_render',frame,not visible)
+            key(lamp,'hide_viewport',frame,not visible)
+        for light,nominal in lights:
+            key(light.data,'energy',frame,nominal)
+        for mat_name,value in [('tour controller feedback',max(0,min(1,((frame-1)/(FRAME_COUNT-1)-.425)/.025))),
+                               ('tour camera feedback',s['security_focus'])]:
+            # Follow all visibility copies as well as the retained source material.
+            for mat in bpy.data.materials:
+                if mat.name.startswith('V4 | '+mat_name):
+                    shader=mat.node_tree.nodes.get('Principled BSDF')
+                    key(shader.inputs['Emission Strength'],'default_value',frame,.06+2.2*value)
+        button=bpy.data.objects.get('Smart A | controller glass')
+        if button:
+            key(button,'location',frame,(4.17,5.054+s['controller_press']*.0015,1.22))
+        records.append({'frame':frame,**s})
+    for action in bpy.data.actions:
+        for layer in action.layers:
+            for strip in layer.strips:
+                for slot in action.slots:
+                    bag=strip.channelbag(slot)
+                    if bag:
+                        for curve in bag.fcurves:
+                            for point in curve.keyframe_points:
+                                point.interpolation='CONSTANT' if curve.data_path in ['hide_render','hide_viewport'] else 'LINEAR'
+    scene.frame_start,scene.frame_end,scene.render.fps=1,FRAME_COUNT,60
+    scene.render.engine='CYCLES'
+    scene.cycles.samples=96
+    scene.cycles.use_denoising=True
+    scene.cycles.use_adaptive_sampling=True
+    scene.cycles.adaptive_threshold=.025
+    scene.cycles.adaptive_min_samples=8
+    scene.cycles.use_animated_seed=False
+    scene.cycles.transparent_max_bounces=128
+    scene.render.resolution_x=scene.render.resolution_y=1200
+    scene.render.resolution_percentage=100
+    scene.render.use_persistent_data=True
+    scene.render.threads_mode,scene.render.threads='FIXED',12
+    scene['web_revision']=REVISION
+    scene['continuous_source_sha256']=hashlib.sha256(SOURCE.read_bytes()).hexdigest()
+    scene['continuous_features']='30 moving lamellae; retained timber balcony access; directional sunlight; detailed door camera; native EV and wallbox; animated solar path and charge indicator'
+    scene.frame_set(1)
+    bpy.context.view_layer.update()
+    bpy.ops.wm.save_as_mainfile(filepath=str(DEST),compress=True)
+    frame=1+round(CHAPTERS[0]['rest']*(FRAME_COUNT-1)/STEP)*STEP
+    scene.frame_set(frame);bpy.context.view_layer.update()
+    regions={
+      'planning':{'regions':[]},
+      'installation':{'regions':[orient_bounds(scene,[(0,0,0),(9.6,0,0),(0,0,6),(9.6,0,6)])]},
+      'smarthome':{'regions':[orient_bounds(scene,[(.1,-1.8,3),(4.7,-1.8,3),(1,0,5.5),(3.5,0,5.5)])]},
+      'security':{'regions':[orient_bounds(scene,[(6.55,0,.95),(7.08,0,1.72)])]},
+      'energy':{'regions':[orient_bounds(scene,[(5,1,9),(9.6,1,6),(5,10,9),(9.6,10,6)]),
+                              orient_bounds(scene,[(9.65,.5,0),(13.4,.5,0),(9.65,6,1.6),(13.4,6,1.6)])]}
+    }
+    write_json(ROOT/'src/config/house-v4-orientation.json',regions)
+    write_json(OUT/'motion-samples.json',records)
+    write_json(OUT/'frame-schedule.json',dict(zip(['unique','aliases'],schedule())))
+    write_json(OUT/'native-build.json',{'revision':REVISION,'source':str(SOURCE),'sourceSha256':scene['continuous_source_sha256'],
+                 'nativeFile':str(DEST),'nativeSha256':hashlib.sha256(DEST.read_bytes()).hexdigest(),
+                 'objects':len(scene.objects),'lamellae':len(slats),'addedObjects':len(NEW),
+                 'sunlight':sun_data.energy,'allInteriorLightsConstant':True,'frameCount':FRAME_COUNT})
+    print('CONTINUOUS_NATIVE_READY',str(DEST),flush=True)
+
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--prepare',action='store_true')
+    args=parser.parse_args(sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else [])
+    if args.prepare:
+        prepare()

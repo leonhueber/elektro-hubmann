@@ -2,6 +2,11 @@ import type { CSSProperties } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { VERSION_G_STORY_CHAPTERS as chapters } from '../../../config/version-g-story-assets';
 import {
+  CONTINUOUS_HOUSE_REVISION,
+  houseSceneCaptionAt,
+} from '../../../config/house-orientation';
+import HouseOrientation from './HouseOrientation';
+import {
   FrameQueue,
   ScrollPlayback,
   chapterAt,
@@ -22,7 +27,9 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
   const root = useRef<HTMLElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const jump = useRef<(index: number) => void>(() => {});
+  const drawnCaption = useRef('');
   const [activeIndex, setActiveIndex] = useState(0);
+  const [sceneCaption, setSceneCaption] = useState('');
   const [ready, setReady] = useState(false);
   useEffect(() => {
     const wrapper = root.current;
@@ -76,6 +83,16 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
         `${scrollProgressAtTimeline(progress) * 100}%`,
       );
       const nextChapter = chapterAt(progress);
+      if (houseManifest.revision === CONTINUOUS_HOUSE_REVISION) {
+        const caption = houseSceneCaptionAt(
+          chapters[nextChapter]!.id,
+          progress,
+        );
+        if (caption !== drawnCaption.current) {
+          drawnCaption.current = caption;
+          setSceneCaption(caption);
+        }
+      }
       if (nextChapter !== currentChapter) {
         currentChapter = nextChapter;
         setActiveIndex(nextChapter);
@@ -322,6 +339,9 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
       ref={root}
       className="g-story g-house-v4"
       data-model={houseManifest.revision}
+      data-continuous={
+        houseManifest.revision === CONTINUOUS_HOUSE_REVISION || undefined
+      }
       aria-label="Elektrotechnik im Haus entdecken"
       data-state={chapters[activeIndex]!.id}
       style={
@@ -354,6 +374,11 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
             height={houseManifest.profiles.desktop.height}
           />
         </div>
+        {houseManifest.revision === CONTINUOUS_HOUSE_REVISION && (
+          <p className="g-house-scene-caption" aria-hidden={!sceneCaption}>
+            {sceneCaption}
+          </p>
+        )}
         <div className="g-story-copy-stack">
           {chapters.map((chapter, index) => (
             <article
@@ -395,6 +420,10 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
             </article>
           ))}
         </div>
+        <HouseOrientation
+          baseUrl={baseUrl}
+          chapter={chapters[activeIndex]!.id}
+        />
         <nav className="g-progress" aria-label="Leistungsabschnitt wählen">
           <strong>
             <span>{chapters[activeIndex]!.number}</span> /{' '}
@@ -409,7 +438,13 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
                 <button
                   type="button"
                   aria-label={`${chapter.number} ${chapter.label} anzeigen`}
-                  aria-current={index === activeIndex ? 'step' : undefined}
+                  aria-current={
+                    index === activeIndex
+                      ? houseManifest.revision === CONTINUOUS_HOUSE_REVISION
+                        ? 'location'
+                        : 'step'
+                      : undefined
+                  }
                   onClick={() => jump.current(index)}
                 >
                   <span>{chapter.label}</span>

@@ -1,4 +1,4 @@
-/* The native square V4 renders keep the complete house visible at every stop. */
+/* Native square renders retain their camera framing throughout the scroll. */
 .g-house-v4 .g-story-visual {
   inset: 1% max(142px, 11%) 1% 31%;
 }
@@ -149,5 +149,231 @@
   }
   .g-static-story {
     display: block;
+  }
+}
+
+/* The overview follows the displayed native chapter, never a second playhead. */
+.g-house-orientation {
+  position: absolute;
+  z-index: 4;
+  right: 18px;
+  bottom: 22px;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+  width: clamp(128px, min(13vw, 23svh), 176px);
+  padding: 10px;
+  border: 1px solid #e8e8e9;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 4px 20px #16171906;
+  pointer-events: none;
+}
+.g-house-orientation[data-location='planning'] {
+  visibility: hidden;
+}
+.g-house-orientation-copy p {
+  margin: 0 0 5px;
+  color: #64676d;
+  font-size: 0.65rem;
+  line-height: 1.4;
+}
+.g-house-orientation-copy strong {
+  display: block;
+  color: var(--g-ink);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.g-house-overview {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+}
+.g-house-overview img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.g-house-overview img {
+  object-fit: contain;
+}
+.g-house-region {
+  position: absolute;
+  box-sizing: border-box;
+  /* The entrance camera projects to under 3px in the smallest overview.
+     Preserve its projected center while keeping the locator discernible. */
+  min-width: 16px;
+  min-height: 16px;
+  border: 1.5px solid var(--g-red);
+  border-radius: 4px;
+  background: #e11f2610;
+  transform: translate(-50%, -50%);
+}
+.g-house-region[data-focus='point'] {
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px #fffc;
+}
+.g-house-v4[data-continuous='true'] .g-story-visual {
+  right: max(190px, 14%);
+  bottom: 50px;
+}
+.g-house-scene-caption {
+  position: absolute;
+  z-index: 3;
+  left: calc(31% + 12px);
+  right: max(190px, 14%);
+  bottom: 17px;
+  margin: 0;
+  padding-left: 9px;
+  border-left: 2px solid var(--g-red);
+  color: #565960;
+  font-size: 0.73rem;
+  line-height: 1.45;
+  pointer-events: none;
+}
+.g-house-scene-caption[aria-hidden='true'] {
+  visibility: hidden;
+}
+.g-house-v4[data-continuous='true'] .g-progress {
+  top: 32px;
+}
+.g-house-v4[data-continuous='true'] .g-progress strong {
+  margin-bottom: 18px;
+}
+.g-house-v4[data-continuous='true'] .g-progress li {
+  height: clamp(40px, 5.2svh, 56px);
+}
+.g-static-story[data-continuous='true'] .g-static-scene {
+  position: relative;
+}
+.g-static-story[data-continuous='true'] .g-static-visual {
+  margin-right: 190px;
+}
+.g-static-story[data-continuous='true'] .g-house-orientation {
+  right: 0;
+  bottom: 0;
+}
+
+@media (min-width: 861px) and (max-height: 720px) {
+  .g-house-v4[data-continuous='true'] .g-progress {
+    top: 22px;
+  }
+  .g-house-v4[data-continuous='true'] .g-progress strong {
+    margin-bottom: 12px;
+  }
+  .g-house-v4[data-continuous='true'] .g-progress li {
+    height: 32px;
+  }
+  .g-house-v4[data-continuous='true'] .g-progress li.is-active::before {
+    height: 24px;
+  }
+}
+
+@media (max-width: 860px) {
+  .g-house-v4[data-continuous='true'] .g-story-stage {
+    display: grid;
+    grid-template-rows: 48px minmax(0, 1fr) 28px 70px auto;
+  }
+  .g-house-v4[data-continuous='true'] .g-story-visual {
+    position: relative;
+    grid-row: 2;
+    inset: auto;
+    width: 100%;
+    min-height: 0;
+  }
+  .g-house-v4[data-continuous='true'] .g-house-scene-caption {
+    position: relative;
+    grid-row: 3;
+    align-self: center;
+    inset: auto;
+    margin-inline: 20px;
+    font-size: 0.68rem;
+  }
+  .g-house-v4[data-continuous='true'] .g-house-orientation,
+  .g-static-story[data-continuous='true'] .g-house-orientation {
+    position: relative;
+    grid-row: 4;
+    inset: auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: auto;
+    min-height: 0;
+    padding: 0;
+    margin: 0 20px;
+    border: 0;
+    border-top: 1px solid #ededee;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .g-house-orientation-copy p {
+    margin-bottom: 3px;
+    font-size: 0.65rem;
+  }
+  .g-house-orientation-copy strong {
+    font-size: 0.75rem;
+  }
+  .g-house-overview {
+    flex: 0 0 70px;
+    width: 70px;
+  }
+  .g-house-v4[data-continuous='true'] .g-story-copy-stack {
+    position: relative;
+    grid-row: 5;
+    inset: auto;
+    display: grid;
+    width: auto;
+    margin: 8px 20px 20px;
+  }
+  .g-house-v4[data-continuous='true'] .g-story-copy {
+    position: relative;
+    grid-area: 1 / 1;
+    inset: auto;
+    padding: 0;
+  }
+  .g-house-v4[data-continuous='true'] .g-house-components {
+    display: none;
+  }
+  .g-house-v4[data-continuous='true'] .g-progress {
+    top: 6px;
+  }
+  .g-house-v4[data-continuous='true'] .g-progress strong {
+    margin: 0;
+  }
+  .g-house-v4[data-continuous='true'] .g-progress li {
+    height: 44px;
+  }
+  .g-static-story[data-continuous='true'] .g-static-visual {
+    margin-right: 0;
+  }
+  .g-static-story[data-continuous='true'] .g-house-orientation {
+    margin: 8px 0 0;
+  }
+  .g-static-story[data-continuous='true']
+    .g-house-orientation[data-location='planning'] {
+    display: none;
+  }
+}
+
+@media (max-width: 860px) and (max-height: 720px) {
+  .g-house-v4[data-continuous='true'] .g-story-stage {
+    grid-template-rows: 48px minmax(0, 1fr) 24px 56px auto;
+  }
+  .g-house-v4[data-continuous='true'] .g-house-overview {
+    flex-basis: 56px;
+    width: 56px;
+  }
+  .g-house-v4[data-continuous='true'] .g-story-copy-stack {
+    margin-block: 6px 14px;
+  }
+  .g-house-v4[data-continuous='true'] .g-story-copy h2 {
+    font-size: 1.65rem;
+  }
+  .g-house-v4[data-continuous='true'] .g-story-description {
+    font-size: 0.78rem;
   }
 }

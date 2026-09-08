@@ -1,0 +1,13 @@
+{
+  "revision": "v4-continuous-01",
+  "source": "C:\\Users\\hueberl\\Private_Projects\\elektro-bubmann\\assets\\3d\\elektro-hubmann-house-v4-smarthome-r1-web.blend",
+  "sourceSha256": "d7e2edd13d0773ea7a5e27793cd7e85d7eacebcc3edf1046d4af71e90e9e675c",
+  "nativeFile": "C:\\Users\\hueberl\\Private_Projects\\elektro-bubmann\\assets\\3d\\elektro-hubmann-house-v4-continuous-r1-web.blend",
+  "nativeSha256": "ded7efb86c4d89581f223262a61bfc2c6656909157cc3ace07debc33df40255d",
+  "objects": 4508,
+  "lamellae": 30,
+  "addedObjects": 409,
+  "sunlight": 1.0499999523162842,
+  "allInteriorLightsConstant": true,
+  "frameCount": 1441
+}

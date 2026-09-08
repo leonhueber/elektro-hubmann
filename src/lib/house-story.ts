@@ -5,44 +5,83 @@ export type HouseProfile = keyof typeof manifest.profiles;
 export const clampProgress = (value: number) =>
   Number.isFinite(value) ? Math.min(1, Math.max(0, value)) : 0;
 
-// Keep the native animation intact; shorten only the stationary EG sequence.
-// Distances use the original scroll length so camera travel keeps its pace.
-const scrollTiming = [
-  { timeline: 0, distance: 0 },
-  { timeline: 0.3, distance: 0.3 },
-  { timeline: 0.39, distance: 0.325 },
-  { timeline: 0.43, distance: 0.34 },
-  { timeline: 0.51, distance: 0.345 },
-  { timeline: 1, distance: 0.835 },
-] as const;
-export const houseScrollLength = scrollTiming.at(-1)!.distance;
-
-function mapTiming(
-  value: number,
-  from: 'timeline' | 'distance',
-  to: 'timeline' | 'distance',
+/** Remove only adjacent duplicate images; keep every native movement interval. */
+export function createScrollTimeline(
+  frameCount: number,
+  step: number,
+  sameImage: (a: number, b: number) => boolean,
 ) {
-  const end = scrollTiming.findIndex((point) => point[from] >= value);
-  if (end <= 0) return end === 0 ? 0 : scrollTiming.at(-1)![to];
-  const a = scrollTiming[end - 1]!;
-  const b = scrollTiming[end]!;
-  return a[to] + ((value - a[from]) / (b[from] - a[from])) * (b[to] - a[to]);
+  const extent = Math.max(0, frameCount - 1);
+  const intervals: { start: number; end: number; distance: number }[] = [];
+  let distance = 0;
+  for (let start = 0; start < extent; start += step) {
+    const end = Math.min(extent, start + step);
+    if (!sameImage(start + 1, end + 1)) {
+      intervals.push({ start, end, distance });
+      distance += end - start;
+    }
+  }
+  // Search in integer native-frame units. Tolerance only resolves floating-point
+  // round trips at an exactly collapsed hold; it is far below one render frame.
+  const lastBefore = (value: number, field: 'start' | 'distance') => {
+    let low = 0;
+    let high = intervals.length;
+    while (low < high) {
+      const middle = (low + high) >>> 1;
+      if (intervals[middle]![field] <= value + 1e-9) low = middle + 1;
+      else high = middle;
+    }
+    return low - 1;
+  };
+  const within = (value: number, interval: (typeof intervals)[number]) =>
+    Math.max(0, Math.min(interval.end - interval.start, value));
+  return {
+    length: extent ? distance / extent : 0,
+    toTimeline(progress: number) {
+      if (!distance) return 0;
+      const p = clampProgress(progress);
+      if (p === 1) return 1;
+      const travelled = p * distance;
+      const interval =
+        intervals[Math.max(0, lastBefore(travelled, 'distance'))]!;
+      // Right-continuity jumps to the END of an identical pose. Interpolating
+      // across that pose would reintroduce a long hold before the next image.
+      return (
+        (interval.start + within(travelled - interval.distance, interval)) /
+        extent
+      );
+    },
+    toScroll(progress: number) {
+      if (!distance) return 0;
+      const native = clampProgress(progress) * extent;
+      const index = lastBefore(native, 'start');
+      if (index < 0) return 0;
+      const interval = intervals[index]!;
+      return (
+        (interval.distance + within(native - interval.start, interval)) /
+        distance
+      );
+    },
+  };
 }
 
-export function timelineProgressAtScroll(progress: number) {
-  return mapTiming(
-    clampProgress(progress) * houseScrollLength,
-    'distance',
-    'timeline',
-  );
-}
-
-export function scrollProgressAtTimeline(progress: number) {
-  return (
-    mapTiming(clampProgress(progress), 'timeline', 'distance') /
-    houseScrollLength
-  );
-}
+const profiles = Object.keys(manifest.profiles) as HouseProfile[];
+const gcd = (a: number, b: number): number => (b ? gcd(b, a % b) : a);
+const timing = createScrollTimeline(
+  manifest.frameCount,
+  profiles.map((profile) => manifest.profiles[profile].step).reduce(gcd),
+  manifest.revision.startsWith('v4-continuous-')
+    ? () => false
+    : (a, b) =>
+        profiles.every(
+          (profile) =>
+            sourceFrame(profile, frameAt(progressAtFrame(a), profile)) ===
+            sourceFrame(profile, frameAt(progressAtFrame(b), profile)),
+        ),
+);
+export const houseScrollLength = timing.length;
+export const timelineProgressAtScroll = timing.toTimeline;
+export const scrollProgressAtTimeline = timing.toScroll;
 
 export function chapterAt(progress: number) {
   const p = clampProgress(progress);
@@ -281,12 +320,14 @@ export class ScrollPlayback<T extends DecodedFrame> {
     private profile: HouseProfile,
   ) {}
   seek(progress: number) {
-    this.position = this.target = clampProgress(progress);
+    this.position = this.target = scrollProgressAtTimeline(progress);
     this.lastTime = undefined;
-    this.frames.request(frameAt(this.position, this.profile));
+    this.frames.request(
+      frameAt(timelineProgressAtScroll(this.position), this.profile),
+    );
   }
   follow(progress: number) {
-    this.target = clampProgress(progress);
+    this.target = scrollProgressAtTimeline(progress);
   }
   tick(time: number) {
     const delta =
@@ -295,7 +336,9 @@ export class ScrollPlayback<T extends DecodedFrame> {
       Math.abs(this.target - this.position) < 0.00001
         ? this.target
         : followScroll(this.position, this.target, delta);
-    this.frames.request(frameAt(this.position, this.profile));
+    this.frames.request(
+      frameAt(timelineProgressAtScroll(this.position), this.profile),
+    );
     const running = this.position !== this.target;
     // The decoder can present the final frame without an idle animation loop.
     this.lastTime = running ? time : undefined;

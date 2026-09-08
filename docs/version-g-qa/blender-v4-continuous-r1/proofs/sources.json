@@ -1,0 +1,26 @@
+{
+  "planning": {
+    "source": "docs\\version-g-qa\\blender-v4-continuous-r1\\benchmarks\\quality-96-reference\\renders\\frame-0001.png",
+    "sha256": "d8232157856756c8753d3ee2393e2da022c7dee8ddc6833fa519341be57630f8"
+  },
+  "installation": {
+    "source": "docs\\version-g-qa\\blender-v4-continuous-r1\\benchmarks\\quality-96-reference\\renders\\frame-0397.png",
+    "sha256": "71dc77e20b63a1b839eadc958793b47a724016917ae0bda29594545f3d269a18"
+  },
+  "smarthome": {
+    "source": "docs\\version-g-qa\\blender-v4-continuous-r1\\benchmarks\\quality-48-smart.png",
+    "sha256": "86710fcd9171a1f916f338f0f3617d111e389d7bfd55af43b06337093dcc2093"
+  },
+  "energy-context": {
+    "source": "docs\\version-g-qa\\blender-v4-continuous-r1\\frontend\\preview\\4679477790f7bcab\\renders\\frame-1289.png",
+    "sha256": "04195d411179d91a481a8b2e1eb39c3badd3e47381eb4a6231880230a97d10a0"
+  },
+  "security": {
+    "source": "docs\\version-g-qa\\blender-v4-continuous-r1\\frontend\\renders\\frame-1089.png",
+    "sha256": "eff35ec6fae72b9d2c975e6f4fb95765a686f86b05275c50ace2556022199521"
+  },
+  "energy": {
+    "source": "docs\\version-g-qa\\blender-v4-continuous-r1\\frontend\\renders\\frame-1369.png",
+    "sha256": "0a758215477cabe2f83d977138ed9a44a4aba75b186c88968485a493227be7d9"
+  }
+}
