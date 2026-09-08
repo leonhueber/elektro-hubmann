@@ -1,19 +1,19 @@
 {
   "version": 4,
-  "revision": "v4-scroll-02-exterior-01-smart-01",
+  "revision": "v4-continuous-01",
   "frameCount": 1441,
-  "assetPath": "images/version-g/house-v4-smarthome-r1/",
+  "assetPath": "images/version-g/house-v4-continuous-r1/",
   "profiles": {
     "desktop": {
-      "width": 1200,
-      "height": 1200,
-      "step": 2,
+      "width": 960,
+      "height": 960,
+      "step": 8,
       "cacheFrames": 12
     },
     "mobile": {
       "width": 720,
       "height": 720,
-      "step": 2,
+      "step": 8,
       "cacheFrames": 18
     }
   },
@@ -21,27 +21,27 @@
     {
       "id": "planning",
       "start": 0,
-      "rest": 0.04
+      "rest": 0.035
     },
     {
       "id": "installation",
-      "start": 0.08,
-      "rest": 0.35
+      "start": 0.12,
+      "rest": 0.275
     },
     {
       "id": "smarthome",
-      "start": 0.51,
-      "rest": 0.63
+      "start": 0.37,
+      "rest": 0.535
     },
     {
       "id": "security",
-      "start": 0.67,
-      "rest": 0.79
+      "start": 0.64,
+      "rest": 0.755
     },
     {
       "id": "energy",
-      "start": 0.82,
-      "rest": 0.91
+      "start": 0.81,
+      "rest": 0.95
     }
   ]
 }
