@@ -42,6 +42,24 @@ class FakeGit:
         return self.patch
 
 
+class RemoteTipTests(unittest.TestCase):
+    def test_changed_remote_is_rejected_before_ancestry_check(self):
+        git = Mock()
+        git.text.return_value = 'c' * 40
+        with self.assertRaisesRegex(RuntimeError, 'Remote main advanced'):
+            finalizer.guard_remote_tip(git, HEAD)
+        git.run.assert_not_called()
+
+    def test_pending_local_commits_must_extend_verified_remote(self):
+        git = Mock()
+        git.text.return_value = HEAD
+        finalizer.guard_remote_tip(git, HEAD)
+        git.run.assert_called_once_with('merge-base', '--is-ancestor', HEAD, 'HEAD')
+        git.run.side_effect = RuntimeError('Not an ancestor')
+        with self.assertRaisesRegex(RuntimeError, 'Not an ancestor'):
+            finalizer.guard_remote_tip(git, HEAD)
+
+
 class GuardTests(unittest.TestCase):
     def setUp(self):
         temporary = tempfile.TemporaryDirectory()

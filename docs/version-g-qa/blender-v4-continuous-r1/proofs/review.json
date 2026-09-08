@@ -1,8 +1,8 @@
 {
   "nativeSha256": "a756da33905e9391378c8ad8ed3040672116900bcd4270f341ebc01e27cd2b08",
   "imageCount": 10,
-  "productionStarted": false,
-  "reviewPending": true,
+  "productionStarted": true,
+  "reviewPending": false,
   "sheets": [
     {
       "file": "states-overview.jpg",
@@ -30,5 +30,8 @@
       ],
       "layout": "unretouched native previews with external captions"
     }
-  ]
+  ],
+  "webFrames": 181,
+  "webWidth": 960,
+  "blenderRenderPasses": 1
 }

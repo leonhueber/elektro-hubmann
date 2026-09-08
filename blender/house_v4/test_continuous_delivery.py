@@ -14,6 +14,22 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from house_v4 import continuous_delivery as delivery
 
 
+class WebSamplingTests(unittest.TestCase):
+    def test_web_schedule_preserves_endpoints_with_181_unique_native_poses(self):
+        frames, aliases = delivery.schedule()
+        self.assertEqual(len(frames), 181)
+        self.assertEqual((frames[0], frames[-1]), (1, 1441))
+        self.assertEqual(aliases, {})
+        self.assertTrue(set(frames).issubset(delivery.native_schedule()[0]))
+        self.assertEqual({p['step'] for p in delivery.MANIFEST['profiles'].values()}, {8})
+
+    def test_native_preview_sampling_stays_dense(self):
+        with patch.object(delivery, 'sha', return_value='b' * 64):
+            self.assertEqual(len(delivery.identity()['frames']), 181)
+            self.assertEqual(len(delivery.identity(preview=True)['frames']), 721)
+            self.assertEqual(delivery.identity(preview=True)['step'], 2)
+
+
 class ContinuousDeliveryTests(unittest.TestCase):
     def setUp(self):
         self.stack = ExitStack()
@@ -28,10 +44,10 @@ class ContinuousDeliveryTests(unittest.TestCase):
         settings = {**delivery.SETTINGS, 'size': 32}
         manifest = deepcopy(delivery.MANIFEST)
         manifest.update(frameCount=3, chapters=chapters)
-        manifest['profiles']['desktop'].update(width=32, height=32)
-        manifest['profiles']['mobile'].update(width=16, height=16)
+        manifest['profiles']['desktop'].update(width=32, height=32, step=2)
+        manifest['profiles']['mobile'].update(width=16, height=16, step=2)
         self.stack.enter_context(patch.multiple(delivery, ROOT=root, ANIMATION=animation,
-            OUT=out, RENDERS=out / 'renders', FRAME_COUNT=3, CHAPTERS=chapters,
+            OUT=out, RENDERS=out / 'renders', FRAME_COUNT=3, STEP=2, CHAPTERS=chapters,
             SETTINGS=settings, MANIFEST=manifest, schedule=lambda: ([1, 3], {})))
         config = root / 'src/config'
         config.mkdir(parents=True)

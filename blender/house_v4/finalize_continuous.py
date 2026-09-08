@@ -244,6 +244,9 @@ def export_snapshot(expected_native, expected_identity):
 def startup(args, commands):
     if not re.fullmatch(r'[0-9a-f]{40}|[0-9a-f]{64}', args.expected_head):
         raise RuntimeError('--expected-head must be a full lowercase Git commit SHA.')
+    remote_head = getattr(args, 'expected_remote_head', None) or args.expected_head
+    if not re.fullmatch(r'[0-9a-f]{40}|[0-9a-f]{64}', remote_head):
+        raise RuntimeError('--expected-remote-head must be a full lowercase Git commit SHA.')
     if not re.fullmatch(r'[0-9a-f]{64}', args.expected_native):
         raise RuntimeError('--expected-native must be a full lowercase SHA-256.')
     if not 0 < args.timeout_hours <= 72:
@@ -268,11 +271,19 @@ def startup(args, commands):
     return git, baseline, expected_identity, reference, checks
 
 
+def guard_remote_tip(git, expected):
+    if git.text('rev-parse', 'FETCH_HEAD') != expected:
+        raise RuntimeError('Remote main advanced or diverged; refusing automatic integration.')
+    # A pending local preparation commit must extend the verified remote tip.
+    git.run('merge-base', '--is-ancestor', expected, 'HEAD')
+
+
 def execute(args, commands, report):
     git, baseline, expected_identity, reference, checks = startup(args, commands)
     staged_args = ['add', '--', *[':(literal)' + path for path in EXPORT_PATHS]]
     plan = {'revision': REVISION, 'expectedHead': args.expected_head,
         'expectedNativeSha256': args.expected_native, 'expectedRemote': EXPECTED_REMOTE,
+        'expectedRemoteHead': getattr(args, 'expected_remote_head', None) or args.expected_head,
         'runnerStartedAt': reference['startedAt'], 'timeoutHours': args.timeout_hours,
         'existingForeignTrackedChanges': baseline, 'exportPaths': EXPORT_PATHS,
         'validationCommands': [{'phase': name, 'args': command} for name, command in checks],
@@ -315,8 +326,7 @@ def execute(args, commands, report):
     guard_remote(git)
     phase('fetching')
     git.run('fetch', '--no-tags', 'origin', 'main')
-    if git.text('rev-parse', 'FETCH_HEAD') != args.expected_head:
-        raise RuntimeError('Remote main advanced or diverged; refusing automatic integration.')
+    guard_remote_tip(git, plan['expectedRemoteHead'])
     unchanged_exports()
     guard(git, args.expected_head, baseline)
     phase('staging', indexMayContainExports=True)
@@ -348,6 +358,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--expected-head', required=True)
     parser.add_argument('--expected-native', required=True)
+    parser.add_argument('--expected-remote-head', help='Verified remote tip when local preparation commits are not pushed yet.')
     parser.add_argument('--node', type=Path, help='Installed Node 24 executable; defaults to PATH.')
     parser.add_argument('--timeout-hours', type=float, default=72)
     parser.add_argument('--plan', action='store_true')

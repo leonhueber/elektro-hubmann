@@ -18,10 +18,17 @@ Smart-Home-B-Datei bleibt die unveränderte Quelle.
 
 ## Vorschauen vor dem langen Renderlauf
 
-Auf Wunsch des Nutzers sind der Produktionsrunner und der automatische
-Commit-/Push-Abschluss gestoppt. Der alte unvollständige Lauf ist unter
-`benchmarks/vehicle-r0-superseded/` lokal archiviert. Er darf nicht mit dem neuen
-Modell fortgesetzt werden. Es läuft kein vollständiger Produktionsrender.
+Der Nutzer hat die Bildvorschau freigegeben und anschließend eine kürzere
+Renderzeit verlangt. Der abgebrochene 721-Bilder-Lauf liegt lokal unter
+`benchmarks/full-721-superseded/`. Die Webanimation verwendet jetzt 181 native
+Positionen (Schrittweite 8) aus derselben unveränderten Blender-Animation.
+Die dichte native Zeitleiste und die 640-px-Prüfvorschauen bleiben erhalten.
+
+Blender rendert nur einmal: 960 px, 24 Samples, Denoising. Desktop übernimmt
+diese Bilder; mobile WebP-Dateien entstehen durch anschließendes Verkleinern
+auf 720 px. Es gibt keinen zweiten Blender-Renderlauf für Mobilgeräte.
+Die ersten drei Produktionsbilder dienen gleichzeitig als Qualitätsprobe und
+werden beim Fortsetzen übernommen. `web-profile-review.json` hält die Messung fest.
 
 `proofs/` enthält zehn neue native Cycles-Kontrollbilder dieses Modellstands,
 640 × 640 Pixel, 16 Samples mit Denoising. `states-overview.jpg` zeigt alle fünf
@@ -32,7 +39,7 @@ sie sind keine Beschriftungen im 3D-Modell.
 
 `sources.json` dokumentiert Bild-, Modell- und Renderherkunft. Diese Bilder dienen
 der Auswahl und Kompositionsprüfung, nicht als endgültiger Schärfenachweis.
-Der spätere Webexport bleibt bei 1200 px / 48 Samples. Die Vergleichsbilder in
+Das gewählte Webprofil nutzt 960 px / 24 Samples. Die Vergleichsbilder in
 `quality-profile-review.json` gehören zur vorherigen Modellrevision und sind
 lediglich die historische Grundlage für dieses Qualitätsprofil.
 
@@ -40,5 +47,5 @@ lediglich die historische Grundlage für dieses Qualitätsprofil.
 Modell und 721 geprüfte native Zustände. Die ursprüngliche Blender-Datei bleibt
 bytegleich. Bewegungs- und Frontendtests prüfen kontinuierliche Fahrt, sichtbare
 Zielpunkte und passende Szenenbeschriftungen. Die Website wird erst nach einem
-vollständigen neuen Export umgeschaltet. Vor dessen Start steht die Bildsichtung
-mit dem Nutzer aus.
+vollständigen neuen Export umgeschaltet. Nach vollständigem Export folgen Frontendtests, Build und gemeinsamer Push.
+Vorbereitende lokale Codecommits werden erst mit dem fertigen Export gepusht.

@@ -22,24 +22,30 @@ import time
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'blender'))
-from house_v4.continuous_motion import CHAPTERS, FRAME_COUNT, REVISION, STEP, schedule
+from house_v4.continuous_motion import CHAPTERS, FRAME_COUNT, REVISION, STEP as NATIVE_STEP, schedule as native_schedule
+
+# Web sampling is independent of the densely baked native animation.
+STEP = 8
+
+def schedule():
+    return list(range(1, FRAME_COUNT + 1, STEP)), {}
 
 ANIMATION = ROOT / 'assets/3d/elektro-hubmann-house-v4-continuous-r1-web.blend'
 OUT = ROOT / 'docs/version-g-qa/blender-v4-continuous-r1/frontend'
 RENDERS = OUT / 'renders'
 SETTINGS = {
-    'engine': 'CYCLES', 'size': 1200, 'samples': 48,
-    'adaptiveThreshold': .035, 'minimumSamples': 8, 'denoising': True,
+    'engine': 'CYCLES', 'size': 960, 'samples': 24,
+    'adaptiveThreshold': .05, 'minimumSamples': 8, 'denoising': True,
     'seed': 0, 'animatedSeed': False, 'threads': 12,
     'persistentData': True, 'filmTransparent': False, 'filmAnimationMuted': True,
 }
-PREVIEW_SETTINGS = {**SETTINGS, 'size': 640, 'samples': 16}
+PREVIEW_SETTINGS = {**SETTINGS, 'size': 640, 'samples': 16, 'adaptiveThreshold': .035}
 ENCODING = {'desktop': 92, 'mobile': 90}
 MANIFEST = {
     'version': 4, 'revision': REVISION, 'frameCount': FRAME_COUNT,
     'assetPath': 'images/version-g/house-v4-continuous-r1/',
     'profiles': {
-        'desktop': {'width': 1200, 'height': 1200, 'step': STEP, 'cacheFrames': 12},
+        'desktop': {'width': 960, 'height': 960, 'step': STEP, 'cacheFrames': 12},
         'mobile': {'width': 720, 'height': 720, 'step': STEP, 'cacheFrames': 18},
     },
     'chapters': deepcopy(CHAPTERS),
@@ -104,7 +110,8 @@ def identity(preview=False):
         'revision': REVISION, 'mode': 'preview' if preview else 'production',
         'nativeAnimationSha256': sha(ANIMATION),
         'settings': deepcopy(PREVIEW_SETTINGS if preview else SETTINGS),
-        'frameCount': FRAME_COUNT, 'step': STEP, 'frames': schedule()[0],
+        'frameCount': FRAME_COUNT, 'step': NATIVE_STEP if preview else STEP,
+        'frames': native_schedule()[0] if preview else schedule()[0],
     }
 
 

@@ -8,8 +8,8 @@ vi.mock('../config/house-v4-manifest.json', () => ({
     frameCount: 1441,
     assetPath: 'images/version-g/house-v4-continuous-r1/',
     profiles: {
-      desktop: { width: 1200, height: 1200, step: 2, cacheFrames: 12 },
-      mobile: { width: 720, height: 720, step: 2, cacheFrames: 18 },
+      desktop: { width: 960, height: 960, step: 8, cacheFrames: 12 },
+      mobile: { width: 720, height: 720, step: 8, cacheFrames: 18 },
     },
     chapters: [
       { id: 'planning', start: 0, rest: 0.035 },
@@ -44,7 +44,7 @@ describe('future continuous native export', () => {
   it('uses identity timing and unique assets throughout both render profiles', () => {
     expect(houseManifest.revision).toBe('v4-continuous-01');
     expect(houseScrollLength).toBe(1);
-    for (let frame = 1; frame <= 1441; frame += 2) {
+    for (let frame = 1; frame <= 1441; frame += 8) {
       const progress = (frame - 1) / 1440;
       expect(timelineProgressAtScroll(progress)).toBeCloseTo(progress, 12);
       expect(scrollProgressAtTimeline(progress)).toBeCloseTo(progress, 12);
@@ -60,13 +60,13 @@ describe('future continuous native export', () => {
       expect(map(NaN)).toBe(0);
       expect(map(2)).toBe(1);
     }
-    expect(frameUrl('/elektro-hubmann/', 'desktop', 771)).toBe(
-      '/elektro-hubmann/images/version-g/house-v4-continuous-r1/desktop/frame-0771.webp?v=v4-continuous-01',
+    expect(frameUrl('/elektro-hubmann/', 'desktop', 769)).toBe(
+      '/elektro-hubmann/images/version-g/house-v4-continuous-r1/desktop/frame-0769.webp?v=v4-continuous-01',
     );
   });
 
   it('lands navigation on the new native poses and selects matching chapter copy', () => {
-    const posters = [51, 397, 771, 1089, 1369];
+    const posters = [49, 401, 769, 1089, 1369];
     houseManifest.chapters.forEach((chapter, index) => {
       expect(chapterAt(chapter.start)).toBe(index);
       if (index) expect(chapterAt(chapter.start - 0.00001)).toBe(index - 1);
@@ -97,20 +97,27 @@ describe('future continuous native export', () => {
           () => new Promise(() => {}),
           vi.fn(),
           vi.fn(),
-          { capacity: 12, concurrency: 3, step: 2, count: 1441 },
+          { capacity: 12, concurrency: 3, step: 8, count: 1441 },
         );
         const request = vi.spyOn(queue, 'request');
         const playback = new ScrollPlayback(queue, profile);
         playback.seek(direction === 1 ? 0 : 1);
         let previous = request.mock.lastCall![0];
+        let repeatedTicks = 0;
         for (let index = 1; index <= 120; index++) {
           const scroll = direction === 1 ? index / 120 : 1 - index / 120;
           playback.follow(timelineProgressAtScroll(scroll));
           playback.tick((index * 1000) / 60);
           const current = request.mock.lastCall![0];
-          expect((current - previous) * direction).toBeGreaterThan(0);
+          const travel = (current - previous) * direction;
+          expect(travel).toBeGreaterThanOrEqual(0);
+          // A sampled sequence can repeat a frame during startup smoothing;
+          // it must not reintroduce stationary chapter-length intervals.
+          repeatedTicks = travel === 0 ? repeatedTicks + 1 : 0;
+          expect(repeatedTicks).toBeLessThanOrEqual(2);
           previous = current;
         }
+        expect(Math.abs(previous - (direction === 1 ? 1 : 1441))).toBeGreaterThan(1300);
         queue.dispose();
       }
     }

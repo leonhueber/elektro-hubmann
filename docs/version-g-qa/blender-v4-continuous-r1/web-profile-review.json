@@ -1,0 +1,59 @@
+{
+  "nativeSha256": "a756da33905e9391378c8ad8ed3040672116900bcd4270f341ebc01e27cd2b08",
+  "webFrames": 181,
+  "nativeBakedFrames": 721,
+  "renderSettings": {
+    "engine": "CYCLES",
+    "size": 960,
+    "samples": 24,
+    "adaptiveThreshold": 0.05,
+    "minimumSamples": 8,
+    "denoising": true,
+    "seed": 0,
+    "animatedSeed": false,
+    "threads": 12,
+    "persistentData": true,
+    "filmTransparent": false,
+    "filmAnimationMuted": true
+  },
+  "renderPasses": 1,
+  "mobile": "Resize and encode from the same native PNG; no second Blender pass",
+  "benchmarks": {
+    "1": {
+      "sha256": "722afe7f7a09bc4b5b1478e3dd4847cdcb655c2ae30270db56cdf110f896459e",
+      "seconds": 60.51,
+      "bytes": 588919,
+      "pixels": {
+        "minimum": 0.016525,
+        "maximum": 1.0,
+        "mean": 0.878711,
+        "standardDeviation": 0.216028
+      }
+    },
+    "769": {
+      "sha256": "da9f0f8826c597926d191e9aedd6ede59467b744931cbb400aa7d84044de0d82",
+      "seconds": 79.49,
+      "bytes": 906902,
+      "pixels": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "mean": 0.77385,
+        "standardDeviation": 0.230462
+      }
+    },
+    "1089": {
+      "sha256": "df278e7cc3c87a318de58e6b93d9300f67105b12ad393f493c92c6abdf565c10",
+      "seconds": 83.16,
+      "bytes": 891334,
+      "pixels": {
+        "minimum": 0.069166,
+        "maximum": 0.784478,
+        "mean": 0.634595,
+        "standardDeviation": 0.16109
+      }
+    }
+  },
+  "observedMeanSeconds": 74.39,
+  "estimatedHours": 3.74,
+  "visualReview": "Planning, bedroom and door camera inspected; house detail and controls remain readable. Temporal smoothness still requires checking the completed sequence."
+}
