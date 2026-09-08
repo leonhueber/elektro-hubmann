@@ -25,8 +25,7 @@ ENTRANCE_LENS = (6.83, -.054, 1.49)
 BEDROOM_TARGET = (2.65, 1.05, 4.05)
 PV_TARGET = (7.2, 5.4, 7.5)
 WALLBOX_TARGET = (9.665, 2.3, 1.35)
-CAR_CENTER = (11.5, 3.5, .80)
-CHARGING_PORT = (10.55, 2.3, .73)
+WALLBOX_FACE = (9.865, 2.3, 1.35)
 PLANNING_CAMERA = (25.5, -30.5, 12.)
 PLANNING_TARGET = (6.2, 4.2, 4.25)
 PLANNING_LENS = 66.
@@ -52,12 +51,12 @@ CAMERA_KEYS = (
     (.745, (7.6, -2.8, 1.85), ENTRANCE_LENS, 78.),
     (.78, (6.2, -3.2, 2.1), ENTRANCE_LENS, 76.),
     (.83, (15., -13., 15.3), (7.2, 4.4, 7.5), 70.),
-    # Pull across a complete house-and-car view before following the energy
+    # Pull across a complete house view before following the energy
     # connection down to the wallbox. These are moving poses, not chapter holds.
     (.885, (25., -13., 13.), (6., 4.25, 3.9), 51.),
     (.91, (24., -12.5, 11.7), (6.2, 4.2, 3.7), 49.),
-    (.95, (19., -7., 7.), (10.8, 2.8, 1.6), 62.),
-    (1., (17., -5., 4.6), (10.75, 2.7, 1.25), 60.),
+    (.95, (16.5, -5.5, 5.3), (9.65, 2.3, 1.8), 65.),
+    (1., (12.6, .10, 1.8), WALLBOX_FACE, 60.),
 )
 
 

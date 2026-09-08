@@ -81,8 +81,9 @@ def run():
     lower = bpy.data.objects.get('Tour | blind weighted lower rail')
     controller = emission_socket(bpy.data.objects.get('Tour | controller scene indicator'))
     camera_led = emission_socket(bpy.data.objects.get('Tour | camera activity LED'))
-    body = bpy.data.objects.get('Tour | formed silver body')
-    arches = [mod for mod in body.modifiers if mod.type == 'BOOLEAN' and mod.operation == 'DIFFERENCE'] if body else []
+    wallbox = bpy.data.objects.get('Tour | wallbox')
+    cable = bpy.data.objects.get('Tour | stowed charging cable')
+    connector = bpy.data.objects.get('Tour | docked connector')
     sun = bpy.data.objects.get('Tour | directional daylight')
 
     check('Saved revision and frame range', scene.get('web_revision') == REVISION and
@@ -110,9 +111,15 @@ def run():
     check('Eight individually controlled charge LEDs', len(lamps) == 8 and
           [obj['charge_segment'] for obj in lamps] == list(range(8)))
     check('Controller and camera feedback use actual material sockets', controller is not None and camera_led is not None)
-    check('Four enabled native wheel arch differences', len(arches) == 4 and
-          all(mod.object and mod.show_render and mod.solver == 'EXACT' for mod in arches) and
-          len({mod.object.as_pointer() for mod in arches if mod.object}) == 4)
+    check('Vehicle geometry is removed', not any(
+        obj.get('vehicle_length_m') or obj.name.startswith(
+            ('Tour | formed silver body', 'Tour | rounded tyre', 'Tour | electric hatchback'))
+        for obj in scene.objects))
+    check('Wallbox connector and stowed cable are physically attached',
+          wallbox is not None and cable is not None and connector is not None and
+          cable.parent == wallbox and connector.parent == wallbox and
+          math.dist(tuple(cable.data.splines[0].bezier_points[-1].co),
+                    tuple(connector.location - Vector((0, 0, .078)))) < 1e-5)
     check('Directional sunlight uses a 0.8 degree source', sun is not None and sun.type == 'LIGHT' and
           sun.data.type == 'SUN' and abs(sun.data.angle - math.radians(.8)) < 1e-6 and sun.data.energy > 0)
     check('Retained timber access is connected to unfaded shaders', bool(retained) and
@@ -135,7 +142,7 @@ def run():
     assemblies = {name: [] for name in roots}
     path_ends, path_starts = {obj.name: [] for obj in paths}, {obj.name: [] for obj in paths}
     counts, lower_heights, controller_values, camera_values = [], [], [], []
-    retained_hidden, hidden_cutters, maximum_visible_slats = [], [], 0
+    retained_hidden, maximum_visible_slats = [], 0
     can_sample = camera is not None and all(roots.values()) and all(obj.type == 'CURVE' for obj in paths)
     try:
         if can_sample:
@@ -171,8 +178,6 @@ def run():
                     camera_values.append(camera_led.default_value)
                 if any(obj.hide_render for obj in retained):
                     retained_hidden.append(frame)
-                if any(mod.object and not mod.object.hide_render for mod in arches):
-                    hidden_cutters.append(frame)
                 if frame in [1, 397, 627, 771, 793, 1089, 1225, 1369, FRAME_COUNT]:
                     sampled.append({'frame': frame, 'camera': position, 'assemblies':
                                     {name: obj.location.z for name, obj in roots.items()},
@@ -214,7 +219,9 @@ def run():
           span(controller_values) > 2 and span(camera_values) > 2)
     check('Retained balcony door stays visible throughout the tour', bool(retained) and not retained_hidden,
           hiddenFrames=retained_hidden[:10])
-    check('Wheel arch cutters never render', len(arches) == 4 and not hidden_cutters, visibleFrames=hidden_cutters[:10])
+    check('Both energy routes terminate on the wallbox status face', len(paths) == 2 and
+          all(math.dist(tuple(path.data.splines[0].bezier_points[-1].co),
+                        (9.87, 2.405, 1.428)) < 1e-5 for path in paths))
     check('Validation leaves both native files unchanged', sha(SOURCE) == source_hash and sha(ANIMATION) == animation_hash)
 
     report = {'revision': REVISION, 'nativeAnimation': str(ANIMATION), 'nativeAnimationSha256': animation_hash,

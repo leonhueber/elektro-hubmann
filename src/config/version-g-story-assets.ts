@@ -75,7 +75,7 @@ const copy: Record<
 };
 if (houseManifest.revision === CONTINUOUS_HOUSE_REVISION) {
   copy.planning.alt =
-    'Detailliertes Wohnhaus mit Holztüren und Holzfenstern, Balkon, Photovoltaik und einem angeschlossenen Elektroauto am Stellplatz.';
+    'Detailliertes Wohnhaus mit Holztüren und Holzfenstern, Balkon, Photovoltaik und einer Wallbox an der Seitenfassade.';
   copy.installation.alt =
     'Das Haus öffnet sich in drei angehobene Ebenen; die groben Leitungswege durch die Geschosse werden sichtbar.';
   copy.smarthome.description =
@@ -89,11 +89,11 @@ if (houseManifest.revision === CONTINUOUS_HOUSE_REVISION) {
     'Kamera & Videosprechanlage',
     'Zutrittskontrolle',
   ];
-  copy.energy.title = ['Vom eigenen Dach', 'direkt ins Auto.'];
+  copy.energy.title = ['Vom eigenen Dach', 'bis zur Wallbox.'];
   copy.energy.description =
     'Photovoltaik, Haus und Wallbox gemeinsam geplant: Nutzen Sie Ihren Solarstrom auch zum Laden Ihres Elektroautos – mit einer Ladeleistung, die sich an den verfügbaren Überschuss anpasst.';
   copy.energy.alt =
-    'Photovoltaik auf dem Hausdach, Wallbox am Stellplatz und ein per Ladekabel verbundenes Elektroauto. Eine schematische Energielinie verbindet das Dach mit der Ladestation; die Wallbox zeigt den Ladevorgang an.';
+    'Photovoltaik auf dem Hausdach und eine Wallbox mit ordentlich eingehängtem Ladekabel an der Seitenfassade. Eine schematische Energielinie verbindet das Dach mit der Ladestation; die Statusanzeige leuchtet auf.';
   copy.energy.components = ['Photovoltaik', 'Wallbox & Überschussladen'];
 }
 export const VERSION_G_STORY_CHAPTERS = houseManifest.chapters.map(

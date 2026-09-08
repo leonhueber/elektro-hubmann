@@ -8,7 +8,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from house_v4.continuous_motion import (
     BLIND_TRAVEL_METRES, CAMERA_KEYS, CHAPTERS, ENTRANCE_LENS,
-    CAR_CENTER, CHARGING_PORT, WALLBOX_TARGET,
+    WALLBOX_FACE, WALLBOX_TARGET,
     FRAME_COUNT, STEP, camera, schedule, state,
 )
 
@@ -61,8 +61,9 @@ class ContinuousMotionTests(unittest.TestCase):
         for frame in range(FRAME_COUNT):
             s = state(frame/(FRAME_COUNT-1))
             self.assertGreaterEqual(s['roof']-s['og'], 3-1e-9)
-            self.assertLess(s['camera'][1], -2.7)
-            self.assertGreater(s['camera'][2], 1.8)
+            self.assertTrue(s['camera'][1] < -2.7 or s['camera'][0] > 10.2,
+                            'Camera must stay outside the front or east facade')
+            self.assertGreaterEqual(s['camera'][2], 1.8)
             self.assertGreater(dist(s['camera'], s['target']), 2.5)
             self.assertEqual(s['light'], 1.)
             self.assertTrue(all(0 <= s[field] <= 1 for field in unit_fields))
@@ -102,7 +103,7 @@ class ContinuousMotionTests(unittest.TestCase):
             ]]
             levels = [(x, y, z) for x in [0, 9.6] for y in [-1.9, 11.1]
                       for z in [-.25, s['og']-.22, s['og']+2.9]]
-            bay = list(product([9.65, 13.8], [.1, 7.2], [-.25, 1.6]))
+            bay = list(product([9.65, 11.56], [.1, 7.2], [-.25, 1.6]))
             for point in roof+levels+bay:
                 self.assertLess(max(abs(v) for v in projected(point, camera(p))), .48,
                                 f'Clipped installation geometry at progress {p}: {point}')
@@ -134,35 +135,35 @@ class ContinuousMotionTests(unittest.TestCase):
         visible_width = 36*dist(s['camera'], ENTRANCE_LENS)/s['lens']
         self.assertGreater(.16/visible_width, .10)
 
-    def test_planning_contains_house_and_car_and_energy_ends_at_charger(self):
+    def test_planning_contains_house_and_energy_ends_at_wallbox(self):
         # Conservative whole-house bounds include the roof, balcony and bay.
         house_bounds = list(product([0, 9.6], [-1.9, 10.8], [-.25, 9.5]))
-        car_bounds = list(product([10.6, 12.4], [1.3, 5.7], [0, 1.6]))
-        for corner in house_bounds+car_bounds:
+        wallbox_bounds = list(product([9.65, 9.90], [2.1, 2.75], [.55, 1.60]))
+        for corner in house_bounds+wallbox_bounds:
             self.assertLess(max(abs(v) for v in projected(corner, camera(0))), .48)
-        for anchor in [WALLBOX_TARGET, CAR_CENTER, CHARGING_PORT]:
+        for anchor in [WALLBOX_TARGET, WALLBOX_FACE]:
             self.assertLess(max(abs(v) for v in projected(anchor, camera(1))), .4)
         self.assertGreater(state(1)['charge'], state(.93)['charge'])
         self.assertGreater(state(1)['energy_flow'], state(.93)['energy_flow'])
 
-    def test_energy_connects_complete_roof_house_wallbox_and_car_before_close_view(self):
+    def test_energy_connects_complete_roof_house_and_wallbox_before_close_view(self):
         roof = [(x, y, z) for x, y, z in [
             (4.8, -.3, 9.5), (4.8, 11.1, 9.5),
             (-.3, -.3, 6), (-.3, 11.1, 6),
             (9.9, -.3, 6), (9.9, 11.1, 6),
         ]]
         house = list(product([0, 9.6], [-1.9, 10.8], [-.25, 6]))
-        bay = list(product([9.65, 13.8], [.1, 7.2], [-.25, 1.65]))
+        bay = list(product([9.65, 11.56], [.1, 7.2], [-.25, 1.65]))
         for index in range(885, 911):
             p = index/1000
-            for point in roof+house+bay+[WALLBOX_TARGET, CHARGING_PORT]:
+            for point in roof+house+bay+[WALLBOX_TARGET, WALLBOX_FACE]:
                 self.assertLess(max(abs(v) for v in projected(point, camera(p))), .48,
                                 f'Energy overview clips connected architecture at {p}: {point}')
-        # The shared view traverses a real spatial arc, then zooms to the bay.
+        # The shared view traverses a real spatial arc, then zooms to the wallbox.
         self.assertGreater(dist(camera(.885)[0], camera(.91)[0]), 1.5)
-        car = list(product([10.55, 12.45], [1.3, 5.7], [-.1, 1.6]))
+        wallbox = list(product([9.65, 9.90], [2.1, 2.75], [.55, 1.60]))
         for p in [.95, .975, 1.]:
-            for point in car+[WALLBOX_TARGET, CHARGING_PORT]:
+            for point in wallbox+[WALLBOX_TARGET, WALLBOX_FACE]:
                 self.assertLess(max(abs(v) for v in projected(point, camera(p))), .48)
 
     def test_navigation_targets_have_no_standstill_or_frame_aliases(self):

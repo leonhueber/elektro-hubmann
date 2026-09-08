@@ -1,9 +1,9 @@
 {
   "revision": "v4-continuous-01",
   "nativeAnimation": "C:\\Users\\hueberl\\Private_Projects\\elektro-bubmann\\assets\\3d\\elektro-hubmann-house-v4-continuous-r1-web.blend",
-  "nativeAnimationSha256": "ded7efb86c4d89581f223262a61bfc2c6656909157cc3ace07debc33df40255d",
+  "nativeAnimationSha256": "a756da33905e9391378c8ad8ed3040672116900bcd4270f341ebc01e27cd2b08",
   "nativeSourceSha256": "d7e2edd13d0773ea7a5e27793cd7e85d7eacebcc3edf1046d4af71e90e9e675c",
-  "objects": 4508,
+  "objects": 4224,
   "sampleCount": 721,
   "allPassed": true,
   "visualApproval": false,
@@ -57,7 +57,11 @@
       "passed": true
     },
     {
-      "check": "Four enabled native wheel arch differences",
+      "check": "Vehicle geometry is removed",
+      "passed": true
+    },
+    {
+      "check": "Wallbox connector and stowed cable are physically attached",
       "passed": true
     },
     {
@@ -86,7 +90,7 @@
     {
       "check": "Camera moves at every adjacent sampled position",
       "passed": true,
-      "minimumTravelMetres": 0.015496681475877022
+      "minimumTravelMetres": 0.02737979696186753
     },
     {
       "check": "Saved camera and floors match the continuous tour",
@@ -148,9 +152,8 @@
       "hiddenFrames": []
     },
     {
-      "check": "Wheel arch cutters never render",
-      "passed": true,
-      "visibleFrames": []
+      "check": "Both energy routes terminate on the wallbox status face",
+      "passed": true
     },
     {
       "check": "Validation leaves both native files unchanged",
@@ -287,9 +290,9 @@
     {
       "frame": 1369,
       "camera": [
-        19.0,
-        -7.0,
-        7.0
+        16.5,
+        -5.5,
+        5.300000190734863
       ],
       "assemblies": {
         "EG": 0.0,
@@ -305,9 +308,9 @@
     {
       "frame": 1441,
       "camera": [
-        17.0,
-        -5.0,
-        4.599999904632568
+        12.600000381469727,
+        0.10000000149011612,
+        1.7999999523162842
       ],
       "assemblies": {
         "EG": 0.0,

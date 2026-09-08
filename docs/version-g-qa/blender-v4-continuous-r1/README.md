@@ -1,64 +1,44 @@
-# Durchgehende Hausfahrt – gewählte Ansichten
+# Durchgehende Hausfahrt – Modellvorschau ohne Auto
 
 Die native Datei `assets/3d/elektro-hubmann-house-v4-continuous-r1-web.blend`
-enthält den Modellumbau und die durchgehende Kamerafahrt. Die ursprüngliche
-Smart-Home-B-Datei bleibt die unveränderte Quelle. Das aktive Webmanifest wird
-erst nach dem vollständigen geprüften Renderexport umgeschaltet.
+enthält die gewählten Ansichten und die durchgehende Kamerafahrt. Die ursprüngliche
+Smart-Home-B-Datei bleibt die unveränderte Quelle.
 
-## Umsetzung
+## Aktueller Stand
 
-- Planung C ohne Modellbeschriftung; Holzfenster, Balkon und eingerichtetes Haus.
-- Erdgeschoss, Obergeschoss und Dach heben sich zu einer Explosionsansicht.
-  Schematische Leitungen wachsen durch beide bewohnten Ebenen.
-- Smart Home A mit seitlichem Blick auf Bett, Balkon, Holz-Balkontür und
-  Raumtaster. 30 Lamellen fahren auseinander und kippen; das Innenlicht bleibt an.
-- Sicherheit B ohne Lupe: direkte Fahrt an die detaillierte Türkamera.
-- Photovoltaik mit einer verbindenden Gesamtperspektive auf Dach und Auto,
-  anschließend Wallbox, angeschlossener Stecker und animierter Energiepfad.
-- Kleine Hausübersicht rechts unten und eine einzelne Szenenzeile, die dem
-  tatsächlich gezeichneten Bild folgt. Keine Einblendung bei der Planung.
+- Planung C: komplettes Haus, Holzfenster, Balkon, Einrichtung, keine Modelltexte.
+- Installation: EG, OG und Dach heben sich; schematische Leitungswege wachsen.
+- Smart Home A: direkter Schlafzimmerblick, Raumtaster, 30 bewegte Lamellen.
+- Sicherheit B: direkte Nahansicht der Türkamera ohne Lupe.
+- Photovoltaik: Gesamtperspektive auf Dach und Haus, dann Fahrt an die Wallbox.
+  Das Auto ist vollständig entfernt. Das Kabel hängt mit Stecker im Wandhalter;
+  der schematische Energiepfad endet an der Statusanzeige der Wallbox.
+- Kleine Hausübersicht rechts unten und eine Szenenzeile für das gerade gezeigte
+  Motiv sind für den vollständigen neuen Webexport vorbereitet.
 
-## Prüfungen und Grenzen
+## Vorschauen vor dem langen Renderlauf
 
-`native-build.json` dokumentiert Quellen und Prüfsummen. `native-validation.json`
-prüft 721 gespeicherte Zustände, darunter Bewegungen, Ebenenabstände, konstantes
-Innenlicht, Jalousiehub und Ladeanzeige. Die technischen Prüfungen ersetzen keine
-Sichtprüfung der Renderbilder.
+Auf Wunsch des Nutzers sind der Produktionsrunner und der automatische
+Commit-/Push-Abschluss gestoppt. Der alte unvollständige Lauf ist unter
+`benchmarks/vehicle-r0-superseded/` lokal archiviert. Er darf nicht mit dem neuen
+Modell fortgesetzt werden. Es läuft kein vollständiger Produktionsrender.
 
-Die ersten Proberender deckten eine angeschnittene Dachspitze, verdecktes Bett,
-ausgeblendete Türrahmen und eine fehlende Gesamtperspektive bei Photovoltaik auf.
-Kamera und Modell wurden daraufhin korrigiert. Die Überarbeitung wurde anhand
-neuer nativer Bilder geprüft, ohne die Webkonfiguration vorzeitig zu wechseln.
+`proofs/` enthält zehn neue native Cycles-Kontrollbilder dieses Modellstands,
+640 × 640 Pixel, 16 Samples mit Denoising. `states-overview.jpg` zeigt alle fünf
+Themen einschließlich der PV-Gesamt- und Detailperspektive.
+`motion-overview.jpg` vergleicht die Installation und drei Smart-Home-Zeitpunkte.
+Die Einblendungen auf den Übersichtsblättern sind nur Bildunterschriften;
+sie sind keine Beschriftungen im 3D-Modell.
 
-Die geprüften Ansichten liegen unter `proofs/`: Planung, Installation,
-Smart Home, Sicherheit, Photovoltaik und deren verbindende Gesamtperspektive.
-Die ersten beiden Bilder stammen aus dem 96-Sample-Referenzlauf, die drei
-Detailansichten aus dem gewählten 48-Sample-Profil, jeweils bei 1200 px.
-Die PV-Gesamtperspektive dokumentiert zusätzlich den 640-px-Kompositionscheck.
-`sources.json` hält die genaue Herkunft fest; diese Einzelbilder aktivieren
-keine unvollständige Webanimation.
+`sources.json` dokumentiert Bild-, Modell- und Renderherkunft. Diese Bilder dienen
+der Auswahl und Kompositionsprüfung, nicht als endgültiger Schärfenachweis.
+Der spätere Webexport bleibt bei 1200 px / 48 Samples. Die Vergleichsbilder in
+`quality-profile-review.json` gehören zur vorherigen Modellrevision und sind
+lediglich die historische Grundlage für dieses Qualitätsprofil.
 
-`quality-profile-review.json` dokumentiert den Vergleich der Renderprofile.
-Die 48-Sample-Probe bewahrt die sichtbare Schärfe und verkürzt die Renderzeit.
-Die abschließende technische Prüfung besteht aus 29 nativen Prüfungen,
-20 Bewegungstests und 9 Tests der Render-/Exportpipeline.
-
-Die bestehende Website überspringt jetzt alle identischen Standbilder ihrer
-bisherigen Folge. 38 Frontendtests bestehen, einschließlich isolierter Tests
-der künftigen kontinuierlichen Konfiguration. Die Desktopfahrt vorwärts wurde
-im echten Browser geprüft; weitere Browserprüfungen scheiterten an wiederholten
-Debuggerabbrüchen. Eine vollständige Browserfreigabe der neuen Bildrevision steht
-bis zu deren vollständigem Export aus.
-
-`frontend/runner-status.json` und `frontend/pipeline-status.json` zeigen den
-lokalen Produktionsfortschritt. Proberender liegen getrennt unter
-`frontend/preview/`; sie werden niemals als vollständige Websitefolge aktiviert.
-
-Der ausdrücklich gestartete `finalize_continuous.py` wartet einmalig auf den
-laufenden Export. Danach prüft er die Exportdateien, Vitest, Astro Check und
-Produktionsbuild, committet ausschließlich die neuen Webbilder und deren
-Konfiguration und pusht normal nach `main`. Er ist an Codecommit, Modell-SHA,
-Runner und den verifizierten GitHub-Remote gebunden. Ein veränderter Branch,
-neue fremde Änderungen, gestagte Dateien oder ein vorgerückter Remote stoppen
-den Abschluss. Der bestehende fremde Arbeitsstand wird erhalten. Sein Status
-steht in `frontend/finalizer-status.json`; es gibt keine zeitgesteuerte Wiederholung.
+`native-build.json` und `native-validation.json` dokumentieren das aktuelle
+Modell und 721 geprüfte native Zustände. Die ursprüngliche Blender-Datei bleibt
+bytegleich. Bewegungs- und Frontendtests prüfen kontinuierliche Fahrt, sichtbare
+Zielpunkte und passende Szenenbeschriftungen. Die Website wird erst nach einem
+vollständigen neuen Export umgeschaltet. Vor dessen Start steht die Bildsichtung
+mit dem Nutzer aus.

@@ -1,26 +1,222 @@
 {
   "planning": {
-    "source": "docs\\version-g-qa\\blender-v4-continuous-r1\\benchmarks\\quality-96-reference\\renders\\frame-0001.png",
-    "sha256": "d8232157856756c8753d3ee2393e2da022c7dee8ddc6833fa519341be57630f8"
+    "frame": 51,
+    "source": "docs/version-g-qa/blender-v4-continuous-r1/frontend/preview/d265610de5ea413d/renders/frame-0051.png",
+    "sha256": "b2d879d1772c284bf93310e57efd02ae810d4c9cb70488aad2a75a764dbef73b",
+    "webpSha256": "587afeca40b1a5334cde60907571fd2d6ce2ee76024ddc93f15e436057cbf90c",
+    "nativeSha256": "a756da33905e9391378c8ad8ed3040672116900bcd4270f341ebc01e27cd2b08",
+    "mode": "preview",
+    "settings": {
+      "engine": "CYCLES",
+      "size": 640,
+      "samples": 16,
+      "adaptiveThreshold": 0.035,
+      "minimumSamples": 8,
+      "denoising": true,
+      "seed": 0,
+      "animatedSeed": false,
+      "threads": 12,
+      "persistentData": true,
+      "filmTransparent": false,
+      "filmAnimationMuted": true
+    }
+  },
+  "installation-opening": {
+    "frame": 301,
+    "source": "docs/version-g-qa/blender-v4-continuous-r1/frontend/preview/d265610de5ea413d/renders/frame-0301.png",
+    "sha256": "c2d3c89dd0cae85cb51ce57497a93a869717cafe0d746378e849e540b80a9fb9",
+    "webpSha256": "cd6c908d2b0a3332acee5abcffd87dda28de0efdc35c5b9692e8a14fd0ec12f8",
+    "nativeSha256": "a756da33905e9391378c8ad8ed3040672116900bcd4270f341ebc01e27cd2b08",
+    "mode": "preview",
+    "settings": {
+      "engine": "CYCLES",
+      "size": 640,
+      "samples": 16,
+      "adaptiveThreshold": 0.035,
+      "minimumSamples": 8,
+      "denoising": true,
+      "seed": 0,
+      "animatedSeed": false,
+      "threads": 12,
+      "persistentData": true,
+      "filmTransparent": false,
+      "filmAnimationMuted": true
+    }
   },
   "installation": {
-    "source": "docs\\version-g-qa\\blender-v4-continuous-r1\\benchmarks\\quality-96-reference\\renders\\frame-0397.png",
-    "sha256": "71dc77e20b63a1b839eadc958793b47a724016917ae0bda29594545f3d269a18"
+    "frame": 397,
+    "source": "docs/version-g-qa/blender-v4-continuous-r1/frontend/preview/d265610de5ea413d/renders/frame-0397.png",
+    "sha256": "697643656942ddf1f3732bd57e5283ada3f65e8671284f4b82b4c724ae5f2540",
+    "webpSha256": "5ae2815814b1645d4988f0d3fe277dff2a415eb1f8ab1c426ff57f7a327c7c68",
+    "nativeSha256": "a756da33905e9391378c8ad8ed3040672116900bcd4270f341ebc01e27cd2b08",
+    "mode": "preview",
+    "settings": {
+      "engine": "CYCLES",
+      "size": 640,
+      "samples": 16,
+      "adaptiveThreshold": 0.035,
+      "minimumSamples": 8,
+      "denoising": true,
+      "seed": 0,
+      "animatedSeed": false,
+      "threads": 12,
+      "persistentData": true,
+      "filmTransparent": false,
+      "filmAnimationMuted": true
+    }
+  },
+  "smarthome-open": {
+    "frame": 627,
+    "source": "docs/version-g-qa/blender-v4-continuous-r1/frontend/preview/d265610de5ea413d/renders/frame-0627.png",
+    "sha256": "fd9bb30d4f64e89a93b25f9bc355d5b5d1e2319c3042ef5ea25f9e7608d2ce4d",
+    "webpSha256": "c24dacb9f263534ee95b63d306243776f2077fd5d5725191a4da2da9af7cb974",
+    "nativeSha256": "a756da33905e9391378c8ad8ed3040672116900bcd4270f341ebc01e27cd2b08",
+    "mode": "preview",
+    "settings": {
+      "engine": "CYCLES",
+      "size": 640,
+      "samples": 16,
+      "adaptiveThreshold": 0.035,
+      "minimumSamples": 8,
+      "denoising": true,
+      "seed": 0,
+      "animatedSeed": false,
+      "threads": 12,
+      "persistentData": true,
+      "filmTransparent": false,
+      "filmAnimationMuted": true
+    }
   },
   "smarthome": {
-    "source": "docs\\version-g-qa\\blender-v4-continuous-r1\\benchmarks\\quality-48-smart.png",
-    "sha256": "86710fcd9171a1f916f338f0f3617d111e389d7bfd55af43b06337093dcc2093"
+    "frame": 771,
+    "source": "docs/version-g-qa/blender-v4-continuous-r1/frontend/preview/d265610de5ea413d/renders/frame-0771.png",
+    "sha256": "54aca7c191040f2cc9af550f492a56e6ed69bc6e57afffbc2dea831a7aa601b0",
+    "webpSha256": "dbe19e3f607ad438d7078b9c02e1b49e8370b59c2106d84ee1faa85b7e0fc3ab",
+    "nativeSha256": "a756da33905e9391378c8ad8ed3040672116900bcd4270f341ebc01e27cd2b08",
+    "mode": "preview",
+    "settings": {
+      "engine": "CYCLES",
+      "size": 640,
+      "samples": 16,
+      "adaptiveThreshold": 0.035,
+      "minimumSamples": 8,
+      "denoising": true,
+      "seed": 0,
+      "animatedSeed": false,
+      "threads": 12,
+      "persistentData": true,
+      "filmTransparent": false,
+      "filmAnimationMuted": true
+    }
   },
-  "energy-context": {
-    "source": "docs\\version-g-qa\\blender-v4-continuous-r1\\frontend\\preview\\4679477790f7bcab\\renders\\frame-1289.png",
-    "sha256": "04195d411179d91a481a8b2e1eb39c3badd3e47381eb4a6231880230a97d10a0"
+  "smarthome-tilted": {
+    "frame": 865,
+    "source": "docs/version-g-qa/blender-v4-continuous-r1/frontend/preview/d265610de5ea413d/renders/frame-0865.png",
+    "sha256": "81aeac432f4ae6ff2823be6d6ae14ae5b168a695808eeb1a5ff1071550ac05e4",
+    "webpSha256": "60aba645ccbad16c06b299ce9e1e51dca574b2c97286c17a87d04ba30af1d5b1",
+    "nativeSha256": "a756da33905e9391378c8ad8ed3040672116900bcd4270f341ebc01e27cd2b08",
+    "mode": "preview",
+    "settings": {
+      "engine": "CYCLES",
+      "size": 640,
+      "samples": 16,
+      "adaptiveThreshold": 0.035,
+      "minimumSamples": 8,
+      "denoising": true,
+      "seed": 0,
+      "animatedSeed": false,
+      "threads": 12,
+      "persistentData": true,
+      "filmTransparent": false,
+      "filmAnimationMuted": true
+    }
   },
   "security": {
-    "source": "docs\\version-g-qa\\blender-v4-continuous-r1\\frontend\\renders\\frame-1089.png",
-    "sha256": "eff35ec6fae72b9d2c975e6f4fb95765a686f86b05275c50ace2556022199521"
+    "frame": 1089,
+    "source": "docs/version-g-qa/blender-v4-continuous-r1/frontend/preview/d265610de5ea413d/renders/frame-1089.png",
+    "sha256": "24defc3ade5c98e028aa07f534467d5be135118535ff81e25874a0e9aa8a628a",
+    "webpSha256": "d0c361518e921f328fef27849d2501065f556e76e05c3ad960a5a2d268fba9de",
+    "nativeSha256": "a756da33905e9391378c8ad8ed3040672116900bcd4270f341ebc01e27cd2b08",
+    "mode": "preview",
+    "settings": {
+      "engine": "CYCLES",
+      "size": 640,
+      "samples": 16,
+      "adaptiveThreshold": 0.035,
+      "minimumSamples": 8,
+      "denoising": true,
+      "seed": 0,
+      "animatedSeed": false,
+      "threads": 12,
+      "persistentData": true,
+      "filmTransparent": false,
+      "filmAnimationMuted": true
+    }
+  },
+  "energy-context": {
+    "frame": 1289,
+    "source": "docs/version-g-qa/blender-v4-continuous-r1/frontend/preview/d265610de5ea413d/renders/frame-1289.png",
+    "sha256": "e27f6b57efdee4e50dd2d65a8517b73a0252457aa77c4158e6ad7c533c07306d",
+    "webpSha256": "92b4ae67875b7bbb215b9a6c04a591cc0389d3d9a6b4365e1cd21c03da09ade6",
+    "nativeSha256": "a756da33905e9391378c8ad8ed3040672116900bcd4270f341ebc01e27cd2b08",
+    "mode": "preview",
+    "settings": {
+      "engine": "CYCLES",
+      "size": 640,
+      "samples": 16,
+      "adaptiveThreshold": 0.035,
+      "minimumSamples": 8,
+      "denoising": true,
+      "seed": 0,
+      "animatedSeed": false,
+      "threads": 12,
+      "persistentData": true,
+      "filmTransparent": false,
+      "filmAnimationMuted": true
+    }
   },
   "energy": {
-    "source": "docs\\version-g-qa\\blender-v4-continuous-r1\\frontend\\renders\\frame-1369.png",
-    "sha256": "0a758215477cabe2f83d977138ed9a44a4aba75b186c88968485a493227be7d9"
+    "frame": 1369,
+    "source": "docs/version-g-qa/blender-v4-continuous-r1/frontend/preview/d265610de5ea413d/renders/frame-1369.png",
+    "sha256": "eeb1262467421d03c480f97beee7dc6dff21b894f2a56c2517bd65b8f35ecb35",
+    "webpSha256": "1fec29079989f10bbab7a821106755b010ca64b296c62a163b25d4c500d97dfa",
+    "nativeSha256": "a756da33905e9391378c8ad8ed3040672116900bcd4270f341ebc01e27cd2b08",
+    "mode": "preview",
+    "settings": {
+      "engine": "CYCLES",
+      "size": 640,
+      "samples": 16,
+      "adaptiveThreshold": 0.035,
+      "minimumSamples": 8,
+      "denoising": true,
+      "seed": 0,
+      "animatedSeed": false,
+      "threads": 12,
+      "persistentData": true,
+      "filmTransparent": false,
+      "filmAnimationMuted": true
+    }
+  },
+  "energy-detail": {
+    "frame": 1441,
+    "source": "docs/version-g-qa/blender-v4-continuous-r1/frontend/preview/d265610de5ea413d/renders/frame-1441.png",
+    "sha256": "f531bceed7b38c47ce85a1322ca0713584d9cbcbdce425702fed92fee1ecd57c",
+    "webpSha256": "cfaed4ee018080031482d8b94426b0f087e9c56b80e1c59e009d8a301579f236",
+    "nativeSha256": "a756da33905e9391378c8ad8ed3040672116900bcd4270f341ebc01e27cd2b08",
+    "mode": "preview",
+    "settings": {
+      "engine": "CYCLES",
+      "size": 640,
+      "samples": 16,
+      "adaptiveThreshold": 0.035,
+      "minimumSamples": 8,
+      "denoising": true,
+      "seed": 0,
+      "animatedSeed": false,
+      "threads": 12,
+      "persistentData": true,
+      "filmTransparent": false,
+      "filmAnimationMuted": true
+    }
   }
 }

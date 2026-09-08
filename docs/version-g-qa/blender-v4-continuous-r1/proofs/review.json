@@ -1,0 +1,34 @@
+{
+  "nativeSha256": "a756da33905e9391378c8ad8ed3040672116900bcd4270f341ebc01e27cd2b08",
+  "imageCount": 10,
+  "productionStarted": false,
+  "reviewPending": true,
+  "sheets": [
+    {
+      "file": "states-overview.jpg",
+      "sha256": "aa3b0ba41de58fc04e086c0a79249cd4f5689584036fc56cf76d793f1f48eecb",
+      "images": [
+        "planning",
+        "installation",
+        "smarthome-tilted",
+        "security",
+        "energy-context",
+        "energy-detail"
+      ],
+      "layout": "unretouched native previews with external captions"
+    },
+    {
+      "file": "motion-overview.jpg",
+      "sha256": "448e1006a3d5ea938df0bb304022d844f4deb0f1f32d9cba70a9da5be36fd0e7",
+      "images": [
+        "planning",
+        "installation-opening",
+        "installation",
+        "smarthome-open",
+        "smarthome",
+        "smarthome-tilted"
+      ],
+      "layout": "unretouched native previews with external captions"
+    }
+  ]
+}

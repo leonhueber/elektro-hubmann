@@ -82,9 +82,9 @@ describe('future continuous native export', () => {
       'Jalousie fährt herunter',
     );
     expect(houseSceneCaptionAt('energy', 0.895)).toBe(
-      'Haus und Auto verbunden',
+      'Dach und Wallbox verbunden',
     );
-    expect(houseSceneCaptionAt('energy', 0.95)).toBe('Laden an der Wallbox');
+    expect(houseSceneCaptionAt('energy', 0.95)).toBe('Solarstrom an der Wallbox');
     expect(VERSION_G_STORY_CHAPTERS[4]!.components).toContain(
       'Wallbox & Überschussladen',
     );

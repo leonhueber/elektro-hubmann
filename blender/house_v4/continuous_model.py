@@ -1,7 +1,7 @@
 """Build a detailed, continuously animated sibling of the existing native B house.
 
 Run with the existing smarthome-r1-web.blend and --prepare. Sources are never
-overwritten. New devices, EV and parking bay are native Blender geometry.
+overwritten. New devices and the wallbox are native Blender geometry.
 """
 import argparse
 import hashlib
@@ -37,12 +37,8 @@ def materials():
         name = mat.name.removeprefix('V4 | ')
         if mat.name.startswith('V4 | ') and ' | ' not in name:
             c.M.setdefault(re.sub(r'\.\d{3}$', '', name), mat)
-    c.material('tour silver lacquer', (.36, .40, .42), .24, .72)
-    shader = c.M['tour silver lacquer'].node_tree.nodes.get('Principled BSDF')
-    shader.inputs['Coat Weight'].default_value = .65
-    shader.inputs['Coat Roughness'].default_value = .15
     c.material('tour rubber', (.012, .015, .017), .72, .05, .0004)
-    c.material('tour car glass', (.015, .027, .035), .13, .42)
+    c.material('tour reader glass', (.015, .027, .035), .13, .42)
     c.material('tour pavement', (.37, .385, .37), .82, 0, .0015)
     c.material('tour route', (.48, .01, .025), .4, .15)
     c.material('tour blue lens', (.011, .037, .07), .09, .45)
@@ -85,36 +81,15 @@ def smooth_curve(name, coords, radius, mat, parent=None):
     return c.register(bpy.data.objects.new(name, curve), mat, parent)
 
 
-def shape_loft(name, sections, mat, parent):
-    """Smooth automotive shoulder profile, longitudinal axis Y."""
-    verts = []
-    for y, width, bottom, top in sections:
-        height = top-bottom
-        verts.extend([(0, y, bottom), (-width*.78, y, bottom),
-                      (-width, y, bottom+.20*height), (-width, y, bottom+.68*height),
-                      (-width*.78, y, top), (0, y, top),
-                      (width*.78, y, top), (width, y, bottom+.68*height),
-                      (width, y, bottom+.20*height), (width*.78, y, bottom)])
-    ring = 10
-    faces = [tuple(reversed(range(ring)))]
-    faces += [(j*ring+i, j*ring+(i+1)%ring, (j+1)*ring+(i+1)%ring, (j+1)*ring+i)
-              for j in range(len(sections)-1) for i in range(ring)]
-    faces.append(tuple((len(sections)-1)*ring+i for i in range(ring)))
-    obj = c.mesh(name, verts, faces, mat, parent, smooth=True)
-    sub = obj.modifiers.new('Coachwork surface continuity', 'SUBSURF')
-    sub.levels = sub.render_levels = 2
-    return obj
-
-
-def ev_and_wallbox():
+def wallbox_and_solar():
     c.collection('V4 | Continuous 10 Energy', None, 'Exterior | EV bay')
     before = set(bpy.context.scene.objects)
     # Thin individual pavers retain material scale beside the existing house.
-    for ix in range(7):
+    for ix in range(3):
         for iy in range(12):
             c.box('Tour | bay paver', (9.78+(ix+.5)*.56, .10+(iy+.5)*.57, -.13),
                   (.552, .562, .10), 'tour pavement', .004)
-    c.box('Tour | bay outer kerb', (13.80, 3.52, -.08), (.10, 6.90, .18), 'stone', .009)
+    c.box('Tour | bay outer kerb', (11.51, 3.52, -.08), (.10, 6.90, .18), 'stone', .009)
     wall = c.empty('Tour | wallbox', (9.665, 2.3, 1.35))
     wall['mounting_height_m'] = 1.35
     c.box('Tour | wallbox mounting gasket', (.028, 0, 0), (.052, .274, .43), 'tour rubber', .024, wall)
@@ -126,7 +101,7 @@ def ev_and_wallbox():
         lamp=c.box('Tour | charging progress LED', (.202, -.059+i*.017, .078),
                    (.004, .012, .009), 'tour status', .002, wall)
         lamp['charge_segment']=i
-    c.box('Tour | reader glass', (.2, 0, -.005), (.004, .096, .082), 'tour car glass', .005, wall)
+    c.box('Tour | reader glass', (.2, 0, -.005), (.004, .096, .082), 'tour reader glass', .005, wall)
     for y in [-.12, .12]:
         for z in [-.19, .19]:
             c.cylinder('Tour | wallbox fixing', (.199, y, z), .004, .005, 'steel', wall, (0, math.pi/2, 0), 16)
@@ -142,86 +117,27 @@ def ev_and_wallbox():
     for i in range(10):
         c.box('Tour | inverter heat sink', (9.34, 2.53+i*.039, 1.4), (.06, .012, .5), 'steel', .003)['continuous_group'] = 'eg'
     c.box('Tour | inverter status', (9.139, 2.72, 1.39), (.004, .072, .012), 'tour status', .002)['continuous_group'] = 'eg'
-    # Native custom compact hatchback. No external or unlicensed vehicle model.
     c.collection('V4 | Continuous 10 Energy', None, 'Exterior | EV bay')
-    car = c.empty('Tour | electric hatchback', (11.5, 3.5, -.10))
-    car['vehicle_length_m'], car['vehicle_width_m'] = 4.4, 1.8
-    body=shape_loft('Tour | formed silver body',
-               [(-2.2,.50,.35,.61),(-2.12,.79,.27,.78),(-1.82,.9,.24,.9),
-                (-1.35,.91,.25,.97),(-.45,.91,.25,.99),(.75,.9,.25,.95),
-                (1.40,.87,.27,.88),(1.94,.80,.3,.76),(2.2,.57,.37,.63)],
-               'tour silver lacquer', car)
-    shape_loft('Tour | curved panoramic cabin',
-               [(-1.64,.56,.81,1.02),(-1.15,.70,.89,1.46),(-.70,.71,.91,1.55),
-                (.28,.70,.9,1.52),(.62,.66,.88,1.4),(1.12,.54,.86,1.01)],
-               'tour car glass', car)
-    c.soft('Tour | roof panel', (0,-.31,1.48), (1.22,1.16,.07), 'tour silver lacquer', car, exponent=.42)
-    for side in [-1,1]:
-        # Window boundaries, two door seams, side sill and flush handles.
-        smooth_curve('Tour | window surround', [(side*.69,-1.29,1.1),(side*.72,-.90,1.46),
-                     (side*.70,.28,1.46),(side*.61,.96,1.03)], .016,'tour silver lacquer',car)
-        c.rod('Tour | window B pillar',(side*.727,-.29,.99),(side*.697,-.29,1.50),.036,'charcoal',car)
-        smooth_curve('Tour | beltline',[(side*.87,-1.75,.90),(side*.94,-.8,.94),
-                     (side*.935,.65,.91),(side*.85,1.61,.80)],.008,'steel',car)
-        for y in [-.67,.50]:
-            c.box('Tour | flush door pull',(side*.918,y,.88),(.027,.16,.027),'charcoal',.011,car)
-            smooth_curve('Tour | door shutline',[(side*.911,y+.37,.92),(side*.92,y+.40,.51),
-                         (side*.88,y+.34,.32)],.003,'black',car)
-        c.box('Tour | side sill',(side*.84,0,.28),(.13,2.55,.09),'charcoal',.026,car)
-        c.rod('Tour | mirror stalk',(side*.72,.79,1.05),(side*.99,.72,1.08),.025,'charcoal',car)
-        c.soft('Tour | mirror housing',(side*1.01,.72,1.09),(.20,.27,.13),'tour silver lacquer',car,exponent=.48)
-        c.box('Tour | mirror glass',(side*1.015,.582,1.09),(.148,.008,.085),'steel',.025,car)
-        for y in [-1.39,1.37]:
-            # Axles along X. Lathed tyre shoulders with separate rim, five spokes.
-            tyre = c.lathe('Tour | rounded tyre',(side*.77,y,.365),
-                          [(.21,-.14),(.31,-.14),(.355,-.10),(.367,-.05),(.367,.05),(.355,.10),(.31,.14),(.21,.14)],
-                          'tour rubber',car,segments=64)
-            tyre.rotation_euler.y=math.pi/2
-            c.cylinder('Tour | alloy rim',(side*.908,y,.365),.239,.024,'steel',car,(0,math.pi/2,0),64)
-            c.cylinder('Tour | brake cavity',(side*.924,y,.365),.206,.025,'charcoal',car,(0,math.pi/2,0),48)
-            for angle in [i*math.tau/5 for i in range(5)]:
-                c.rod('Tour | forged wheel spoke',(side*.945,y+.048*math.sin(angle),.365+.048*math.cos(angle)),
-                      (side*.945,y+.20*math.sin(angle+.11),.365+.20*math.cos(angle+.11)),.027,'steel',car)
-            c.cylinder('Tour | hub cap',(side*.955,y,.365),.055,.014,'steel',car,(0,math.pi/2,0),32)
-            for angle in [i*math.tau/40 for i in range(40)]:
-                yy,zz=y+.364*math.sin(angle),.365+.364*math.cos(angle)
-                c.rod('Tour | tread siping',(side*.70,yy,zz),(side*.84,yy,zz),.0025,'black',car)
-            cutter=c.cylinder('Tour | wheel arch cutter',(side*.85,y,.365),.401,.65,'black',car,(0,math.pi/2,0),64)
-            cutter.modifiers.clear()
-            cut=body.modifiers.new('Real wheel arch','BOOLEAN')
-            cut.operation='DIFFERENCE';cut.solver='EXACT';cut.object=cutter
-            cutter.hide_render=True
-            cutter['continuous_group']='never'
-        c.soft('Tour | front light',(side*.59,2.075,.69),(.39,.075,.085),'tour led',car,exponent=.35)
-        c.soft('Tour | rear light',(side*.58,-2.06,.76),(.42,.06,.077),'tour tail',car,exponent=.36)
-    c.box('Tour | front intake',(0,2.159,.46),(1.08,.055,.10),'charcoal',.035,car)
-    c.box('Tour | front plate',(0,2.20,.58),(.42,.014,.082),'ceramic',.012,car)
-    c.box('Tour | rear plate',(0,-2.151,.55),(.42,.014,.082),'ceramic',.012,car)
-    c.soft('Tour | roof antenna',(0,-.85,1.61),(.055,.16,.085),'charcoal',car,exponent=.65)
-    # Visible charging port on the house-facing side.
-    c.box('Tour | charge port recess',(-.897,-1.2,.83),(.045,.19,.17),'black',.025,car)
-    c.box('Tour | open charge flap',(-.995,-1.31,.83),(.14,.024,.18),'tour silver lacquer',.022,car,angle=.45)
-    c.cylinder('Tour | plugged connector',(-.96,-1.2,.83),.046,.15,'charcoal',car,(0,math.pi/2,0),40)
-    for j in range(5):
-        c.cylinder('Tour | connector grip ring',(-1.02-j*.014,-1.2,.83),.044,.007,'tour rubber',car,(0,math.pi/2,0),40)
-    smooth_curve('Tour | charging cable',
-                 [(9.8,2.3,1.09),(9.92,2.3,.54),(10.12,2.30,.08),(10.30,2.3,.20),(10.39,2.3,.55),(10.425,2.3,.73)],
-                 .018,'tour rubber')
+    c.box('Tour | connector wall holster',(.085,.33,.055),(.11,.095,.14),'charcoal',.018,wall)
+    c.cylinder('Tour | docked connector',(.16,.33,.0),.038,.17,'charcoal',wall,vertices=40)
+    for j in range(4):
+        c.cylinder('Tour | docked connector grip',(.16,.33,-.045-j*.012),.040,.006,'tour rubber',wall,vertices=40)
+    smooth_curve('Tour | stowed charging cable',
+                 [(.13,0,-.262),(.20,0,-.65),(.22,.14,-.76),(.22,.36,-.66),(.18,.36,-.31),(.16,.33,-.078)],
+                 .014,'tour rubber',wall)
     # Explicitly schematic, dimensioned path laid just outside the real surface.
-    # The path follows the roof slope, then the east wall and charging cable.
+    # The path follows the roof slope and east wall to the actual wallbox face.
     fade_group('energy')
     points=[(6.2,4.2,8.66),(7.7,4.2,7.61),(9.79,4.2,6.16),
-            (9.89,4.2,5.70),(9.89,4.2,1.35),(9.89,2.3,1.35),
-            (9.94,2.3,1.09),(10.03,2.3,.54),(10.20,2.3,.10),
-            (10.35,2.3,.24),(10.44,2.3,.55),(10.46,2.3,.73)]
-    for name,radius,mat in [('solar route',.017,'tour solar path'),('solar pulse',.030,'tour solar pulse')]:
+            (9.89,4.2,5.70),(9.89,4.2,1.428),(9.87,2.405,1.428)]
+    for name,radius,mat in [('solar route',.005,'tour solar path'),('solar pulse',.009,'tour solar pulse')]:
         path=smooth_curve('Tour | '+name,points,radius,mat)
         for point in path.data.splines[0].bezier_points:
             point.handle_left_type=point.handle_right_type='VECTOR'
         path['continuous_group']='energy'
         path['energy_path']=name
     NEW.extend(o for o in bpy.context.scene.objects if o not in before)
-    return wall,car
+    return wall
 
 
 def retain_balcony_access():
@@ -380,7 +296,7 @@ def prepare():
     scene=bpy.context.scene
     scene.frame_set(1)
     materials()
-    wall,car=ev_and_wallbox()
+    wallbox_and_solar()
     slats,lower,ring=details_and_routes()
     retain_balcony_access()
     attach_fades(NEW)
@@ -490,7 +406,7 @@ def prepare():
     scene.render.threads_mode,scene.render.threads='FIXED',12
     scene['web_revision']=REVISION
     scene['continuous_source_sha256']=hashlib.sha256(SOURCE.read_bytes()).hexdigest()
-    scene['continuous_features']='30 moving lamellae; retained timber balcony access; directional sunlight; detailed door camera; native EV and wallbox; animated solar path and charge indicator'
+    scene['continuous_features']='30 moving lamellae; retained timber balcony access; directional sunlight; detailed door camera; wallbox with stowed cable; animated solar path and status indicator; no vehicle'
     scene.frame_set(1)
     bpy.context.view_layer.update()
     bpy.ops.wm.save_as_mainfile(filepath=str(DEST),compress=True)
@@ -502,7 +418,7 @@ def prepare():
       'smarthome':{'regions':[orient_bounds(scene,[(.1,-1.8,3),(4.7,-1.8,3),(1,0,5.5),(3.5,0,5.5)])]},
       'security':{'regions':[orient_bounds(scene,[(6.55,0,.95),(7.08,0,1.72)])]},
       'energy':{'regions':[orient_bounds(scene,[(5,1,9),(9.6,1,6),(5,10,9),(9.6,10,6)]),
-                              orient_bounds(scene,[(9.65,.5,0),(13.4,.5,0),(9.65,6,1.6),(13.4,6,1.6)])]}
+                              orient_bounds(scene,[(9.65,2,.55),(9.9,2.8,1.65)])]}
     }
     write_json(ROOT/'src/config/house-v4-orientation.json',regions)
     write_json(OUT/'motion-samples.json',records)

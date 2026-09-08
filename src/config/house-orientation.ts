@@ -25,8 +25,8 @@ export function houseSceneCaptionAt(
     case 'energy':
       if (progress < 0.885) return 'Solarstrom vom Dach';
       return progress < 0.93
-        ? 'Haus und Auto verbunden'
-        : 'Laden an der Wallbox';
+        ? 'Dach und Wallbox verbunden'
+        : 'Solarstrom an der Wallbox';
   }
 }
 
@@ -67,8 +67,8 @@ export const HOUSE_ORIENTATION: Record<VersionGStoryState, HouseOrientation> = {
     regions: projectedRegions.security.regions,
   },
   energy: {
-    location: 'Dach & Stellplatz',
-    subject: 'Solarstrom für Haus und Auto',
+    location: 'Dach & Wallbox',
+    subject: 'Solarstrom und Ladeinfrastruktur',
     regions: projectedRegions.energy.regions,
   },
 };
