@@ -6,6 +6,8 @@ import {
 import { houseManifest, posterUrl } from '../../../lib/house-story';
 import { CONTINUOUS_HOUSE_REVISION } from '../../../config/house-orientation';
 
+import SkipHouseStory from './SkipHouseStory';
+
 interface Props {
   baseUrl: string;
 }
@@ -19,6 +21,7 @@ const chapters = VERSION_G_STORY_CHAPTERS;
     undefined}
   aria-label="Leistungen von der Planung bis zu integrierten Energiesystemen"
 >
+  <SkipHouseStory staticView client:load />
   {
     chapters.map((chapter, index) => (
       <section class="g-static-chapter" id={`g-${chapter.id}`}>

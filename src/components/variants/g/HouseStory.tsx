@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import SkipHouseStory from './SkipHouseStory';
 import { useEffect, useRef, useState } from 'react';
 import { VERSION_G_STORY_CHAPTERS as chapters } from '../../../config/version-g-story-assets';
 import {
@@ -352,6 +353,7 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
       }
     >
       <div className="g-story-stage">
+        <SkipHouseStory />
         <div className="g-story-visual" aria-hidden="true">
           <picture className={`g-house-poster ${ready ? 'is-hidden' : ''}`}>
             <source
