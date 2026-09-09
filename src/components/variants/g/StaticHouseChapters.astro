@@ -5,7 +5,6 @@ import {
 } from '../../../config/version-g-story-assets';
 import { houseManifest, posterUrl } from '../../../lib/house-story';
 import { CONTINUOUS_HOUSE_REVISION } from '../../../config/house-orientation';
-import HouseOrientation from './HouseOrientation';
 
 interface Props {
   baseUrl: string;
@@ -42,7 +41,6 @@ const chapters = VERSION_G_STORY_CHAPTERS;
               />
             </picture>
           </div>
-          <HouseOrientation baseUrl={baseUrl} chapter={chapter.id} />
         </div>
         <article class="g-story-copy is-active">
           <p class="g-eyebrow">

@@ -5,7 +5,6 @@ import {
   CONTINUOUS_HOUSE_REVISION,
   houseSceneCaptionAt,
 } from '../../../config/house-orientation';
-import HouseOrientation from './HouseOrientation';
 import {
   FrameQueue,
   ScrollPlayback,
@@ -420,10 +419,6 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
             </article>
           ))}
         </div>
-        <HouseOrientation
-          baseUrl={baseUrl}
-          chapter={chapters[activeIndex]!.id}
-        />
         <nav className="g-progress" aria-label="Leistungsabschnitt wählen">
           <strong>
             <span>{chapters[activeIndex]!.number}</span> /{' '}

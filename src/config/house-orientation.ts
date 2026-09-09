@@ -1,5 +1,4 @@
 import type { VersionGStoryState } from './version-g-story-assets';
-import projectedRegions from './house-v4-orientation.json';
 
 export const CONTINUOUS_HOUSE_REVISION = 'v4-continuous-01';
 
@@ -29,46 +28,3 @@ export function houseSceneCaptionAt(
         : 'Solarstrom an der Wallbox';
   }
 }
-
-type HouseRegion = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
-
-export type HouseOrientation = {
-  location: string;
-  subject: string;
-  regions: HouseRegion[];
-};
-
-// Bounds are projected from the native scene onto its square planning poster,
-// including white margins; normalized coordinates keep both profiles aligned.
-export const HOUSE_ORIENTATION: Record<VersionGStoryState, HouseOrientation> = {
-  planning: {
-    location: 'Das Haus im Überblick',
-    subject: 'Elektrotechnik von Anfang an',
-    regions: projectedRegions.planning.regions,
-  },
-  installation: {
-    location: 'Drei Ebenen',
-    subject: 'Leitungswege im Haus',
-    regions: projectedRegions.installation.regions,
-  },
-  smarthome: {
-    location: 'Schlafzimmer · Obergeschoss',
-    subject: 'Beschattung auf Knopfdruck',
-    regions: projectedRegions.smarthome.regions,
-  },
-  security: {
-    location: 'Am Hauseingang',
-    subject: 'Kamera und Zutritt',
-    regions: projectedRegions.security.regions,
-  },
-  energy: {
-    location: 'Dach & Wallbox',
-    subject: 'Solarstrom und Ladeinfrastruktur',
-    regions: projectedRegions.energy.regions,
-  },
-};
