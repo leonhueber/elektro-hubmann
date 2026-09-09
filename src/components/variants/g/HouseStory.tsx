@@ -2,10 +2,7 @@ import type { CSSProperties } from 'react';
 import SkipHouseStory from './SkipHouseStory';
 import { useEffect, useRef, useState } from 'react';
 import { VERSION_G_STORY_CHAPTERS as chapters } from '../../../config/version-g-story-assets';
-import {
-  CONTINUOUS_HOUSE_REVISION,
-  houseSceneCaptionAt,
-} from '../../../config/house-orientation';
+import { CONTINUOUS_HOUSE_REVISION } from '../../../config/house-orientation';
 import {
   FrameQueue,
   ScrollPlayback,
@@ -27,9 +24,7 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
   const root = useRef<HTMLElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const jump = useRef<(index: number) => void>(() => {});
-  const drawnCaption = useRef('');
   const [activeIndex, setActiveIndex] = useState(0);
-  const [sceneCaption, setSceneCaption] = useState('');
   const [ready, setReady] = useState(false);
   useEffect(() => {
     const wrapper = root.current;
@@ -83,16 +78,6 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
         `${scrollProgressAtTimeline(progress) * 100}%`,
       );
       const nextChapter = chapterAt(progress);
-      if (houseManifest.revision === CONTINUOUS_HOUSE_REVISION) {
-        const caption = houseSceneCaptionAt(
-          chapters[nextChapter]!.id,
-          progress,
-        );
-        if (caption !== drawnCaption.current) {
-          drawnCaption.current = caption;
-          setSceneCaption(caption);
-        }
-      }
       if (nextChapter !== currentChapter) {
         currentChapter = nextChapter;
         setActiveIndex(nextChapter);
@@ -375,11 +360,6 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
             height={houseManifest.profiles.desktop.height}
           />
         </div>
-        {houseManifest.revision === CONTINUOUS_HOUSE_REVISION && (
-          <p className="g-house-scene-caption" aria-hidden={!sceneCaption}>
-            {sceneCaption}
-          </p>
-        )}
         <div className="g-story-copy-stack">
           {chapters.map((chapter, index) => (
             <article
@@ -414,10 +394,6 @@ export default function HouseStory({ baseUrl }: { baseUrl: string }) {
                 <span>{chapter.cta}</span>
                 <span aria-hidden="true">→</span>
               </a>
-              <span className="g-scroll-hint">
-                {chapter.hint}
-                <i aria-hidden="true">↓</i>
-              </span>
             </article>
           ))}
         </div>

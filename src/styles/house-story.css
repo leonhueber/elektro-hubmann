@@ -156,23 +156,6 @@
   right: max(142px, 11%);
   bottom: 50px;
 }
-.g-house-scene-caption {
-  position: absolute;
-  z-index: 3;
-  left: calc(31% + 12px);
-  right: max(230px, 17%);
-  bottom: 17px;
-  margin: 0;
-  padding-left: 9px;
-  border-left: 2px solid var(--g-red);
-  color: #565960;
-  font-size: 0.73rem;
-  line-height: 1.45;
-  pointer-events: none;
-}
-.g-house-scene-caption[aria-hidden='true'] {
-  visibility: hidden;
-}
 .g-house-v4[data-continuous='true'] .g-progress {
   top: 32px;
 }
@@ -204,7 +187,7 @@
 @media (max-width: 860px) {
   .g-house-v4[data-continuous='true'] .g-story-stage {
     display: grid;
-    grid-template-rows: 48px minmax(0, 1fr) 28px auto;
+    grid-template-rows: 48px minmax(0, 1fr) auto;
   }
   .g-house-v4[data-continuous='true'] .g-story-visual {
     position: relative;
@@ -213,17 +196,9 @@
     width: 100%;
     min-height: 0;
   }
-  .g-house-v4[data-continuous='true'] .g-house-scene-caption {
-    position: relative;
-    grid-row: 3;
-    align-self: center;
-    inset: auto;
-    margin-inline: 20px;
-    font-size: 0.68rem;
-  }
   .g-house-v4[data-continuous='true'] .g-story-copy-stack {
     position: relative;
-    grid-row: 4;
+    grid-row: 3;
     inset: auto;
     display: grid;
     width: auto;
@@ -251,7 +226,7 @@
 
 @media (max-width: 860px) and (max-height: 720px) {
   .g-house-v4[data-continuous='true'] .g-story-stage {
-    grid-template-rows: 48px minmax(0, 1fr) 24px auto;
+    grid-template-rows: 48px minmax(0, 1fr) auto;
   }
   .g-house-v4[data-continuous='true'] .g-story-copy-stack {
     margin-block: 6px 14px;
@@ -299,7 +274,7 @@
 }
 @media (max-width: 860px) {
   .g-house-v4[data-continuous='true'] .g-story-stage {
-    grid-template-rows: 48px 44px minmax(0, 1fr) 28px auto;
+    grid-template-rows: 48px 44px minmax(0, 1fr) auto;
   }
   .g-house-v4 .g-house-skip {
     position: relative;
@@ -312,15 +287,12 @@
   .g-house-v4[data-continuous='true'] .g-story-visual {
     grid-row: 3;
   }
-  .g-house-v4[data-continuous='true'] .g-house-scene-caption {
-    grid-row: 4;
-  }
   .g-house-v4[data-continuous='true'] .g-story-copy-stack {
-    grid-row: 5;
+    grid-row: 4;
   }
 }
 @media (max-width: 860px) and (max-height: 720px) {
   .g-house-v4[data-continuous='true'] .g-story-stage {
-    grid-template-rows: 48px 44px minmax(0, 1fr) 24px auto;
+    grid-template-rows: 48px 44px minmax(0, 1fr) auto;
   }
 }
